@@ -1,0 +1,12 @@
+
+{
+  "language": "node_js",
+  "node_js": "10",
+  "services": [
+    "oracledb"
+  ],
+  "script": [
+    "npm run build",
+    "npm run test"
+  ]
+}
