@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 // mongoose initialize
-module.exports.initialize = function() {
+module.exports.initialize = function () {
   mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     () => { console.log('Database connection is successful') },
     err => { console.log(`Error when connecting to the database ${err}`) }

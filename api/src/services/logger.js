@@ -4,7 +4,7 @@ const MLogger = require('../models/logger'),
 
 module.exports.set = async (request, name, id, action) => {
   try {
-    if (!!process.env.LOGGER) return;
+    if (process.env.LOGGER) return;
     const logger = {
       userId: request.verify._id,
       collName: name,
@@ -12,7 +12,7 @@ module.exports.set = async (request, name, id, action) => {
       method: action,
       userAgent: requestHelper.getUserAgent(request),
       at: new Date(),
-      ip: requestHelper.getIp(request),
+      ip: requestHelper.getIp(request)
     };
     const data = new MLogger(logger);
     // data.validate()

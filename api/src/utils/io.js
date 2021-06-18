@@ -8,7 +8,7 @@ const fs = require('fs'),
 const upload_path = process.env.UPLOAD_DIR
 // module.exports.upload_path = upload_path
 // console.log(public_path)
-module.exports.createDir = async function(opts) {
+module.exports.createDir = async function (opts) {
   try {
     const list_dir = opts.dir.replace(/^\/|\/$/g, '').split('/')
     const result = {
@@ -45,14 +45,14 @@ module.exports.rename = async (oldPath, newPath) => {
   }
 }
 
-module.exports.getExtention = function(path, dot = true) {
+module.exports.getExtention = function (path, dot = true) {
   if (!path) return ''
   const regx = /(?:\.([^.]+))?$/
   path = regx.exec(path)
   return path ? (dot ? path[0] : path[1]) : ''
 }
 
-function getFolder({ dir, root, host }) {
+function getFolder ({ dir, root, host }) {
   let result = []
   root = root || process.env.PUBLIC_DIR
   const _dir = path.join(root, dir)
@@ -75,7 +75,7 @@ function getFolder({ dir, root, host }) {
 }
 module.exports.getFolder = getFolder
 
-function getAllFolder({ dir, parent, root, host }) {
+function getAllFolder ({ dir, parent, root, host }) {
   let result = []
   root = root || process.env.PUBLIC_DIR
   const _dir = path.join(root, dir)
@@ -104,7 +104,7 @@ function getAllFolder({ dir, parent, root, host }) {
 }
 module.exports.getAllFolder = getAllFolder
 
-function getDirectories({ dir, root }) {
+function getDirectories ({ dir, root }) {
   const result = []
   root = root || process.env.PUBLIC_DIR
   const _dir = path.join(root, dir)
@@ -125,7 +125,7 @@ function getDirectories({ dir, root }) {
 }
 module.exports.getDirectories = getDirectories
 
-function getAllDirectories({ dir, parent, root }) {
+function getAllDirectories ({ dir, parent, root }) {
   const result = []
   root = root || process.env.PUBLIC_DIR
   // root = root || `./${process.env.PUBLIC_PATH}`
@@ -154,7 +154,7 @@ function getAllDirectories({ dir, parent, root }) {
 }
 module.exports.getAllDirectories = getAllDirectories
 
-function getFiles({ dir, root, host }) {
+function getFiles ({ dir, root, host }) {
   const result = []
   root = root || process.env.PUBLIC_DIR
   const _dir = path.join(root, dir)
@@ -176,7 +176,7 @@ function getFiles({ dir, root, host }) {
 }
 module.exports.getFiles = getFiles
 
-function getAllFiles({ dir, root, parent, host }) {
+function getAllFiles ({ dir, root, parent, host }) {
   let result = []
   root = root || process.env.PUBLIC_DIR
   const _dir = path.join(root, dir)

@@ -23,7 +23,7 @@ dotenv.config({ path: '.env' });
 
 let httpServer;
 
-module.exports.initialize = function() {
+module.exports.initialize = function () {
   return new Promise((resolve, reject) => {
     // Controllers (route handlers)
     // import * as homeController from '../controllers/home';
@@ -95,7 +95,7 @@ module.exports.initialize = function() {
      * Primary app routes.
      */
     /* GET home page. */
-    app.get(process.env.BASE_URL, function(req, res, next) {
+    app.get(process.env.BASE_URL, function (req, res, next) {
       // res.render('index', { title: 'Express' });
       res.end('TM-Store Express Server api', { title: 'Express' });
     });
@@ -112,7 +112,7 @@ module.exports.initialize = function() {
   });
 }
 
-module.exports.close = function() {
+module.exports.close = function () {
   return new Promise((resolve, reject) => {
     httpServer.close((err) => {
       if (err) {
@@ -126,7 +126,7 @@ module.exports.close = function() {
 
 const iso8601RegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
 
-module.exports.reviveJson = function(key, value) {
+module.exports.reviveJson = function (key, value) {
   // revive ISO 8601 date strings to instances of Date
   if (typeof value === 'string' && iso8601RegExp.test(value)) {
     return new Date(value);

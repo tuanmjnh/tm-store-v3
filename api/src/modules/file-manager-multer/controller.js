@@ -2,11 +2,11 @@ const io = require('../utils/io')
 const multer = require('multer')
 
 const storage = multer.diskStorage({
-  destination: async function(req, file, cb) {
+  destination: async function (req, file, cb) {
     const create_dir = await io.createDir({ dir: req.headers.path })
     cb(null, create_dir.path)
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, file.originalname)
   }
 })
@@ -15,7 +15,7 @@ module.exports.storage = storage
 const upload = multer({ storage: storage }).array('file-upload')
 module.exports.upload = upload
 
-module.exports.get = async function(req, res, next) {
+module.exports.get = async function (req, res, next) {
   try {
     const result = 'File manager'
     if (result) res.status(201).json(result).end()
@@ -25,7 +25,7 @@ module.exports.get = async function(req, res, next) {
   }
 }
 
-module.exports.post = async function(req, res, next) {
+module.exports.post = async function (req, res, next) {
   try {
     const result = []// await dbapi.create(body)
     for (const e of req.files) {

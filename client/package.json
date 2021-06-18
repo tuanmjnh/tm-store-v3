@@ -19,25 +19,39 @@
     "info": "quasar info",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
-    "upgrade": "quasar upgrade",
-    "upgrade:linux": "~/.npm-global/bin/quasar upgrade",
-    "upgrade:install": "quasar upgrade -i",
-    "upgrade:install-linux": "~/.npm-global/bin/quasar upgrade -i"
+    "update": "npm update",
+    "upgrade": "npm upgrade",
+    "upgrade-quasar": "quasar upgrade",
+    "upgrade-quasar:linux": "~/.npm-global/bin/quasar upgrade",
+    "upgrade-quasar:install": "quasar upgrade -i",
+    "upgrade-quasar:install-linux": "~/.npm-global/bin/quasar upgrade -i"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.10.6",
     "axios": "^0.21.1",
-    "core-js": "^3.6.5",
-    "quasar": "^2.0.0-beta.1",
-    "vue-i18n": "^9.0.0-beta.0"
+    "chart.js": "^3.3.2",
+    "core-js": "^3.14.0",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "nprogress": "^0.2.0",
+    "qrcode": "^1.4.4",
+    "quasar": "^2.0.0-rc.1",
+    "vue-i18n": "^9.1.6",
+    "vuedraggable": "^2.24.3",
+    "vuex": "^4.0.1",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.13.14",
-    "@quasar/app": "^3.0.0-beta.1",
-    "eslint": "^7.14.0",
+    "@babel/eslint-parser": "^7.14.4",
+    "@intlify/vue-i18n-loader": "^2.1.0",
+    "@quasar/app": "^3.0.0-rc.1",
+    "copy-webpack-plugin": "^8.1.1",
+    "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^7.0.0",
-    "eslint-webpack-plugin": "^2.4.0"
+    "eslint-plugin-vue": "^7.10.0",
+    "eslint-webpack-plugin": "^2.4.0",
+    "quasar-app-extension-qdraggabletree": "0.0.5"
   },
   "browserslist": [
     "last 10 Chrome versions",

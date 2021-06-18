@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Start Express server.
  */
-async function startup() {
+async function startup () {
   console.log('Starting application')
 
   try {
@@ -41,7 +41,7 @@ async function startup() {
 
 startup()
 
-async function shutdown(e) {
+async function shutdown (e) {
   let err = e
 
   console.log('Shutting down application')

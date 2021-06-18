@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
   type: { type: String, required: true },
   dependent: { type: mongoose.Schema.Types.ObjectId, default: null },
@@ -19,6 +19,6 @@ const schema = new mongoose.Schema({
   endAt: { type: Date, default: null },
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
-});
-module.exports = mongoose.model('categories', schema);
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
+})
+module.exports = mongoose.model('categories', schema)

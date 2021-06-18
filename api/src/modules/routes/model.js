@@ -14,5 +14,5 @@ const schema = new mongoose.Schema({
   flag: { type: Number, default: 1 },
   children: { type: Array, default: null },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
-});
+})
 module.exports = mongoose.model('routes', schema)

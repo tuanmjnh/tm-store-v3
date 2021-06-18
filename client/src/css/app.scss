@@ -1,1 +1,77 @@
 // app global css in SCSS form
+//
+.bri {
+  border-radius: initial;
+}
+//
+.q-tree__node-header {
+  width: fit-content;
+}
+.q-inner-loading {
+  z-index: 999;
+}
+
+// Flat Button
+.q-btn--square {
+  border-radius: initial;
+  .q-btn__wrapper::before {
+    box-shadow: initial;
+  }
+  &.q-btn--dense .q-btn__wrapper {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+.q-btn--square.q-btn-group {
+  box-shadow: initial;
+  .q-btn--dense.q-btn-dropdown--current {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+// Remove error icon
+.no-error-icon {
+  .q-field__append.q-anchor--skip {
+    display: none;
+  }
+}
+
+// Remove arrows input number
+.no-arrows {
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+// .component-fade-enter-active,
+// .component-fade-leave-active {
+//   transition: opacity 0.3s ease;
+// }
+// /* .component-fade-leave-active below version 2.1.8 */
+// .component-fade-enter,
+// .component-fade-leave-to {
+//   opacity: 0;
+// }
+
+.q-tab-panels .q-panel {
+  min-height: 250px;
+}
+
+.card-title {
+  line-height: 3rem;
+  .card-title-text {
+    line-height: 3rem !important;
+  }
+  .text-right {
+    padding-right: 6px;
+  }
+}

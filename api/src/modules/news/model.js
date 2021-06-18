@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
   // type: { type: String, default: null },
   categories: { type: mongoose.Schema.Types.ObjectId, ref: 'categories' },
@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
   endAt: { type: Date, default: null },
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
-});
-module.exports = mongoose.model('news', schema);
-schema.index({ code: 'text', title: 'text', author: 'text' });
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
+})
+module.exports = mongoose.model('news', schema)
+schema.index({ code: 'text', title: 'text', author: 'text' })

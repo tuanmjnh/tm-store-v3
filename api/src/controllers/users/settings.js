@@ -29,14 +29,14 @@ module.exports.put = async function (req, res, next) {
           font: req.body.font,
           dense: req.body.dense,
           format: req.body.format,
-          darkMode: req.body.darkMode,
-        },
+          darkMode: req.body.darkMode
+        }
       },
       (e, rs) => {
         // { multi: true, new: true },
         if (e) return res.status(500).send(e);
         return res.status(200).json(rs);
-      },
+      }
     );
   } catch (e) {
     console.log(e);

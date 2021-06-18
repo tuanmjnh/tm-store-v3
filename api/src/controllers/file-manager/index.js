@@ -31,8 +31,8 @@ module.exports.getDirectories = async function (req, res, next) {
             directory: '',
             fullPath: '',
             icon: 'folder',
-            children: result,
-          },
+            children: result
+          }
         ])
         .end();
     } else res.status(404).json({ msg: 'exist', params: 'data' }).end();
@@ -85,7 +85,7 @@ module.exports.post = async function (req, res, next) {
       console.log('user aborted upload');
     });
 
-    form.on('end', (fields, files) => {});
+    form.on('end', (fields, files) => { });
 
     form.onPart = function (part) {
       if (part.filename) {
@@ -115,7 +115,7 @@ module.exports.post = async function (req, res, next) {
           ext: io.getExtention(file.name),
           icon: 'file',
           path: `${process.env.UPLOAD_DIR}/${req.headers['upload-path']}`,
-          type: file.type,
+          type: file.type
         });
       }
       if (rs) res.status(201).json(rs).end();

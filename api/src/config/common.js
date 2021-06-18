@@ -1,4 +1,4 @@
-// import { SHA256 } from '../utils/crypto';
+// import { SHA256 } from '../utils/crypto'
 module.exports.users = [
   {
     _id: '5ec9dc4f50d47517fe4f0629',
@@ -19,9 +19,9 @@ module.exports.users = [
     enable: true,
     lastLogin: new Date(),
     lastChangePass: undefined,
-    created: { at: new Date(), by: 'root', ip: '0.0.0.0' },
-  },
-];
+    created: { at: new Date(), by: 'root', ip: '0.0.0.0' }
+  }
+]
 
 module.exports.routes = [
   'manager',
@@ -39,6 +39,6 @@ module.exports.routes = [
   'manager-types-view',
   'manager-types-add',
   'manager-types-edit',
-  'manager-types-trash',
-];
-// console.log(SHA256('43cb52f9' + 'c1a41699367941a38d0e57ad4a69d2a2'));
+  'manager-types-trash'
+]
+// console.log(SHA256('43cb52f9' + 'c1a41699367941a38d0e57ad4a69d2a2'))

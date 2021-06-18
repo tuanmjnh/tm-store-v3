@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-// const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+// const Schema = mongoose.Schema
 const schema = new mongoose.Schema({
   group: { type: String, default: null },
   username: { type: String, required: true },
@@ -20,6 +20,6 @@ const schema = new mongoose.Schema({
   enable: { type: Boolean, default: true },
   lastLogin: { type: Date, default: null },
   lastChangePass: { type: Date, default: null },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
-});
-module.exports = mongoose.model('users', schema);
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
+})
+module.exports = mongoose.model('users', schema)

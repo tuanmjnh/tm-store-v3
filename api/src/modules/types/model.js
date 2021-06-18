@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
   key: { type: String, required: true },
   code: { type: String, required: true },
@@ -8,5 +8,5 @@ const schema = new mongoose.Schema({
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
-});
-module.exports = mongoose.model('types', schema);
+})
+module.exports = mongoose.model('types', schema)

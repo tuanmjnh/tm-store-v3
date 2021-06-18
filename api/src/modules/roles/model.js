@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
   key: String,
   name: String,
@@ -10,5 +10,5 @@ const schema = new mongoose.Schema({
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
   // type: 'personal',
   // order: 1,
-});
-module.exports = mongoose.model('roles', schema);
+})
+module.exports = mongoose.model('roles', schema)

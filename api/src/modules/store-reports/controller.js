@@ -5,18 +5,18 @@ const mongoose = require('mongoose'),
   MImportItems = require('../store-imports/model-items'),
   MProducts = require('../products/model'),
   MCategories = require('../categories/model'),
-  moment = require('moment');
+  moment = require('moment')
 
-const name = 'store-reports';
-module.exports.name = name;
+const name = 'store-reports'
+module.exports.name = name
 module.exports.date = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const curent = moment().date();
-    const labelsLength = 25;
+      exports: []
+    }
+    const curent = moment().date()
+    const labelsLength = 25
     const conditions = [
       // Having
       // { $match: { flag: 1 } },
@@ -28,26 +28,26 @@ module.exports.date = async function (req, res, next) {
             labels: {
               $hour: {
                 date: '$created_at',
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              },
-            },
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+              }
+            }
           },
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { '_id.curent': curent } },
       // Sort
-      { $sort: { '_id.curent': -1, '_id.labels': 1 } },
-    ];
+      { $sort: { '_id.curent': -1, '_id.labels': 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id.labels === i);
+        const item = imports.find((x) => x._id.labels === i)
         if (item) {
           result.imports.push({
             curent: item._id.curent,
@@ -56,9 +56,9 @@ module.exports.date = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: curent,
@@ -67,17 +67,17 @@ module.exports.date = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id.labels === i);
+        const item = exports.find((x) => x._id.labels === i)
         if (item) {
           result.exports.push({
             curent: item._id.curent,
@@ -86,9 +86,9 @@ module.exports.date = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: curent,
@@ -97,50 +97,50 @@ module.exports.date = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}
 
 module.exports.weekly = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const curent = moment().week();
-    const labelsLength = 8;
+      exports: []
+    }
+    const curent = moment().week()
+    const labelsLength = 8
     const conditions = [
       {
         $group: {
           _id: {
             curent: { $isoWeek: '$created_at' },
-            labels: { $isoDayOfWeek: '$created_at' },
+            labels: { $isoDayOfWeek: '$created_at' }
           },
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { '_id.curent': curent } },
       // Sort
-      { $sort: { '_id.curent': -1, '_id.labels': 1 } },
-    ];
+      { $sort: { '_id.curent': -1, '_id.labels': 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id.labels === i);
+        const item = imports.find((x) => x._id.labels === i)
         if (item) {
           result.imports.push({
             curent: item._id.curent,
@@ -149,9 +149,9 @@ module.exports.weekly = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: curent,
@@ -160,17 +160,17 @@ module.exports.weekly = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id.labels === i);
+        const item = exports.find((x) => x._id.labels === i)
         if (item) {
           result.exports.push({
             curent: item._id.curent,
@@ -179,9 +179,9 @@ module.exports.weekly = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: curent,
@@ -190,27 +190,27 @@ module.exports.weekly = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}
 
 module.exports.month = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const curent = moment().month() + 1;
-    const labelsLength = moment().daysInMonth() + 1;
+      exports: []
+    }
+    const curent = moment().month() + 1
+    const labelsLength = moment().daysInMonth() + 1
     const conditions = [
       // Having
       // { $match: { flag: 1 } },
@@ -219,24 +219,24 @@ module.exports.month = async function (req, res, next) {
         $group: {
           _id: {
             curent: { $month: '$created_at' },
-            labels: { $dayOfMonth: '$created_at' },
+            labels: { $dayOfMonth: '$created_at' }
           },
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { '_id.curent': curent } },
       // Sort
-      { $sort: { '_id.curent': -1, '_id.labels': 1 } },
-    ];
+      { $sort: { '_id.curent': -1, '_id.labels': 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id.labels === i);
+        const item = imports.find((x) => x._id.labels === i)
         if (item) {
           result.imports.push({
             curent: item._id.curent,
@@ -245,9 +245,9 @@ module.exports.month = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: curent,
@@ -256,17 +256,17 @@ module.exports.month = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id.labels === i);
+        const item = exports.find((x) => x._id.labels === i)
         if (item) {
           result.exports.push({
             curent: item._id.curent,
@@ -275,9 +275,9 @@ module.exports.month = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: curent,
@@ -286,27 +286,27 @@ module.exports.month = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}
 
 module.exports.quarter = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const curent = moment().year();
-    const labelsLength = 5;
+      exports: []
+    }
+    const curent = moment().year()
+    const labelsLength = 5
     const conditions = [
       {
         $project: {
@@ -322,42 +322,42 @@ module.exports.quarter = async function (req, res, next) {
                     {
                       $subtract: [
                         {
-                          $month: '$created_at',
+                          $month: '$created_at'
                         },
-                        1,
-                      ],
+                        1
+                      ]
                     },
-                    3,
-                  ],
+                    3
+                  ]
                 },
-                1,
-              ],
-            },
-          },
-        },
+                1
+              ]
+            }
+          }
+        }
       },
       {
         $group: {
           _id: {
             curent: '$year',
-            labels: '$quarter',
+            labels: '$quarter'
           },
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { '_id.curent': curent } },
       // Sort
-      { $sort: { '_id.curent': -1, '_id.labels': 1 } },
-    ];
+      { $sort: { '_id.curent': -1, '_id.labels': 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id.labels === i);
+        const item = imports.find((x) => x._id.labels === i)
         if (item) {
           result.imports.push({
             curent: item._id.curent,
@@ -366,9 +366,9 @@ module.exports.quarter = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: curent,
@@ -377,17 +377,17 @@ module.exports.quarter = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id.labels === i);
+        const item = exports.find((x) => x._id.labels === i)
         if (item) {
           result.exports.push({
             curent: item._id.curent,
@@ -396,9 +396,9 @@ module.exports.quarter = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: curent,
@@ -407,50 +407,50 @@ module.exports.quarter = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}
 
 module.exports.year = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const curent = moment().year();
-    const labelsLength = 13;
+      exports: []
+    }
+    const curent = moment().year()
+    const labelsLength = 13
     const conditions = [
       {
         $group: {
           _id: {
             curent: { $year: '$created_at' },
-            labels: { $month: '$created_at' },
+            labels: { $month: '$created_at' }
           },
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { '_id.curent': curent } },
       // Sort
-      { $sort: { '_id.curent': -1, '_id.labels': 1 } },
-    ];
+      { $sort: { '_id.curent': -1, '_id.labels': 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id.labels === i);
+        const item = imports.find((x) => x._id.labels === i)
         if (item) {
           result.imports.push({
             curent: item._id.curent,
@@ -459,9 +459,9 @@ module.exports.year = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: curent,
@@ -470,17 +470,17 @@ module.exports.year = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id.labels === i);
+        const item = exports.find((x) => x._id.labels === i)
         if (item) {
           result.exports.push({
             curent: item._id.curent,
@@ -489,9 +489,9 @@ module.exports.year = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: curent,
@@ -500,27 +500,27 @@ module.exports.year = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}
 
 module.exports.fiveYear = async function (req, res, next) {
   try {
     const result = {
       imports: [],
-      exports: [],
-    };
-    const labelsLength = moment().year() + 1;
-    const curent = labelsLength - 5;
+      exports: []
+    }
+    const labelsLength = moment().year() + 1
+    const curent = labelsLength - 5
     const conditions = [
       {
         $group: {
@@ -528,19 +528,19 @@ module.exports.fiveYear = async function (req, res, next) {
           total_bill: { $sum: 1 },
           total_product: { $sum: '$total_product' },
           total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' },
-        },
+          total_quantity: { $sum: '$total_quantity' }
+        }
       },
       // Having
       { $match: { _id: { $gt: curent } } },
       // Sort
-      { $sort: { _id: 1 } },
-    ];
+      { $sort: { _id: 1 } }
+    ]
     // imports
-    const imports = await MImports.aggregate(conditions);
+    const imports = await MImports.aggregate(conditions)
     if (imports) {
       for (let i = curent; i < labelsLength; i++) {
-        const item = imports.find((x) => x._id === i);
+        const item = imports.find((x) => x._id === i)
         if (item) {
           result.imports.push({
             curent: item._id,
@@ -549,9 +549,9 @@ module.exports.fiveYear = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.imports.push({
             curent: i,
@@ -560,17 +560,17 @@ module.exports.fiveYear = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
     // exports
-    const exports = await MExports.aggregate(conditions);
+    const exports = await MExports.aggregate(conditions)
     if (exports) {
       for (let i = curent; i < labelsLength; i++) {
-        const item = exports.find((x) => x._id === i);
+        const item = exports.find((x) => x._id === i)
         if (item) {
           result.exports.push({
             curent: item._id,
@@ -579,9 +579,9 @@ module.exports.fiveYear = async function (req, res, next) {
               total_bill: item.total_bill,
               total_product: item.total_product,
               total_price: item.total_price,
-              total_quantity: item.total_quantity,
-            },
-          });
+              total_quantity: item.total_quantity
+            }
+          })
         } else {
           result.exports.push({
             curent: i,
@@ -590,15 +590,15 @@ module.exports.fiveYear = async function (req, res, next) {
               total_bill: 0,
               total_product: 0,
               total_price: 0,
-              total_quantity: 0,
-            },
-          });
+              total_quantity: 0
+            }
+          })
         }
       }
     }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (e) {
-    console.log(e);
-    return res.status(500).send('invalid');
+    console.log(e)
+    return res.status(500).send('invalid')
   }
-};
+}

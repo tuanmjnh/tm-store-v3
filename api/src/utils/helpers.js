@@ -1,50 +1,50 @@
 const moment = require('moment')
 
-module.exports.getBody = function(obj, req) { // req: Request
-  const rs = {};
+module.exports.getBody = function (obj, req) { // req: Request
+  const rs = {}
   Object.keys(obj).forEach(e => {
-    if (req.body && req.body[e] !== undefined) rs[e] = req.body[e];
-  });
-  return rs;
-};
-
-module.exports.toTimestamp = function(strDate) {
-  const datum = Date.parse(strDate);
-  return datum / 1000;
+    if (req.body && req.body[e] !== undefined) rs[e] = req.body[e]
+  })
+  return rs
 }
 
-function ToUpperCase(obj) {
+module.exports.toTimestamp = function (strDate) {
+  const datum = Date.parse(strDate)
+  return datum / 1000
+}
+
+function ToUpperCase (obj) {
   const rs = {}
   Object.keys(obj).forEach(e => {
     rs[e.toUpperCase()] = obj[e]
-  });
-  return rs;
+  })
+  return rs
 }
-module.exports.ToUpperCase = ToUpperCase;
+module.exports.ToUpperCase = ToUpperCase
 
-function ToLowerCase(obj) {
+function ToLowerCase (obj) {
   const rs = {}
   Object.keys(obj).forEach(e => {
     rs[e.toLowerCase()] = obj[e]
-  });
-  return rs;
+  })
+  return rs
 }
-module.exports.ToLowerCase = ToLowerCase;
+module.exports.ToLowerCase = ToLowerCase
 
-module.exports.RandomDate = function(start, end) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+module.exports.RandomDate = function (start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }
 
-module.exports.ToDate = function(timestamp, format = null) {
-  timestamp = parseInt(timestamp);
+module.exports.ToDate = function (timestamp, format = null) {
+  timestamp = parseInt(timestamp)
   if (format) {
-    return moment(timestamp).format(format);
+    return moment(timestamp).format(format)
   } else {
-    return moment(timestamp).toDate();
+    return moment(timestamp).toDate()
   }
 }
 
-module.exports.pushIfNotExist = function(data, element, key) {
+module.exports.pushIfNotExist = function (data, element, key) {
   if (Array.isArray(element)) {
     element.forEach(e => {
       if (key) {
