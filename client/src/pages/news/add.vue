@@ -124,40 +124,41 @@
             <div class="row q-gutter-sm">
               <div class="col-12">{{$t('global.content')}}</div>
               <div class="col-12">
-                <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple:max-file-size="1024*1024*2"
+                <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'news'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif" iconAccept="add_task" :labelAccept="$t('global.accept')"
                            :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')" :labelFileName="$t('files.fileName')"
-                           :labelFileSize="$t('files.fileSize')" :multiple="true" />
+                           :labelFileSize="$t('files.fileSize')" />
               </div>
             </div>
           </q-tab-panel>
           <q-tab-panel name="upload">
             <div class="row">
               <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model:data="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
+                <tm-upload v-model="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'news'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="false" v-model:view-type="viewTypeImage" :size="121"
                            :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
                            :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
                            :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelFileName="$t('files.fileName')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
-                           :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
+                           :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
+                           :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelDeleteFile="$t('global.delete')"
+                           :labelCancel="$t('global.cancel')" :labelConfirmTitle="$t('messageBox.confirm')"
+                           :labelConfirmContent="$t('messageBox.delete')" />
               </div>
             </div>
             <q-separator class="q-mb-sm q-mt-sm" />
             <div class="row">
               <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model:data="data.attach" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*5" :multiple="true"
+                <tm-upload v-model="data.attach" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*5"
                            :headers="[{name:'Upload-Path',value:'news'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
-                           v-model:view-type="viewTypeAttach" :size="121" :labelTitle="$t('global.attach')"
-                           :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')"
-                           :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')"
-                           iconAccept="add_task" :labelAccept="$t('global.accept')"
-                           :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelFileName="$t('files.fileName')" :labelFileSize="$t('files.fileSize')"
-                           :labelCancel="$t('global.cancel')" :labelConfirmTitle="$t('messageBox.confirm')"
-                           :labelConfirmContent="$t('messageBox.delete')" />
+                           :multiple="true" v-model:view-type="viewTypeAttach" :size="121" :labelTitle="$t('global.attach')"
+                           :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelOpenFile="$t('files.openFile')"
+                           :labelOpenData="$t('files.openData')" iconAccept="add_task" :labelAccept="$t('global.accept')"
+                           :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')" :labelIndex="$t('files.index')"
+                           :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')" :labelType="$t('files.type')"
+                           :labelFileSize="$t('files.fileSize')" :labelDeleteFile="$t('global.delete')" :labelCancel="$t('global.cancel')"
+                           :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
               </div>
             </div>
           </q-tab-panel>
@@ -169,12 +170,12 @@
               </div>
             </div>
             <q-separator class="q-mt-md" />
-            <tm-tags v-model:data="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
+            <tm-tags v-model="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
                      :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
                      tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
                      :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')" />
             <q-separator class="q-mb-md q-mt-md" />
-            <tm-attributes v-model:data="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
+            <tm-attributes v-model="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
                            :labelTitle="$t('global.attributes')+':'" :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')"
                            :labelInputKey="$t('global.key')" :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')"
                            :btnDeleteLabel="$t('global.delete')" :labelConfirmTitle="$t('messageBox.confirm')"

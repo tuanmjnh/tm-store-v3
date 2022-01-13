@@ -227,13 +227,13 @@ export default defineComponent({
       onAdd: () => {
         $store.dispatch('news/set')
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogAdd) $router.push('add')
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.add) $router.push('add')
         else isDialogAdd.value = true
       },
       onEdit: (val) => {
         $store.dispatch('news/set', val)
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogEdit) $router.push({ path: 'edit', query: { id: val._id } })
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.edit) $router.push({ path: 'edit', query: { id: val._id } })
         else isDialogAdd.value = true
       },
       onTrash (val) {

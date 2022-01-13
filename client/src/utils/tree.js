@@ -182,12 +182,40 @@ export function findNodesIfExist (nodes, nodeIds, nodeKey = 'id') {
   return rs
 }
 
-// export function getParent(root, id) {
-//   return root.some(function(n) {
-//     if (n.id === id) return n
-//     if (n.children) return getParent(n.children, id)
-//   }) || null
-// }
+export function getParent (nodes, node, nodeKey = 'id') {
+  // console.log(nodes)
+  // console.log(node)
+  // console.log(nodeKey)
+  let rs = []
+  for (let i = 0; i < nodes.length; i++) {
+    if (nodes[i][nodeKey] === node[nodeKey]) {
+      rs.push(nodes[i])
+      break;
+    }
+    else {
+      if (nodes[i].children) {
+        const child = getParent(nodes[i].children, node, nodeKey)
+        if (child && child.length) {
+          rs.push(nodes[i])
+          rs = rs.concat(child)
+        }
+      }
+    }
+  }
+  // nodes.forEach(e => {
+  //   if (e[nodeKey] === node[nodeKey]) rs.push(e)
+  //   else {
+  //     if (e.children) {
+  //       const child = getParent(e.children, node, nodeKey)
+  //       if (child && child.length) rs.concat(child)
+  //     }
+  //   }
+  // })
+  return rs
+  // nodes.some(function (n) {
+  //   if (n.children) return getParent(n.children, node, nodeKey)
+  // }) || null
+}
 
 // function getParent(root, id) {
 //   var i, node

@@ -153,7 +153,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.q-btn-dropdown-tm >>> .q-btn-dropdown__arrow {
+.q-btn-dropdown-tm .q-btn-dropdown__arrow {
   display: none;
 }
 </style>

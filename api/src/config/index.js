@@ -27,9 +27,9 @@ if (process.env.NODE_ENV && process.env.NODE_ENV.toString().trim() === 'developm
   // dotenv.config({ path: '.env' })
 }
 // Root path
-process.env.PUBLIC_DIR = `${process.env.ROOT_PATH}\\${process.env.PUBLIC_PATH}` // path.join(process.env.ROOT_PATH, process.env.PUBLIC_PATH)
-process.env.STATIC_DIR = `${process.env.PUBLIC_DIR}\\${process.env.STATIC_PATH}` // path.join(process.env.PUBLIC_DIR, process.env.STATIC_PATH)
-process.env.UPLOAD_DIR = `${process.env.PUBLIC_DIR}\\${process.env.UPLOAD_PATH}` // path.join(process.env.PUBLIC_DIR, process.env.UPLOAD_PATH)
+process.env.PUBLIC_DIR = `${process.env.ROOT_PATH}/${process.env.PUBLIC_PATH}` // path.join(process.env.ROOT_PATH, process.env.PUBLIC_PATH)
+process.env.STATIC_DIR = `${process.env.PUBLIC_DIR}/${process.env.STATIC_PATH}` // path.join(process.env.PUBLIC_DIR, process.env.STATIC_PATH)
+process.env.UPLOAD_DIR = `${process.env.PUBLIC_DIR}/${process.env.UPLOAD_PATH}` // path.join(process.env.PUBLIC_DIR, process.env.UPLOAD_PATH)
 process.env.PORT = process.env.PORT || 8001
 
 // console.log(process.env.PUBLIC_DIR)

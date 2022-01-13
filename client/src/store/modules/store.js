@@ -1,90 +1,69 @@
 import { api } from '@/boot/axios'
-const collectionExports = '/store-exports';
-const collectionImports = '/store-imports';
-const collectionReports = '/store-reports';
+const collectionImports = '/store-imports'
+const collectionExports = '/store-exports'
+const collectionReports = '/store-reports'
 
 const state = {
-  items: [],
-  item: {},
-  rowsNumber: 0
-};
+  importItems: [],
+  exportItems: []
+}
 const mutations = {
-  SET_ITEMS (state, value) {
-    state.items = value ? value : [];
+  IMPORT_SET_ITEMS (state, value) {
+    state.importItems = value ? value : []
   },
-  SET_ITEM (state, value) {
-    state.item = value ? value : {};
-  },
-  SET_ROWS_NUMBER (state, value) {
-    state.rowsNumber = value ? value : 0;
+  EXPORT_SET_ITEMS (state, value) {
+    state.exportItems = value ? value : []
   }
-};
+}
 const actions = {
-  // collection Exports
-  async getExport ({ commit }, params) {
-    const rs = await api.get(collectionExports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  // collection Imports
+  importsGet ({ commit }, params) {
+    return api.get(collectionImports, { params }).then((res) => {
+      if (res && res.data) commit('IMPORT_SET_ITEMS', res.data)
+      return res
+    })
   },
-  async findsExport ({ commit }, params) {
-    const rs = await api.post(`${collectionExports}/find`, { params });
-    if (rs) commit('SET_ITEMS', rs);
+  importsFinds ({ commit }, params) {
+    return api.post(`${collectionImports}/finds`, params)
   },
-  async updateExport ({ commit }, params) {
-    const rs = await api.put(`${collectionExports}/exist`, { params });
-    if (rs) commit('SET_ITEMS', rs);
+  importsUpdate ({ commit }, params) {
+    return api.put(collectionImports, params)
   },
 
-  // collection Imports
-  async getImports ({ commit }, params) {
-    const rs = await api.get(collectionImports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  // collection Exports
+  exportGet ({ commit }, params) {
+    return api.get(collectionExports, { params })
   },
-  async findsImports ({ commit }, params) {
-    const rs = await api.post(`${collectionImports}/find`, { params });
-    if (rs) commit('SET_ITEMS', rs);
+  exportFinds ({ commit }, params) {
+    return api.post(`${collectionExports}/finds`, params)
   },
-  async updateImports ({ commit }, params) {
-    const rs = await api.put(`${collectionImports}/exist`, { params });
-    if (rs) commit('SET_ITEMS', rs);
+  exportUpdate ({ commit }, params) {
+    return api.put(collectionExports, params)
   },
 
   //collectionReports
-  async getReportDate ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetDate ({ commit }, params) {
+    return api.get(collectionReports, { params })
   },
-  async getReportWeekly ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetWeekly ({ commit }, params) {
+    return api.get(`${collectionReports}/weekly`, { params })
   },
-  async getReportMonth ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetMonth ({ commit }, params) {
+    return api.get(`${collectionReports}/month`, { params })
   },
-  async getReportQuarter ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetQuarter ({ commit }, params) {
+    return api.get(`${collectionReports}/quarter`, { params })
   },
-  async getReportYear ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetYear ({ commit }, params) {
+    return api.get(`${collectionReports}/year`, { params })
   },
-  async getReportFiveYear ({ commit }, params) {
-    const rs = await api.get(collectionReports, { params });
-    if (rs && rs.data) commit('SET_ITEMS', rs.data);
-    if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber);
+  reportGetFiveYear ({ commit }, params) {
+    return api.get(`${collectionReports}/five-year`, { params })
   }
-};
+}
 export default {
   namespaced: true,
   state,
   mutations,
   actions
-};
+}

@@ -29,6 +29,7 @@ module.exports = configure(function (ctx) {
       'axios',
       'moment',
       'directive'
+      // 'gapi'
       // 'filter'
     ],
 

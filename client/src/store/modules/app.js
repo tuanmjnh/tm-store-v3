@@ -49,8 +49,7 @@ const state = {
     { id: 3, code: 'unknown' }
   ],
   rowsPerPageOptions: [10, 20, 50, 100, 200, 0],
-  isDialogAdd: true,
-  isDialogEdit: true,
+  isDialog: { add: true, edit: true, import: true },
   passwordResetDefault: 'Bk123456@',
   apiFileUpload: '/api/file-manager'
 };

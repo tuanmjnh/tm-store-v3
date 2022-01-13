@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"tm-store.routes"}],"uuid":"076bbf8e7f2e4074a4147cc17a66a2f2"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"5545b6a77a3e4ed2a35b033af57bd862","collectionName":"routes"}

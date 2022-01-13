@@ -99,7 +99,7 @@ const actions = {
     return api.post(collection, params).then((res) => {
       commit('ADD_ITEMS', res)
       commit('SET_ITEM')
-      return (res)
+      return res
     })
   },
   put ({ commit }, params) {

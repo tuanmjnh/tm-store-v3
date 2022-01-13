@@ -12,6 +12,7 @@ const mapRouter = (controller) => {
   // Extras
   if (controller.getAll) router.route(`/${controller.name}/get-all`).get(controller.getAll)
   if (controller.find) router.route(`/${controller.name}/find`).get(controller.find)
+  if (controller.finds) router.route(`/${controller.name}/finds`).post(controller.finds)
   if (controller.exist) router.route(`/${controller.name}/exist`).get(controller.exist)
   if (controller.getKey) router.route(`/${controller.name}/get-key`).get(controller.getKey)
   if (controller.getMeta) router.route(`/${controller.name}/get-meta`).get(controller.getMeta)

@@ -1,6 +1,7 @@
-export function getExtension (file, dot = true) {
+export function getExtension (file, dot = true, lower = true) {
   if (!file) return null
   let regx = /(?:\.([^.]+))?$/
+  file = lower ? file.toLowerCase() : file.toUpperCase()
   file = regx.exec(file)
   return file ? (dot ? file[0] : file[1]) : ''
 }

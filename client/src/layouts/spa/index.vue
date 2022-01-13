@@ -5,20 +5,16 @@
         <q-btn flat dense round @click="onChangeModeDrawer" aria-label="Menu">
           <q-icon name="menu" />
         </q-btn>
-        <q-toolbar-title>
-          {{ title }}
-        </q-toolbar-title>
+        <q-toolbar-title>{{title}}</q-toolbar-title>
         <header-right />
-        <!-- <div>Quasar v{{ $q.version }}</div> -->
+        <!-- <div>Quasar v{{$q.version}}</div> -->
       </q-toolbar>
     </q-header>
-    <q-drawer v-model="drawer" bordered :mini="drawerMini" :mini-to-overlay="overlay"
-              @mouseover="onMouseOverDrawer" @mouseout="onMouseOutDrawer">
-      <q-scroll-area style="height:calc(100% - 50px);margin-top:50px;">
+    <q-drawer v-model="drawer" bordered :mini="drawerMini" :mini-to-overlay="overlay" @mouseover="onMouseOverDrawer" @mouseout="onMouseOutDrawer">
+      <q-scroll-area style="height:calc(100% - 50px);margin-top:50px">
         <q-list class="rounded-borders">
-          <drawer-item v-for="(e,i) in $store.getters.routes" :key="i" :active="onActive(e.name)"
-                       :dense="$store.state.userSetting.menu" :item="e" is-icon>
-          </drawer-item>
+          <drawer-item v-for="(e,i) in $store.getters.routes" :key="i" :dense="$store.state.userSetting.menu" :item="e" is-icon
+                       :active="onActive(e.name)" />
         </q-list>
       </q-scroll-area>
       <drawer-search :is-placeholder="!drawerMini" />

@@ -33,7 +33,7 @@ const state = {
 const mutations = {
   SET_ITEMS (state, value) {
     state.rootItems = value ? value : []
-    state.items = value ? generateCategory(value) : []
+    state.items = value ? generateCategory(value).sort((a, b) => a.orders - b.orders) : []
   },
   SET_ITEM (state, value) {
     // Set Item
@@ -71,7 +71,7 @@ const mutations = {
       const i = state.rootItems.findIndex(x => x._id === value._id)
       if (i > -1) state.rootItems.splice(i, 1, value)
     }
-    state.items = generateCategory(state.rootItems)
+    state.items = generateCategory(state.rootItems).sort((a, b) => a.orders - b.orders)
   },
   FLAG_UPDATE_ITEMS (state, value) {
     if (Array.isArray(value)) {
@@ -124,7 +124,7 @@ const actions = {
     return api.post(collection, params).then((res) => {
       commit('ADD_ITEMS', res)
       commit('SET_ITEM', { item: null, dependent: state.dependent ? state.dependent._id : null, type: params.type })
-      return (res)
+      return res
     })
   },
   put ({ commit }, params) {

@@ -57,7 +57,36 @@ module.exports.find = async function (req, res, next) {
         if (!rs) return res.status(404).send('no_exist')
         return res.status(200).json(rs)
       })
-    }
+    } else if (req.query.username) {
+      MUsers.findOne({ username: req.query.username }, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        if (!rs) return res.status(404).send('no_exist')
+        return res.status(200).json(rs)
+      })
+    } else return res.status(200).json(null)
+  } catch (e) {
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.finds = async function (req, res, next) {
+  try {
+    if (req.query._ids) {
+      MUsers.where({ $in: { _id: req.query._ids } }, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        return res.status(200).json(rs)
+      })
+    } else if (req.query.emails) {
+      MUsers.where({ $in: { email: req.query.emails } }, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        return res.status(200).json(rs)
+      })
+    } else if (req.query.usernames) {
+      MUsers.where({ $in: { username: req.query.usernames } }, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        return res.status(200).json(rs)
+      })
+    } else return res.status(200).json([])
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -112,6 +141,9 @@ module.exports.import = async function (req, res, next) {
       if (itemSave) rs.success.push(i)
       else rs.error.push(i)
     }
+    // commit
+    await session.commitTransaction()
+    session.endSession()
     return res.status(201).json(rs)
   } catch (e) {
     console.log(e)

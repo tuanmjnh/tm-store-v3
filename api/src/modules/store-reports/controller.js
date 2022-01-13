@@ -24,18 +24,18 @@ module.exports.date = async function (req, res, next) {
       {
         $group: {
           _id: {
-            curent: { $dayOfMonth: '$created_at' },
+            curent: { $dayOfMonth: '$createdAt' },
             labels: {
               $hour: {
-                date: '$created_at',
+                date: '$createdAt',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
               }
             }
           },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -53,10 +53,10 @@ module.exports.date = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -64,10 +64,10 @@ module.exports.date = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -83,10 +83,10 @@ module.exports.date = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -94,10 +94,10 @@ module.exports.date = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -122,13 +122,13 @@ module.exports.weekly = async function (req, res, next) {
       {
         $group: {
           _id: {
-            curent: { $isoWeek: '$created_at' },
-            labels: { $isoDayOfWeek: '$created_at' }
+            curent: { $isoWeek: '$createdAt' },
+            labels: { $isoDayOfWeek: '$createdAt' }
           },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -146,10 +146,10 @@ module.exports.weekly = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -157,10 +157,10 @@ module.exports.weekly = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -176,10 +176,10 @@ module.exports.weekly = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -187,10 +187,10 @@ module.exports.weekly = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -218,13 +218,13 @@ module.exports.month = async function (req, res, next) {
       {
         $group: {
           _id: {
-            curent: { $month: '$created_at' },
-            labels: { $dayOfMonth: '$created_at' }
+            curent: { $month: '$createdAt' },
+            labels: { $dayOfMonth: '$createdAt' }
           },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -242,10 +242,10 @@ module.exports.month = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -253,10 +253,10 @@ module.exports.month = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -272,10 +272,10 @@ module.exports.month = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -283,10 +283,10 @@ module.exports.month = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -310,10 +310,10 @@ module.exports.quarter = async function (req, res, next) {
     const conditions = [
       {
         $project: {
-          total_product: 1,
-          total_price: 1,
-          total_quantity: 1,
-          year: { $year: '$created_at' },
+          products: 1,
+          prices: 1,
+          quantities: 1,
+          year: { $year: '$createdAt' },
           quarter: {
             $trunc: {
               $add: [
@@ -322,7 +322,7 @@ module.exports.quarter = async function (req, res, next) {
                     {
                       $subtract: [
                         {
-                          $month: '$created_at'
+                          $month: '$createdAt'
                         },
                         1
                       ]
@@ -342,10 +342,10 @@ module.exports.quarter = async function (req, res, next) {
             curent: '$year',
             labels: '$quarter'
           },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -363,10 +363,10 @@ module.exports.quarter = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -374,10 +374,10 @@ module.exports.quarter = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -393,10 +393,10 @@ module.exports.quarter = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -404,10 +404,10 @@ module.exports.quarter = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -432,13 +432,13 @@ module.exports.year = async function (req, res, next) {
       {
         $group: {
           _id: {
-            curent: { $year: '$created_at' },
-            labels: { $month: '$created_at' }
+            curent: { $year: '$createdAt' },
+            labels: { $month: '$createdAt' }
           },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -456,10 +456,10 @@ module.exports.year = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -467,10 +467,10 @@ module.exports.year = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -486,10 +486,10 @@ module.exports.year = async function (req, res, next) {
             curent: item._id.curent,
             labels: item._id.labels,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -497,10 +497,10 @@ module.exports.year = async function (req, res, next) {
             curent: curent,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -524,11 +524,11 @@ module.exports.fiveYear = async function (req, res, next) {
     const conditions = [
       {
         $group: {
-          _id: { $year: '$created_at' },
-          total_bill: { $sum: 1 },
-          total_product: { $sum: '$total_product' },
-          total_price: { $sum: '$total_price' },
-          total_quantity: { $sum: '$total_quantity' }
+          _id: { $year: '$createdAt' },
+          bills: { $sum: 1 },
+          products: { $sum: '$products' },
+          prices: { $sum: '$prices' },
+          quantities: { $sum: '$quantities' }
         }
       },
       // Having
@@ -546,10 +546,10 @@ module.exports.fiveYear = async function (req, res, next) {
             curent: item._id,
             labels: item._id,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -557,10 +557,10 @@ module.exports.fiveYear = async function (req, res, next) {
             curent: i,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }
@@ -576,10 +576,10 @@ module.exports.fiveYear = async function (req, res, next) {
             curent: item._id,
             labels: item._id,
             data: {
-              total_bill: item.total_bill,
-              total_product: item.total_product,
-              total_price: item.total_price,
-              total_quantity: item.total_quantity
+              bills: item.bills,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
             }
           })
         } else {
@@ -587,10 +587,10 @@ module.exports.fiveYear = async function (req, res, next) {
             curent: i,
             labels: i,
             data: {
-              total_bill: 0,
-              total_product: 0,
-              total_price: 0,
-              total_quantity: 0
+              bills: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
             }
           })
         }

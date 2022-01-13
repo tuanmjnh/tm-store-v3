@@ -19,12 +19,34 @@ module.exports.get = async function (req, res, next) {
 
 module.exports.find = async function (req, res, next) {
   try {
-    if (!req.body || req.body.length < 1) return res.status(404).send('no_exist')
-    const rs = await MProducts.find(
-      { code: { $in: req.body } },
-      '_id code title quantity price priceDiscount priceExport priceUnit unit'
-    )
-    return res.status(200).json(rs)
+    if (req.query._id) {
+      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
+        const rs = await MProducts.findById(req.query._id, '_id code title quantity price priceDiscount priceExport priceUnit unit')
+        return res.status(200).json(rs)
+      } else {
+        return res.status(500).send('invalid')
+      }
+    } else if (req.query.code) {
+      const rs = await MProducts.findOne({ code: req.query.code }, '_id code title quantity price priceDiscount priceExport priceUnit unit')
+      return res.status(200).json(rs)
+    } else return res.status(200).json(null)
+  } catch (e) {
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.finds = async function (req, res, next) {
+  try {
+    if (!req.body) return res.status(200).json([])
+    else {
+      if (req.body.ids) {
+        const rs = await MProducts.where({ _id: { $in: req.body.ids } }, '_id code title quantity price priceDiscount priceExport priceUnit unit')
+        return res.status(200).json(rs)
+      } else if (req.body.codes) {
+        const rs = await MProducts.where({ code: { $in: req.body.codes } }, '_id code title quantity price priceDiscount priceExport priceUnit unit')
+        return res.status(200).json(rs)
+      } else return res.status(200).json([])
+    }
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -40,10 +62,10 @@ module.exports.put = async function (req, res, next) {
     // Import total
     const total = new MExports({
       code: crypto.NewGuid(),
-      product: req.body.length,
-      quantity: req.body.sum('quantity'),
-      price: req.body.sum('amount'),
-      vat: Math.round(req.body.sum('amount') * 0.1, 0),
+      products: req.body.length,
+      quantities: req.body.sum('quantity'),
+      prices: req.body.sum('amount'),
+      taxes: Math.round(req.body.sum('amount') * 0.1, 0),
       createdAt: new Date(),
       createdBy: req.verify._id,
       createdIp: request.getIp(req),

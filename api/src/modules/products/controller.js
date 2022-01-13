@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'),
   MProducts = require('./model'),
+  Actions = require('./actions'),
   pagination = require('../../utils/pagination'),
   request = require('../../utils/request'),
   Logger = require('../../services/logger')
@@ -22,16 +23,49 @@ module.exports.get = async function (req, res, next) {
     if (req.query.categories) conditions.$and.push({ categories: { $in: [req.query.categories] } })
     if (!req.query.sortBy) req.query.sortBy = 'orders'
     req.query.rowsNumber = await MProducts.where(conditions).countDocuments()
-    const options = {
-      skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
-      limit: parseInt(req.query.rowsPerPage),
-      sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
-    }
-    MProducts.find(conditions, null, options, function (e, rs) {
-      if (e) return res.status(500).send(e)
-      // if (!rs) return res.status(404).send('No data exist!')
-      return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
-    })
+
+    // const options = {
+    //   skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
+    //   limit: parseInt(req.query.rowsPerPage),
+    //   sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
+    // }
+    // MProducts.find(conditions, null, options, function (e, rs) {
+    //   if (e) return res.status(500).send(e)
+    //   // if (!rs) return res.status(404).send('No data exist!')
+    //   return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
+    // })
+    const rs = await MProducts.aggregate([
+      { $match: conditions },
+      {
+        $lookup: {
+          from: 'types',
+          let: { unit: { $toString: '$unit' } },
+          as: 'units',
+          pipeline: [
+            { $match: { $expr: { $and: [{ $eq: ['$code', '$$unit'] }] } } },
+            { $project: { _id: 0, unitName: '$name' } }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: 'types',
+          let: { priceUnit: { $toString: '$priceUnit' } },
+          as: 'priceUnits',
+          pipeline: [
+            { $match: { $expr: { $and: [{ $eq: ['$code', '$$priceUnit'] }] } } },
+            { $project: { _id: 0, priceUnitName: '$name' } }
+          ]
+        }
+      },
+      { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$priceUnits', 0] }, { $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
+      { $project: { units: 0, priceUnits: 0 } }
+    ]).skip((parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage))
+      .limit(parseInt(req.query.rowsPerPage))
+      .sort({ [(req.query.sortBy) || 'orders']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
+      .exec()
+
+    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
   } catch (e) {
     console.log(e)
     return res.status(500).send('invalid')
@@ -107,20 +141,27 @@ module.exports.post = async function (req, res, next) {
       !req.body.title ||
       !req.body.code ||
       req.body.categories.length < 1
-    ) {
-      return res.status(500).send('invalid')
-    }
-    const x = await MProducts.findOne({ code: req.body.code })
-    if (x) return res.status(501).send('exist')
-    req.body.created = { at: new Date(), by: req.verify._id, ip: request.getIp(req) }
-    const data = new MProducts(req.body)
-    // data.validate()
-    data.save((e, rs) => {
-      if (e) return res.status(500).send(e)
+    ) { return res.status(500).send('invalid') }
+
+    const rs = await Actions.insert(req.body, req.verify._id, request.getIp(req))
+    console.log(rs)
+    if (rs.error) return res.status(501).send(rs.error)
+    else {
       // Push logs
       Logger.set(req, name, rs._id, 'insert')
-      return res.status(201).json(rs)
-    })
+      return res.status(201).json(rs.success)
+    }
+    // const x = await MProducts.findOne({ code: req.body.code })
+    // if (x) return res.status(501).send('exist')
+    // req.body.created = { at: new Date(), by: req.verify._id, ip: request.getIp(req) }
+    // const data = new MProducts(req.body)
+    // // data.validate()
+    // data.save((e, rs) => {
+    //   if (e) return res.status(500).send(e)
+    //   // Push logs
+    //   Logger.set(req, name, rs._id, 'insert')
+    //   return res.status(201).json(rs)
+    // })
   } catch (e) {
     return res.status(500).send('invalid')
   }

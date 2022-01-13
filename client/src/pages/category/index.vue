@@ -51,7 +51,7 @@
     </tm-tree> -->
 
     <q-tree :nodes="rows" v-model:selected="selected" v-model:ticked="ticked" v-model:expanded="expanded" node-key="_id"
-            tick-strategy="leaf" :filter="pagination.filter" :filter-method="onFilter" default-expand-all>
+            tick-strategy="leaf" :filter="pagination.filter" :filter-method="onFilter">
       <template v-slot:default-header="prop">
         <div class="row items-center" @mouseover="tooltipAction=prop.node._id" @mouseleave="tooltipAction=null">
           <q-icon :name="prop.node.icon||'share'" color="blue-grey" size="20px" class="q-mr-sm" />
@@ -158,13 +158,13 @@ export default defineComponent({
       onAdd: (val) => {
         $store.dispatch('categories/set', { item: null, dependent: val ? val._id : null, type: $route.meta.type })
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogAdd) $router.push('add')
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.add) $router.push('add')
         else isDialogAdd.value = true
       },
       onEdit: (val) => {
         $store.dispatch('categories/set', { item: val, dependent: val.dependent, type: $route.meta.type })
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogEdit) $router.push({ path: 'edit', query: { id: val._id } })
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.edit) $router.push({ path: 'edit', query: { id: val._id } })
         else isDialogAdd.value = true
       },
       onTrash: (val) => {

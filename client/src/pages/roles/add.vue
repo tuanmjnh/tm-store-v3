@@ -48,14 +48,14 @@
         <q-tab-panels v-model="tabs">
           <q-tab-panel name="main">
             <div class="row q-gutter-xs">
-              <div class="col-12 col-md-5">
-                <q-input v-model.trim="data.key" :dense="$store.getters.dense.input" v-lowercase
-                         :label="$t('roles.key')" :rules="[v=>v&&v.length>0||$t('error.required')]" />
-              </div>
-              <q-space />
               <div class="col-12 col-md-6">
                 <q-input v-model.trim="data.name" :dense="$store.getters.dense.input"
                          :label="$t('roles.name')" :rules="[v=>v&&v.length>0||$t('error.required')]" />
+              </div>
+              <q-space />
+              <div class="col-12 col-md-5">
+                <q-input v-model.trim="data.key" :dense="$store.getters.dense.input" v-lowerCase
+                         :label="$t('roles.key')" :rules="[v=>v&&v.length>0||$t('error.required')]" />
               </div>
             </div>
             <div class="row q-gutter-xs">
@@ -72,8 +72,10 @@
               <q-space />
               <div class="col self-center">
                 {{$t('global.colorPick')}}:
-                <q-badge :style="{backgroundColor:data.color}" @click="isDialogColorPick=true">
-                  {{data.color}}</q-badge>
+                <q-badge class="cursor-pointer" :style="{backgroundColor:data.color}" @click="isDialogColorPick=true">{{data.color}}</q-badge>
+                <div class="float-right q-mr-sm">
+                  <q-icon name="sync" class="cursor-pointer text-primary" style="font-size:20px" @click="onRandomColor" />
+                </div>
               </div>
             </div>
             <q-input v-model.trim="data.desc" autogrow :dense="$store.getters.dense.input"
@@ -124,6 +126,7 @@ import { defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { dynamic } from '@/router/routes'
+import { RandomColor } from '@/utils/color'
 export default defineComponent({
   name: 'RolesAdd',
   props: {
@@ -173,6 +176,9 @@ export default defineComponent({
 
     return {
       isDialogColorPick, tabs, form, data, treeRoute, routes,
+      onRandomColor: () => {
+        data.value.color = RandomColor(true)
+      },
       onSubmit: () => {
         form.value.validate().then(valid => {
           if (valid) {

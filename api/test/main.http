@@ -1,0 +1,8 @@
+get http://localhost:8001/ HTTP/1.1
+#
+get http://localhost:8000/api/types/get-all
+Accept: application/json, text/plain, */*
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+x-access-token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZWNjYmM5ZTkwNzEwMDFkODdmZDRkZjEiLCJjb2RlIjoiYWRtaW4iLCJpYXQiOjE2Mjg2Njg3NDEsImV4cCI6MTYyODc1NTE0MX0.ed6L7YuwU4Wzrbz-Bmmd9UN_6QvuWtXjBczXrPhhk3g
+

@@ -29,8 +29,10 @@ export default {
     store: 'Store',
     warehouse: 'Warehouse',
     data: 'Data',
-    import: 'Import',
-    export: 'Export',
+    import: 'Import store',
+    importList: 'Import list',
+    export: 'Export store',
+    exportList: 'Export list',
     report: 'Report'
   },
   global: {
@@ -112,7 +114,11 @@ export default {
     result: 'Result',
     append: 'Append',
     fullScreen: 'Full screen',
-    normalScreen: 'Normal screen'
+    normalScreen: 'Normal screen',
+    index: 'Index',
+    icon: 'Icon',
+    range: 'Range',
+    new: 'New'
   },
   success: {
     insert: 'Insert success',
@@ -149,7 +155,10 @@ export default {
     remove: 'This action will delete the items forever. Are you sure you want to continue?',
     lock: 'Are you sure you want to lock these records?',
     unlock: 'Are you sure you want to unlock these records?',
-    resetPassword: 'Are you sure you want to reset password for {username}?'
+    resetPassword: 'Are you sure you want to reset password for {username}?',
+    totalWrong: 'There are a total of <b>{total}</b> invalid records',
+    wrongIndex: 'Detail index:',
+    print: 'Print data'
   },
   hint: {
     newValue: 'Type the value then press \'Enter\' to add a new value'
@@ -180,8 +189,7 @@ export default {
     authInvalidEmail: 'The Username is badly formatted!',
     authUserNotFound: 'Account does not exist!',
     authWrongPassword: 'The password is invalid!',
-    authTooManyRequests:
-      'Too many unsuccessful login attempts. Please include reCaptcha verification or try again later!',
+    authTooManyRequests: 'Too many unsuccessful login attempts. Please include reCaptcha verification or try again later!',
     networkRequestFailed: 'A network error. Please try again!',
     loginWith: 'Login with'
   },
@@ -245,8 +253,10 @@ export default {
     bot: 'Dưới'
   },
   category: {
+    title: 'Category',
     titleproduct: 'Category of product',
     titlenews: 'Category of news',
+    titlesub: 'Sub category',
     noithatvanphong: 'Office furniture',
     hitCode: 'Code of category',
     select: 'Select category',
@@ -280,19 +290,25 @@ export default {
     statusIn: 'Already on the system',
     statusOut: 'Not available on the system yet',
     createNew: 'Create new',
+    totalProduct: 'Total product',
+    totalQuantity: 'Total quantity',
     total: 'Total',
-    vat: 'VAT',
+    tax: 'VAT',
     amount: 'Amount',
-    totalAmount: 'Total amount',
+    totalAmount: 'Totalize',
     deliverer: 'Deliverer',
     receiver: 'Receiver',
     sign: 'Sign, write full name',
     print: 'Print ballot',
+    printDetails: 'Print ballot details',
+    printTotal: 'Print ballot total',
     ballotCode: 'Code ballot',
     importDate: 'Import date',
     exportRate: 'Export date',
-    importBallot: 'Import ballot',
-    exportBallot: 'Export ballot',
+    importBallotTotal: 'Import ballot total',
+    importBallotDetails: 'Import ballot details',
+    exportBallotTotal: 'Export ballot total',
+    exportBallotDetails: 'Export ballot details',
     importSuccess: 'Successful warehousing - Voucher code: ',
     exportSuccess: 'Successful warehousing - Voucher code: ',
     importExistResult: 'Import form completed, please create new',
@@ -309,6 +325,40 @@ export default {
     date: 'Publication date',
     attributes: 'News attributes'
   },
+  store: {
+    code: 'Receipt code',
+    products: 'Total product',
+    quantities: 'Total quantity',
+    taxes: 'Total tax',
+    prices: 'Total price',
+    totalize: 'Totalize'
+  },
+  report: {
+    title: 'Synthesis - Report',
+    category: 'Report category',
+    types: 'Report type',
+    import: 'Importing',
+    export: 'Exporting',
+    orders: 'Orders',
+    date: 'Date report',
+    weekly: 'Weekly report',
+    month: 'Month report',
+    quarter: 'quarter report',
+    year: 'Year report',
+    fiveYear: '1st quarter',
+    bills: 'Total bill',
+    products: 'Total product',
+    prices: 'Total price',
+    quantities: 'Total quantity',
+    billsImport: 'Total bill import',
+    productsImport: 'Total product import',
+    pricesImport: 'Total price import',
+    quantitiesImport: 'Total quantity importp',
+    billsExport: 'Total bill export',
+    productsExport: 'Total product export',
+    pricesExport: 'Total price export',
+    quantitiesExport: 'Total quantity export'
+  },
   tabs: {
     inf: 'Information',
     main: 'Main information',
@@ -322,7 +372,8 @@ export default {
     noFilterData: 'No matched records',
     rowSelected: 'rows are selected',
     rowPerPage: 'Records per page',
-    actions: '#'
+    actions: '#',
+    temporaryData: 'Temporary viewing data'
   },
   files: {
     title: 'List file',
@@ -338,31 +389,19 @@ export default {
     fileSize: 'File size',
     dataList: 'Data list',
     import: 'Import data',
-    export: 'Export data'
+    export: 'Export data',
+    index: 'Index',
+    icon: 'Icon',
+    name: 'Name',
+    type: 'Type',
+    url: 'Url file',
+    inputUrl: 'Input url',
+    googleSheet: 'Google sheet'
   },
   gender: {
     male: 'Male',
     female: 'Female',
     unknown: 'Unknown'
-  },
-  report: {
-    title: 'Synthesis - Report',
-    category: 'Report category',
-    types: 'Report type',
-    import: 'Importing',
-    export: 'Exporting',
-    orders: 'Orders',
-    date: 'Date report',
-    weekly: 'Weekly report',
-    month: 'Month report',
-    quarter: 'quarter report',
-    year: 'Year report',
-    fiveYear: '1st quarter',
-    totalBill: 'Total bill',
-    totalProduct: 'Total product',
-    totalPrice: 'Total price',
-    totalQuantity: 'Total quantity',
-    totalPriceImport: 'Total price import'
   },
   tagsView: {
     refresh: 'Refresh',

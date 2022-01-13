@@ -188,13 +188,14 @@
           <q-tab-panel name="avatar">
             <div class="row">
               <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model:data="data.avatar" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
+                <tm-upload v-model="data.avatar" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'users'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="false" v-model:view-type="viewType" :size="121"
                            :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
                            :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
                            :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelFileName="$t('files.fileName')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
+                           :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
+                           :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
                            :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
               </div>
             </div>

@@ -63,11 +63,9 @@
         </div>
         <div class="col-12 row">
           <div class="col-xs-12 col-sm-5 col-md-4">
-            <select-category :categories="categories" v-model:selected="pagination.categories"
-                             data-key="_id" data-all :dense="$store.getters.dense.input"
-                             :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
-                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')"
-                             @on-selected="onSelectCategory" />
+            <select-category v-model="pagination.categories" :categories="categories" option-value="_id" option-label="label" data-all
+                             :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
+                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')" @on-selected="onSelectCategory" />
           </div>
           <q-space />
           <div class="col-xs-12 col-sm-5 col-md-4">
@@ -105,24 +103,24 @@
             {{props.row.code}}
           </q-td>
           <q-td key="quantity" :props="props">
-            <!-- <span class="q-pr-xs">{{ props.row.quantity|NumberFormat($store.getters.language) }}</span> -->
-            <q-badge v-html="props.row.unit" color="orange" transparent />
+            <div class="q-pr-xs flex inline">{{props.row.quantity.NumberFormat($store.getters.language)}}</div>
+            <q-badge v-html="props.row.unitName" color="orange" transparent />
           </q-td>
           <q-td key="price" :props="props">
-            <!-- <span class="q-pr-xs">{{ props.row.price|NumberFormat($store.getters.language) }}</span> -->
-            <q-badge v-html="props.row.priceUnit" color="blue" transparent />
+            <div class="q-pr-xs flex inline">{{props.row.price.NumberFormat($store.getters.language)}}</div>
+            <q-badge v-html="props.row.priceUnitName" color="blue" transparent />
           </q-td>
           <q-td key="priceDiscount" :props="props">
-            <!-- <span class="q-pr-xs">{{ props.row.priceDiscount|NumberFormat($store.getters.language) }}</span> -->
-            <q-badge v-html="props.row.priceUnit" color="red" transparent />
+            <div class="q-pr-xs flex inline">{{props.row.priceDiscount.NumberFormat($store.getters.language)}}</div>
+            <q-badge v-html="props.row.priceUnitName" color="red" transparent />
           </q-td>
           <q-td key="priceImport" :props="props">
-            <!-- <span class="q-pr-xs">{{ props.row.priceImport|NumberFormat($store.getters.language) }}</span> -->
-            <q-badge v-html="props.row.priceUnit" color="teal" transparent />
+            <div class="q-pr-xs flex inline">{{props.row.priceImport.NumberFormat($store.getters.language)}}</div>
+            <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
           </q-td>
           <q-td key="priceExport" :props="props">
-            <!-- <span class="q-pr-xs">{{ props.row.priceExport|NumberFormat($store.getters.language) }}</span> -->
-            <q-badge v-html="props.row.priceUnit" color="teal" transparent />
+            <div class="q-pr-xs flex inline">{{props.row.priceExport.NumberFormat($store.getters.language)}}</div>
+            <q-badge v-html="props.row.priceUnitName" color="indigo" transparent />
           </q-td>
           <q-td key="order" :props="props">
             {{props.row.order}}
@@ -189,6 +187,12 @@ export default defineComponent({
     // const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pin_product'))
     // const units = computed(() => $store.state.types.items.filter(x => x.key === 'unit'))
     // const unitsPrice = computed(() => $store.state.types.items.filter(x => x.key === 'unit_price'))
+    const isRoutes = ref({
+      add: $router.hasRoute('product-list-add'),
+      edit: $router.hasRoute('product-list-edit'),
+      trash: $router.hasRoute('product-list-trash')
+    })
+
     const pagination = ref({
       filter: '',
       sortBy: 'order',
@@ -210,11 +214,6 @@ export default defineComponent({
       { name: 'priceExport', field: 'priceExport', label: 'product.priceExport', align: 'right', sortable: true },
       { name: 'order', field: 'order', label: 'global.order', align: 'right', sortable: true }
     ])
-    const isRoutes = ref({
-      add: $router.hasRoute('product-list-add'),
-      edit: $router.hasRoute('product-list-edit'),
-      trash: $router.hasRoute('product-list-trash')
-    })
 
     const rows = computed(() => $store.state.products.items || [])
     const onFetch = (props) => {
@@ -233,8 +232,17 @@ export default defineComponent({
     $store.dispatch('categories/get', { type: 'product', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })
 
     return {
-      isDialogAdd, isMaximizedView, rows, selected, categories, pagination, visibleColumns, columns, isRoutes,
-      onFetch,
+      isDialogAdd, isMaximizedView, rows, selected, categories, pagination, visibleColumns, columns, isRoutes, onFetch,
+      // onGetUnits: (id) => {
+      //   const rs = units.value.find(x => x._id = id)
+      //   if (rs) return rs.name
+      //   else return 'N/A'
+      // },
+      // onGetUnitsPrice: (id) => {
+      //   const rs = unitsPrice.value.find(x => x._id = id)
+      //   if (rs) return rs.name
+      //   else return 'N/A'
+      // },
       onSelectCategory: (val) => {
         if (val) onFetch({ pagination: pagination.value })
       },
@@ -252,13 +260,13 @@ export default defineComponent({
       onAdd: () => {
         $store.dispatch('products/set')
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogAdd) $router.push('add')
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.add) $router.push('add')
         else isDialogAdd.value = true
       },
       onEdit: (val) => {
         $store.dispatch('products/set', val)
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogEdit) $router.push({ path: 'edit', query: { id: val._id } })
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.edit) $router.push({ path: 'edit', query: { id: val._id } })
         else isDialogAdd.value = true
       },
       onTrash (val) {

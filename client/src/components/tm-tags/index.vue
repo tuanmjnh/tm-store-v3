@@ -16,8 +16,8 @@
         </q-input>
       </div>
     </div>
-    <div class="col-12" v-if="data&&data.length">
-      <q-chip v-for="(e,i) in data" :key="i" removable clickable @click="onEditTag(e)" @remove="onRemoveTag(e)"
+    <div class="col-12" v-if="modelValue&&modelValue.length">
+      <q-chip v-for="(e,i) in modelValue" :key="i" removable clickable @click="onEditTag(e,i)" @remove="onRemoveTag(i)"
               :color="tagsColor" :text-color="tagsTextColor">{{e}}</q-chip>
     </div>
   </div>
@@ -29,7 +29,7 @@ import { useQuasar } from 'quasar'
 export default defineComponent({
   name: 'tm-tags',
   props: {
-    data: { type: Array, default: () => [] },
+    modelValue: { type: Array, default: () => [] },
     dense: { type: Boolean, default: true },
     inputIcon: { type: String, default: 'style' },
     btnIcon: { type: String, default: 'add' },
@@ -52,7 +52,12 @@ export default defineComponent({
     const $q = useQuasar()
     const tag = ref('')
 
-    if (!props.data) emit('update:data', [])
+    if (!props.modelValue) emit('update:modelValue', [])
+    const removeTag = (index) => {
+      const modelValue = props.modelValue.slice()
+      modelValue.splice(index, 1)
+      emit('update:modelValue', modelValue)
+    }
     return {
       tag,
       onAddTag: () => {
@@ -60,20 +65,18 @@ export default defineComponent({
           $q.notify({ color: props.colorWarning, timeout: props.timeoutWarning, message: props.labelWarningContent })
           return
         }
-        const data = props.data.slice()
-        data.push(tag.value)
-        emit('update:data', data)
+        const modelValue = props.modelValue.slice()
+        modelValue.push(tag.value)
+        emit('update:modelValue', modelValue)
         tag.value = ''
       },
-      onEditTag: (val) => {
-        tag.value = val
-        onRemoveTag(val)
+      onEditTag: (e, i) => {
+        tag.value = e
+        removeTag(i)
       },
-      onRemoveTag: (val) => {
+      onRemoveTag: (i) => {
         $q.dialog({ title: props.labelConfirmTitle, message: props.labelConfirmContent, cancel: true, persistent: true }).onOk(() => {
-          const i = props.data.indexOf(val)
-          if (i > -1) emit(props.data, props.data.slice().splice(i, 1)) // props.data.splice(i, 1)
-          if (props.data.length < 1) emit('update:data', null)
+          removeTag(i)
         })
       }
     }

@@ -5,4 +5,13 @@
 
 // Select the database to use.
 use('tm-store');
-db.roles.find({name:'Admin'})
+// db.products.deleteOne({code:'DFHDFH'});
+db.products.find({code:'HVC-BO-BSM66-200220'});
+
+db.products.drop();
+db.product_exports.drop();
+db.product_export_items.drop();
+db.product_imports.drop();
+db.product_import_items.drop();
+db.logs.drop();
+

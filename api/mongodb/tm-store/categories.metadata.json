@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"tm-store.categories"}],"uuid":"d7a9406d1e6c464db10dd7b8329fe0f5"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"81f0fed7dcbf4f05ab014746f8b76f15","collectionName":"categories"}

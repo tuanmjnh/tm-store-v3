@@ -15,8 +15,7 @@
               <q-btn v-if="isRoutes.add" flat round dense icon="add" color="blue" @click="onAdd">
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t("global.add")}}</q-tooltip>
               </q-btn>
-              <q-btn v-if="isRoutes.add" flat round dense icon="cloud_upload" color="indigo"
-                     @click="isDialogImport=true">
+              <q-btn v-if="isRoutes.add" flat round dense icon="cloud_upload" color="indigo" @click="onImport">
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t("files.openFile")}}</q-tooltip>
               </q-btn>
               <q-btn v-if="isRoutes.trash && selected.length > 0 && pagination.enable" flat round
@@ -34,7 +33,7 @@
                 <q-menu fit>
                   <q-list dense style="min-width:100px">
                     <template v-for="(item, i) in columns">
-                      <q-item clickable :key="i" v-if="!item.required" :active="visibleColumns.indexOf(item.name) > -1 || false"
+                      <q-item clickable :key="i" v-if="!item.required" :active="visibleColumns.indexOf(item.name) > -1||false"
                               @click="onColumns(item.name)">
                         <q-item-section>{{ $t(item.label) }}</q-item-section>
                       </q-item>
@@ -249,13 +248,13 @@ export default defineComponent({
       onAdd: () => {
         $store.dispatch('users/set')
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogAdd) $router.push('add')
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.add) $router.push('add')
         else isDialogAdd.value = true
       },
       onEdit: (val) => {
         $store.dispatch('users/set', val)
         isMaximizedView.value = false
-        if ($q.platform.is.mobile || !$store.state.app.isDialogEdit) $router.push({ path: 'edit', query: { id: val._id } })
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.edit) $router.push({ path: 'edit', query: { id: val._id } })
         else isDialogAdd.value = true
       },
       onTrash (val) {
@@ -268,6 +267,11 @@ export default defineComponent({
           if (val) selected.value = [val]
           $store.dispatch('users/patch', { _id: selected.value.map(x => x._id) }).then(x => { selected.value = [] })
         })
+      },
+      onImport: () => {
+        isMaximizedView.value = false
+        if ($q.platform.is.mobile || !$store.state.app.isDialog.import) $router.push('import')
+        else isDialogImport.value = true
       },
       onResetPassword (val) {
         $q.dialog({

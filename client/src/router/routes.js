@@ -1,4 +1,4 @@
-import fakeLayout from '@/layouts/fake-layout';
+import fakeLayout from 'layouts/fake-layout';
 
 export const constant = [
   {
@@ -198,7 +198,7 @@ export const dynamic = [
         path: 'orders',
         name: 'product-orders',
         meta: { title: 'orders', icon: 'class', parent: 'product' },
-        component: 'orders',
+        component: fakeLayout,
         redirect: '/product/orders/view',
         children: [
           {
@@ -212,7 +212,7 @@ export const dynamic = [
               flag: 1,
               parent: 'product-orders'
             },
-            component: 'orders/index'
+            component: () => import('pages/orders/index')
           },
           {
             path: 'add',
@@ -223,7 +223,7 @@ export const dynamic = [
               hidden: true,
               parent: 'product-orders'
             },
-            component: 'orders/add'
+            component: () => import('pages/orders/add')
           },
           {
             path: 'edit/:id?',
@@ -236,7 +236,7 @@ export const dynamic = [
               activeMenu: '/product-orders/view',
               parent: 'product-orders'
             },
-            component: 'orders/add'
+            component: () => import('pages/orders/add')
           },
           {
             path: 'trash',
@@ -249,7 +249,7 @@ export const dynamic = [
               flag: 0,
               parent: 'product-orders'
             },
-            component: 'orders/index'
+            component: () => import('pages/orders/index')
           }
         ]
       }
@@ -389,7 +389,7 @@ export const dynamic = [
   {
     path: '/store',
     name: 'store',
-    redirect: 'store-warehouse',
+    redirect: '/store/warehouse',
     meta: { title: 'store', icon: 'store' },
     component: fakeLayout,
     children: [
@@ -397,25 +397,37 @@ export const dynamic = [
         path: 'warehouse',
         name: 'store-warehouse',
         meta: { title: 'data', icon: 'home_work', parent: 'store' },
-        component: 'store/index'
+        component: () => import('pages/store/index')
       },
       {
         path: 'report',
         name: 'store-report',
         meta: { title: 'report', icon: 'pie_chart', parent: 'store' },
-        component: 'store/report'
+        component: () => import('pages/store/report')
+      },
+      {
+        path: 'import-list',
+        name: 'store-import-list',
+        meta: { title: 'importList', icon: 'playlist_add_check', parent: 'store' },
+        component: () => import('pages/store/import-list')
       },
       {
         path: 'import',
         name: 'store-import',
         meta: { title: 'import', icon: 'playlist_add', parent: 'store' },
-        component: 'store/import'
+        component: () => import('pages/store/import')
+      },
+      {
+        path: 'export-list',
+        name: 'store-export-list',
+        meta: { title: 'exportList', icon: 'playlist_remove', parent: 'store' },
+        component: () => import('pages/store/export-list')
       },
       {
         path: 'export',
         name: 'store-export',
         meta: { title: 'export', icon: 'double_arrow', parent: 'store' },
-        component: 'store/export'
+        component: () => import('pages/store/export')
       }
     ]
   },
@@ -643,7 +655,7 @@ if (process.env.MODE !== 'ssr') {
     name: '404',
     constant: true,
     meta: { title: 'error404', icon: '404', hidden: true },
-    component: () => import('pages/error404')
+    component: () => import('pages/error/error404')
   });
 }
 

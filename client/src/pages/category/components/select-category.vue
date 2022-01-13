@@ -26,20 +26,20 @@
                   <q-icon :name="prop.node.icon" color="blue-grey" size="20px" class="q-mr-sm" />
                   <div :class="['node-label q-pr-md',prop.node.flag===1?'':'text-blue-grey-4']"
                        :style="{color:prop.node.color?prop.node.color:'#009688'}">
-                    {{ prop.node.label }}
+                    {{prop.node.label}}
                   </div>
                 </div>
               </template>
             </tm-tree> -->
 
-            <q-tree :nodes="categoriesLocal" v-model:selected="selectedTree" node-key="_id"
-                    default-expand-all :no-nodes-label="$t('table.noData')" :no-results-label="$t('table.noData')">
+            <q-tree :nodes="categoriesLocal" v-model:selected="selectedTree" :node-key="optionValue" default-expand-all
+                    :no-nodes-label="$t('table.noData')" :no-results-label="$t('table.noData')">
               <template v-slot:default-header="prop">
-                <div class="row items-center" @click="onSelected(prop.node)">
+                <div class="row items-center" @click="onSelected(prop.node)" clickable v-close-popup>
                   <q-icon :name="prop.node.icon||'share'" color="blue-grey" size="20px" class="q-mr-sm" />
                   <div :class="['node-label q-pr-md']"
-                       :style="{color:selectedTree===prop.node._id?'#2196f3':(prop.node.color?prop.node.color:'#607d8b')}">
-                    {{ prop.node.label }}
+                       :style="{color:selectedTree===prop.node[optionValue]?'#2196f3':(prop.node.color?prop.node.color:'#607d8b')}">
+                    {{prop.node[optionLabel]}}
                   </div>
                 </div>
               </template>
@@ -53,13 +53,16 @@
 
 <script>
 import { defineComponent, ref, watch } from 'vue';
+import { getParent, findNode } from '@/utils/tree';
 export default defineComponent({
   name: 'CategorySelectComponent',
   // components: { tmTree: defineAsyncComponent(() => import('components/tm-tree')) },
   props: {
+    modelValue: { default: undefined },
     categories: { type: Array, default: null },
-    selected: { default: undefined },
-    dataKey: { type: String, default: 'id' },
+    parents: { type: Array, default: null },
+    optionValue: { type: String, default: 'id' },
+    optionLabel: { type: String, default: 'label' },
     dataAll: { type: Boolean, default: false },
     // dialog: { type: Boolean, default: true },
     dense: { type: Boolean, default: true },
@@ -85,26 +88,33 @@ export default defineComponent({
     //   const rs = props.dataAll ? [...all, ...$store.state.categories.items] : $store.state.categories.items
     //   return rs
     // })
-
     watch(() => props.categories, (state, prevState) => {
       const all = [{ _id: null, dependent: null, icon: 'graphic_eq', color: '#607d8b', flag: 1, label: props.labelAll }]
       categoriesLocal.value = props.dataAll ? [...all, ...state] : state
       // if (!props.selected) selectedLocal.value = categoriesLocal.value[0]
       // else {
-      const item = props.categories.find(x => x[props.dataKey] === props.selected)
+      const item = findNode(props.categories, props.modelValue, props.optionValue)
+      // const item = props.categories.find(x => x[props.optionValue] === props.modelValue)
       if (props.dataAll) selectedLocal.value = item ? item : all[0]
       else selectedLocal.value = item
+      selectedTree.value = item ? item[props.optionValue] : null
       // }
     }, { deep: true, immediate: true })
+
+    // watch(() => props.modelValue, (state, prevState) => {
+    //   console.log(state)
+    // }, { deep: true, immediate: true })
 
     return {
       isDialog, categoriesLocal, selectedLocal, selectedTree,
       // categories: [],
       onSelected: (val) => {
         // if (!props.selected) props.selected = value
+        const parents = getParent(categoriesLocal.value, val, props.optionValue)
         if (val) selectedLocal.value = val
-        if (props.selected !== val[props.dataKey]) {
-          emit('update:selected', val[props.dataKey])
+        if (props.modelValue !== val[props.optionValue]) {
+          emit('update:modelValue', val[props.optionValue])
+          emit('update:parents', parents)
           emit('on-selected', val)
         }
         isDialog.value = false

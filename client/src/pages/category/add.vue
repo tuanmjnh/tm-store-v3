@@ -4,7 +4,7 @@
       <div class="col-sm-auto col-xs-12 text-h6 card-title-text">
         <q-avatar v-if="dialog" :icon="$route.meta.icon" size="50px" />
         {{$store.state.categories.item._id?$t('global.update'):$t('global.add') }}
-        <span class="text-weight-bold">{{$t(`category.title_${$route.meta.type}`)}}</span>
+        <span class="text-weight-bold">{{$t(`category.title${$route.meta.type}`)}}</span>
       </div>
       <q-space />
       <div class="col-sm-auto col-xs-12 text-right">
@@ -85,7 +85,10 @@
               <q-space />
               <div class="col col-md-6 self-center">
                 {{$t('global.colorPick')}}:
-                <q-badge :style="{backgroundColor:data.color}" @click="isDialogColorPick=true">{{data.color}}</q-badge>
+                <q-badge class="cursor-pointer" :style="{backgroundColor:data.color}" @click="isDialogColorPick=true">{{data.color}}</q-badge>
+                <div class="float-right q-mr-sm">
+                  <q-icon name="sync" class="cursor-pointer text-primary" style="font-size:20px" @click="onRandomColor" />
+                </div>
               </div>
             </div>
             <div class="row q-gutter-xs">
@@ -136,13 +139,15 @@
           <q-tab-panel name="images">
             <div class="row">
               <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model:data="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
+                <tm-upload v-model="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'category'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="false" v-model:view-type="viewType" :size="121"
-                           :labelTitle="$t('files.title')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelFileName="$t('files.fileName')" :labelFileSize="$t('files.fileSize')" :labelConfirmTitle="$t('messageBox.confirm')"
-                           :labelConfirmContent="$t('messageBox.delete')">
-                </tm-upload>
+                           :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
+                           :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
+                           :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
+                           :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
+                           :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
+                           :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
               </div>
             </div>
           </q-tab-panel>
@@ -152,7 +157,7 @@
               <q-option-group v-model="data.position" :options="positions" color="green" type="checkbox" inline :dense="$store.getters.dense.input" />
             </div>
             <q-separator class="q-mb-md q-mt-md" />
-            <tm-attributes v-model:data="data.meta" :keys="metaKeys" :values="metaValues"
+            <tm-attributes v-model="data.meta" :keys="metaKeys" :values="metaValues"
                            :dense="$store.getters.dense.input" :labelTitle="$t('global.attributes')+':'"
                            :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')" :labelInputKey="$t('global.key')"
                            :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')" :btnDeleteLabel="$t('global.delete')"
@@ -161,7 +166,7 @@
                            :labelNoData="$t('table.noData')" :hintKey="$t('hint.newValue')" :hintVal="$t('hint.newValue')"
                            :on-filter-key="onFilterMetaKey" :on-filter-value="onFilterMetaValue" />
             <q-separator class="q-mb-md q-mt-md" />
-            <tm-tags v-model:data="data.tags" :dense="$store.getters.dense.input"
+            <tm-tags v-model="data.tags" :dense="$store.getters.dense.input"
                      :labelBtnAdd="$t('global.add')"
                      :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
                      tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')"
@@ -194,6 +199,7 @@
 import { defineComponent, defineAsyncComponent, ref, computed } from 'vue';
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { RandomColor } from '@/utils/color'
 export default defineComponent({
   name: 'CategoryAdd',
   components: {
@@ -253,6 +259,9 @@ export default defineComponent({
           const rs = await $store.dispatch('categories/exist', { code: val })
           return rs ? t('error.exist') : true
         }
+      },
+      onRandomColor: () => {
+        data.value.color = RandomColor(true)
       },
       onSubmit: () => {
         form.value.validate().then(valid => {

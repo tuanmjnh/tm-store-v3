@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"tm-store.roles"}],"uuid":"d512392d517742ea8be08ac15648b89c"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"7dcca4c44d074644be4d3b95c37adc18","collectionName":"roles"}

@@ -30,8 +30,10 @@ export default {
     store: 'Kho hàng',
     warehouse: 'Kho hàng',
     data: 'Dữ liệu',
-    import: 'Nhập',
-    export: 'Xuất',
+    import: 'Nhập kho',
+    importList: 'Danh sách nhập',
+    export: 'Xuất kho',
+    exportList: 'Danh sách xuất',
     report: 'Báo cáo'
   },
   global: {
@@ -112,7 +114,11 @@ export default {
     result: 'Kết quả',
     append: 'Nhập thêm',
     fullScreen: 'Toàn màn hình',
-    normalScreen: 'Màn hình thường'
+    normalScreen: 'Màn hình thường',
+    index: 'Thứ tự',
+    icon: 'Biểu tượng',
+    range: 'Phạm vi',
+    new: 'Mới'
   },
   success: {
     insert: 'Thêm mới thành công',
@@ -143,15 +149,16 @@ export default {
     title: 'Thông báo',
     warning: 'Cảnh báo',
     confirm: 'Xác nhận',
-    trash:
-      'Các bản ghi này sẽ được chuyển vào thùng rác. Bạn có chắc chắn muốn tiếp tục không?',
+    trash: 'Các bản ghi này sẽ được chuyển vào thùng rác. Bạn có chắc chắn muốn tiếp tục không?',
     delete: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
     recover: 'Bạn có chắc chắn muốn khôi phục bản các bản ghi này không?',
     remove: 'Bạn có chắc chắn muốn xóa các bản ghi này mãi mãi không?',
     lock: 'Bạn có chắc chắn muốn khóa các bản ghi này không?',
     unlock: 'Bạn có chắc chắn muốn mở khóa các bản ghi này không?',
-    resetPassword:
-      'Bạn có chắc chắn muốn đặt lại mật khẩu cho tài khoản {username} không?'
+    resetPassword: 'Bạn có chắc chắn muốn đặt lại mật khẩu cho tài khoản {username} không?',
+    totalWrong: 'Có tổng số <b>{total}</b> bản ghi không hợp lệ',
+    wrongIndex: 'Chi tiết vị trí:',
+    print: 'In dữ liệu'
   },
   hint: {
     newValue: 'Nhập giá trị sau đó ấn \'Enter\' để thêm giá trị mới'
@@ -247,8 +254,10 @@ export default {
     bot: 'Dưới'
   },
   category: {
+    title: 'Danh mục',
     titleproduct: 'Danh mục sản phẩm',
     titlenews: 'Danh mục tin tức',
+    titlesub: 'Danh mục con',
     noithatvanphong: 'Nội thất văn phòng',
     hitCode: 'Mã của danh mục',
     select: 'Chọn danh mục',
@@ -282,17 +291,23 @@ export default {
     statusIn: 'Đã có trên hệ thống',
     statusOut: 'Chưa có trên hệ thống',
     createNew: 'Tạo mới',
+    totalProduct: 'Tổng sản phẩm',
+    totalQuantity: 'Tổng số lượng',
     total: 'Tổng',
-    vat: 'Thuế GTGT',
+    tax: 'Thuế GTGT',
     amount: 'Thành tiền',
     totalAmount: 'Tổng cộng',
     deliverer: 'Người chuyển',
     receiver: 'Người nhận',
     sign: 'Ký, ghi rõ họ tên',
     print: 'In phiếu',
+    printDetails: 'In phiếu chi tiết',
+    printTotal: 'In phiếu tổng hợp',
     ballotCode: 'Mã phiếu',
-    importBallot: 'Phiếu nhập kho',
-    exportBallot: 'Phiếu xuất kho',
+    importBallotTotal: 'Tổng hợp phiếu nhập kho',
+    importBallotDetails: 'Chi tiết phiếu nhập kho',
+    exportBallotTotal: 'Tổng hợp phiếu xuất kho',
+    exportBallotDetails: 'Chi tiết phiếu xuất kho',
     importDate: 'Ngày nhập',
     exportRate: 'Ngày xuất',
     importSuccess: 'Nhập kho thành công - Mã phiếu: ',
@@ -311,6 +326,40 @@ export default {
     date: 'Ngày xuất bản',
     attributes: 'Thuộc tính tin tức'
   },
+  store: {
+    code: 'Mã phiếu',
+    products: 'Tổng sản phẩm',
+    quantities: 'Tổng số lượng',
+    taxes: 'Tổng thuế',
+    prices: 'Tổng tiền',
+    totalize: 'Tổng cộng'
+  },
+  report: {
+    title: 'Tổng hợp - Báo cáo',
+    category: 'Danh mục báo cáo',
+    types: 'Kiểu báo cáo',
+    import: 'Nhập hàng',
+    export: 'Xuất hàng',
+    orders: 'Đơn hàng',
+    date: 'Báo cáo ngày',
+    weekly: 'Báo cáo tuần',
+    month: 'Báo cáo tháng',
+    quarter: 'Báo cáo quý',
+    year: 'Báo cáo năm',
+    fiveYear: '5 năm',
+    bills: 'Tổng đơn',
+    products: 'Tổng sản phẩm',
+    prices: 'Tổng tiền',
+    quantities: 'Tổng số lượng',
+    billsImport: 'Tổng đơn nhập',
+    productsImport: 'Tổng sản phẩm nhập',
+    pricesImport: 'Tổng tiền nhập',
+    quantitiesImport: 'Tổng số lượng nhập',
+    billsExport: 'Tổng đơn xuất',
+    productsExport: 'Tổng sản phẩm xuất',
+    pricesExport: 'Tổng tiền xuất',
+    quantitiesExport: 'Tổng số lượng xuất'
+  },
   tabs: {
     inf: 'Thông tin',
     main: 'Thông tin chính',
@@ -324,7 +373,8 @@ export default {
     noFilterData: 'không tìm thấy dữ liệu phù hợp',
     rowSelected: 'bản ghi đã được chọn',
     rowPerPage: 'Số bản ghi trên trang',
-    actions: '#'
+    actions: '#',
+    temporaryData: 'Dữ liệu xem tạm'
   },
   files: {
     title: 'Danh sách tệp',
@@ -340,38 +390,19 @@ export default {
     fileSize: 'Kích cỡ',
     dataList: 'Danh sách dữ liệu',
     import: 'Nhập dữ liệu',
-    export: 'Xuất dữ liệu'
+    export: 'Xuất dữ liệu',
+    index: 'Vị trí',
+    icon: 'Icon',
+    name: 'Tên',
+    type: 'Kiểu',
+    url: 'Địa chỉ tệp',
+    inputUrl: 'Nhập đường dẫn',
+    googleSheet: 'Google sheet'
   },
   gender: {
     male: 'Nam',
     female: 'Nữ',
     unknown: 'Không xác định'
-  },
-  report: {
-    title: 'Tổng hợp - Báo cáo',
-    category: 'Danh mục báo cáo',
-    types: 'Kiểu báo cáo',
-    import: 'Nhập hàng',
-    export: 'Xuất hàng',
-    orders: 'Đơn hàng',
-    date: 'Báo cáo ngày',
-    weekly: 'Báo cáo tuần',
-    month: 'Báo cáo tháng',
-    quarter: 'Báo cáo quý',
-    year: 'Báo cáo năm',
-    fiveYear: '5 năm',
-    totalBill: 'Tổng đơn',
-    totalProduct: 'Tổng sản phẩm',
-    totalPrice: 'Tổng tiền',
-    totalQuantity: 'Tổng số lượng',
-    totalBillImport: 'Tổng đơn nhập',
-    totalProductImport: 'Tổng sản phẩm nhập',
-    totalPriceImport: 'Tổng tiền nhập',
-    totalQuantityImport: 'Tổng số lượng nhập',
-    totalBillExport: 'Tổng đơn xuất',
-    totalProductExport: 'Tổng sản phẩm xuất',
-    totalPriceExport: 'Tổng tiền xuất',
-    totalQuantityExport: 'Tổng số lượng xuất'
   },
   tagsView: {
     refresh: 'Làm mới',

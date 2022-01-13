@@ -49,8 +49,9 @@
           <q-tab-panel name="inf">
             <div class="row q-gutter-xs">
               <div class="col-12">
-                <select-category :categories="categories" v-model:selected="data.categories" data-key="_id" :dense="$store.getters.dense.input"
-                                 :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
+                <select-category v-model="selectedCategory" v-model:parents="selectedCategories" :categories="categories" option-value="_id"
+                                 option-label="label" :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')"
+                                 :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
                                  :rules="[v=>v&&v.length>0||$t('error.required')]" />
               </div>
             </div>
@@ -89,8 +90,9 @@
               </div>
               <div class="col-2">
                 <q-select v-model="data.unit" use-input emit-value map-options hide-selected fill-input input-debounce="200"
-                          :dense="$store.getters.dense.input" :options="units" :label="$t('global.unit')" @filter="onFilterUnit" option-value="_id"
-                          :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''" :rules="[v=>v&&v.length>0||$t('error.required')]">
+                          :dense="$store.getters.dense.input" :options="units" :label="$t('global.unit')" @filter="onFilterUnit" option-value="code"
+                          :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''" :rules="[v=>v&&v.length>0||$t('error.required')]"
+                          @update:model-value="onUpdateValueUnit">
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">{{$t('table.noData')}}</q-item-section>
@@ -100,9 +102,9 @@
               </div>
               <div class="col-2">
                 <q-select v-model="data.priceUnit" use-input emit-value map-options hide-selected fill-input input-debounce="200"
-                          :dense="$store.getters.dense.input" :options="unitsPrice" @filter="onFilterUnitPrice" :label="$t('product.priceUnit')"
-                          option-value="_id" :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''"
-                          :rules="[v=>v&&v.length>0||$t('error.required')]">
+                          :dense="$store.getters.dense.input" :options="unitsPrice" :label="$t('product.priceUnit')" @filter="onFilterUnitPrice"
+                          option-value="code" :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''"
+                          :rules="[v=>v&&v.length>0||$t('error.required')]" @update:model-value="onUpdateValueUnitPrice">
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">{{$t('table.noData')}}</q-item-section>
@@ -134,11 +136,11 @@
             <div class="row q-gutter-sm">
               <div class="col-12">{{$t('global.content')}}</div>
               <div class="col-12">
-                <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple:max-file-size="1024*1024*2"
+                <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif" iconAccept="add_task" :labelAccept="$t('global.accept')"
                            :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')" :labelFileName="$t('files.fileName')"
-                           :labelFileSize="$t('files.fileSize')" :multiple="true" />
+                           :labelFileSize="$t('files.fileSize')" />
               </div>
             </div>
           </q-tab-panel>
@@ -172,13 +174,14 @@
           <q-tab-panel name="images">
             <div class="row">
               <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model:data="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
+                <tm-upload v-model="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
                            :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
                            accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="true" v-model:view-type="viewType" :size="121"
                            :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
                            :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
                            :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelFileName="$t('files.fileName')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
+                           :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
+                           :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
                            :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
               </div>
             </div>
@@ -187,16 +190,16 @@
             <div class="row q-gutter-md">
               <div class="col-12">{{$t('global.pin')}}:</div>
               <div class="col-12">
-                <q-option-group v-model="data.pin" :options="pins" type="checkbox" inline :dense="$store.getters.dense.input" />
+                <q-option-group v-model="data.pins" :options="pins" type="checkbox" inline :dense="$store.getters.dense.input" />
               </div>
             </div>
             <q-separator class="q-mt-md" />
-            <tm-tags v-model:data="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
+            <tm-tags v-model="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
                      :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
                      tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
                      :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')" />
             <q-separator class="q-mb-md q-mt-md" />
-            <tm-attributes v-model:data="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
+            <tm-attributes v-model="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
                            :labelTitle="$t('global.attributes')+':'" :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')"
                            :labelInputKey="$t('global.key')" :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')"
                            :btnDeleteLabel="$t('global.delete')" :labelConfirmTitle="$t('messageBox.confirm')"
@@ -230,7 +233,7 @@ export default defineComponent({
     dialog: { type: Boolean, default: false },
     maximized: { type: Boolean, default: false }
   },
-  setup () {
+  setup (props, { emit }) {
     const $store = useStore()
     const { t } = useI18n({ useScope: 'global' })
     const tabs = ref('inf')
@@ -245,6 +248,8 @@ export default defineComponent({
     const unitsPriceSource = computed(() => $store.state.types.items.filter(x => x.key === 'unit_price'))
     const units = ref(unitsSource.value)
     const unitsPrice = ref(unitsPriceSource.value)
+    const selectedCategory = ref([])
+    const selectedCategories = ref([])
 
     $store.dispatch('categories/get', { type: 'product', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })
 
@@ -259,7 +264,7 @@ export default defineComponent({
     onReset()
 
     return {
-      tabs, form, data, attrKeys, attrValues, viewType, categories, pins, units, unitsPrice,
+      tabs, form, data, attrKeys, attrValues, viewType, categories, pins, units, unitsPrice, selectedCategory, selectedCategories,
       onFilterAttrKey (val) {
         if (!val) return
         attrKeys.value = []
@@ -282,6 +287,14 @@ export default defineComponent({
       onFilterUnitPrice: (val, update, abort) => {
         update(() => { unitsPrice.value = unitsPriceSource.value.filter(v => normalize(v.name.toLowerCase()).indexOf(normalize(val.toLowerCase())) > -1) })
       },
+      onUpdateValueUnit: (val) => {
+        const e = unitsSource.value.find(x => x.code === val)
+        if (e) data.value.unitName = e.name
+      },
+      onUpdateValueUnitPrice: (val) => {
+        const e = unitsPriceSource.value.find(x => x.code === val)
+        if (e) data.value.priceUnitName = e.name
+      },
       checkExistCode: async (val) => {
         if (val) {
           if ($store.state.products.item._id) {
@@ -294,8 +307,15 @@ export default defineComponent({
       onSubmit () {
         form.value.validate().then(async (valid) => {
           if (valid) {
-            if ($store.state.products.item._id) $store.dispatch('products/put', data.value)
-            else $store.dispatch('products/post', data.value).then(() => { onReset() })
+            data.value.categories = selectedCategories.value.map(x => x._id)
+            if ($store.state.products.item._id) {
+              $store.dispatch('products/put', data.value).then(() => {
+                emit('on-finish', data.value)
+              })
+            } else $store.dispatch('products/post', data.value).then((x) => {
+              emit('on-finish', x)
+              onReset()
+            })
           }
         })
       }

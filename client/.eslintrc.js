@@ -86,6 +86,7 @@ module.exports = {
     'vue/require-prop-type-constructor': 'off',
     'vue/valid-v-bind': 'off',
     'semi': 'off',
+    'vue/no-v-html': 'off',
     // allow console.log during development only
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     // allow debugger during development only

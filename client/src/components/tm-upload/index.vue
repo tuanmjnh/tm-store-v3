@@ -1,9 +1,10 @@
 <template>
   <div>
-    <tm-file-list :data="data" :view-type="viewType" :size="121" :labelTitle="labelTitle"
-                  :labelViewList="labelViewList" :labelViewBox="labelViewBox" :labelFileName="labelFileName"
-                  :labelFileSize="labelFileSize" :labelConfirmTitle="labelConfirmTitle"
-                  :labelConfirmContent="labelConfirmContent">
+    <tm-file-list :modelValue="modelValue" v-model:selected="selectedFileList" :view-type="viewType" :size="121" :labelTitle="labelTitle"
+                  :labelViewList="labelViewList" :labelViewBox="labelViewBox" :labelIndex="labelIndex" :labelIcon="labelIcon"
+                  :labelFileName="labelFileName" :labelType="labelType" :labelFileSize="labelFileSize" :labelConfirmTitle="labelConfirmTitle"
+                  :labelConfirmContent="labelConfirmContent" :labelDeleteFile="labelDeleteFile" :loading="loading" :multiple="multiple"
+                  :isHeader="isHeader" :isCount="isCount" :isBorder="isBorder" @on-delete="onDeleteImage">
       <template v-slot:tool-bar>
         <q-btn round dense flat icon="cloud_upload" color="primary"
                @click="dialogUpload=!dialogUpload">
@@ -12,7 +13,7 @@
         <q-btn round dense flat icon="pageview" color="secondary" @click="isDialogFiles=!isDialogFiles">
           <q-tooltip v-if="!$q.platform.is.mobile">{{labelOpenData}}</q-tooltip>
         </q-btn>
-        <span class="q-pl-sm q-pr-sm">|</span>
+        <q-separator vertical class="q-ml-sm q-mr-sm" />
         <q-btn dense flat icon="view_module" :color="viewType!=='list'?'indigo':'blue-grey'"
                @click="onChangeView('box')">
           <q-tooltip v-if="!$q.platform.is.mobile">{{labelViewBox}}</q-tooltip>
@@ -25,19 +26,20 @@
     </tm-file-list>
     <!-- Dialog Files -->
     <q-dialog v-model="isDialogFiles" persistent>
-      <q-card style="width:672px;max-width:80vw;">
-        <q-toolbar>
+      <q-card flat :style="{minWidth:'50%'}">
+        <!-- <q-toolbar>
           <q-toolbar-title>{{labelTitleFiles}}</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup>
             <q-tooltip>{{labelCancel}}</q-tooltip>
           </q-btn>
         </q-toolbar>
         <q-separator />
-        <q-card-section class="q-pa-sm">
-          <tm-files v-model:selected="selected" v-model:view-type="viewTypeFiles" :accept="accept" :multiple="multiple" :url="uploadUrl"
-                    :headers="headers" :labelViewList="labelViewList" :labelViewBox="labelViewBox" :iconAccept="iconAccept" :labelAccept="labelAccept"
-                    :labelFileName="labelFileName" :labelFileSize="labelFileSize" @on-finish="onFinishBrowse" />
-        </q-card-section>
+        <q-card-section class="q-pt-none"> -->
+        <tm-files v-model="selected" v-model:view-type="viewTypeFiles" :accept="accept" :multiple="multiple" :url="uploadUrl" :headers="headers"
+                  :labelViewList="labelViewList" :labelViewBox="labelViewBox" :iconAccept="iconAccept" :labelAccept="labelAccept"
+                  :labelIndex="labelIndex" :labelIcon="labelIcon" :labelFileName="labelFileName" :labelType="labelType" :labelFileSize="labelFileSize"
+                  :labelTitle="labelTitleFiles" :labelCancel="labelCancel" @on-finish="onFinishBrowse" />
+        <!-- </q-card-section>-->
       </q-card>
     </q-dialog>
     <!-- Dialog Upload-->
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from 'vue';
+import { defineComponent, defineAsyncComponent, ref, computed, watch } from 'vue';
 export default defineComponent({
   name: 'tm-upload',
   components: {
@@ -68,7 +70,7 @@ export default defineComponent({
     tmFiles: defineAsyncComponent(() => import('components/tm-files'))
   },
   props: {
-    data: { default: null },
+    modelValue: { default: null },
     multiple: { type: Boolean, default: false },
     maxFileSize: { type: Number, default: 1024 * 1024 * 2 }, // 2MB
     uploadUrl: { type: String, required: true },
@@ -89,9 +91,13 @@ export default defineComponent({
     labelOpenData: { type: String, default: 'Open data' },
     labelViewList: { type: String, default: 'View list' },
     labelViewBox: { type: String, default: 'View box' },
+    labelIndex: { type: String, default: 'Index' },
+    labelIcon: { type: String, default: 'Icon' },
     labelFileName: { type: String, default: 'File name' },
+    labelType: { type: String, default: 'Type' },
     labelFileSize: { type: String, default: 'Size' },
     labelCancel: { type: String, default: 'Cancel' },
+    labelDeleteFile: { type: String, default: 'Delete' },
     labelConfirmTitle: { type: String, default: 'Warning' },
     labelConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' }
   },
@@ -100,11 +106,18 @@ export default defineComponent({
     const dialogUpload = ref(false)
     const viewTypeFiles = ref('box')
     const selected = ref(null)
+    const selectedFileList = ref(null)
     const slotToolBar = computed(() => !!slots['tool-bar'])
     const slotPanelLeft = computed(() => !!slots['panel-left'])
+    // const localValue = computed(() => { return JSON.parse(JSON.stringify(props.modelValue)) })
+
+    // watch(localValue, (state) => {
+    //   console.log(state)
+    //   emit('update:modelValue', state)
+    // }, { deep: true })
 
     return {
-      isDialogFiles, dialogUpload, viewTypeFiles, selected, slotToolBar, slotPanelLeft,
+      isDialogFiles, dialogUpload, viewTypeFiles, selected, selectedFileList, slotToolBar, slotPanelLeft,
       onChangeView: (val) => {
         emit('update:viewType', val)
         emit('on-change-view', val)
@@ -113,26 +126,24 @@ export default defineComponent({
         isDialogFiles.value = false
         if (val) {
           if (props.multiple) {
-            const rs = props.data.slice()
+            const rs = props.modelValue ? props.modelValue.slice() : []
             val.forEach(e => { if (!rs.includes(e.fullName)) rs.push(e.fullName) })
-            emit('update:data', rs)
-          } else emit('update:data', val.fullName)
+            if (rs.length) emit('update:modelValue', rs)
+          } else emit('update:modelValue', val.fullName)
         }
         emit('finish-browse', val)
       },
       onFinishUpload: (val) => {
         var res = JSON.parse(val.xhr.response)
         if (res.length > 0) {
-          if (props.multiple) emit(props.data, props.data.slice().push(res[0].fullName)) // props.data.push(res[0].fullName)
-          else emit('update:data', res[0].fullName)
+          if (props.multiple) emit(props.modelValue, props.modelValue.slice().push(res[0].fullName))
+          else emit('update:modelValue', res[0].fullName)
         }
         emit('finish-uploaded', res)
       },
       onDeleteImage: (val) => {
-        const i = props.data.indexOf(val)
-        if (i > -1) emit(props.data, props.data.slice().splice(i, 1))// props.data.splice(i, 1)
+        emit('update:modelValue', val)
       }
-
     }
   }
 })

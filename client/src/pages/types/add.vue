@@ -65,7 +65,7 @@
               </div>
               <q-space />
               <div class="col-12 col-md-6">
-                <q-input v-model.trim="data.code" v-lowercase :dense="$store.getters.dense.input"
+                <q-input v-model.trim="data.code" v-lowerCase :dense="$store.getters.dense.input"
                          :label="$t('global.code')" :rules="[v=>v&&v.length>0||$t('error.required')]" />
               </div>
             </div>
@@ -94,7 +94,7 @@
             </div>
           </q-tab-panel>
           <q-tab-panel name="attributes">
-            <tm-attributes v-model:data="data.meta" :keys="metaKeys" :values="metaValues"
+            <tm-attributes v-model="data.meta" :keys="metaKeys" :values="metaValues"
                            :dense="$store.getters.dense.input" :labelTitle="$t('global.attributes')+':'"
                            :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')" :labelInputKey="$t('global.key')"
                            :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')" :btnDeleteLabel="$t('global.delete')"

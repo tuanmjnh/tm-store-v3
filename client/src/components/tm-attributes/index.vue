@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="row q-mb-md">
-      <div class="col-12 row" v-for="(e,i) in data" :key="i">
+      <div class="col-12 row" v-for="(e,i) in modelValue" :key="i">
         <div class="col-3">{{e.key}}</div>
         <q-space />
         <div class="col-8">{{e.value}}</div>
@@ -70,7 +70,7 @@ import { useQuasar } from 'quasar'
 export default defineComponent({
   name: 'tm-attributes',
   props: {
-    data: { type: Array, default: () => [] },
+    modelValue: { type: Array, default: () => [] },
     keys: { type: Array, default: () => [] },
     values: { type: Array, default: () => [] },
     dense: { type: Boolean, default: true },
@@ -109,7 +109,7 @@ export default defineComponent({
     const val = ref('')
     const indexItem = ref(null)
 
-    if (!props.data) emit('update:data', [])
+    if (!props.modelValue) emit('update:modelValue', [])
 
     return {
       key, val, indexItem,
@@ -127,12 +127,12 @@ export default defineComponent({
             $q.notify({ color: props.colorWarning, timeout: props.timeoutWarning, message: props.labelWarningContent })
             return
           }
-          const data = props.data.slice()
+          const modelValue = props.modelValue.slice()
           if (indexItem.value != null) {
-            data.splice(indexItem.value, 1, { key: key.value, value: val.value })
+            damodelValueta.splice(indexItem.value, 1, { key: key.value, value: val.value })
             indexItem.value = null
-          } else data.push({ key: key.value, value: val.value })
-          emit('update:data', data)
+          } else modelValue.push({ key: key.value, value: val.value })
+          emit('update:modelValue', modelValue)
           key.value = ''
           val.value = ''
         }, 300)
@@ -144,9 +144,9 @@ export default defineComponent({
       },
       onRemoveAttr: (i) => {
         $q.dialog({ title: props.labelConfirmTitle, message: props.labelConfirmContent, cancel: true, persistent: true }).onOk(() => {
-          const data = props.data.slice()
-          data.splice(i, 1)
-          emit('update:data', data)
+          const modelValue = props.modelValue.slice()
+          modelValue.splice(i, 1)
+          emit('update:modelValue', modelValue)
         })
       }
     }

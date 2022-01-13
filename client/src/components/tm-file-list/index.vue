@@ -1,91 +1,137 @@
 <template>
   <div class="tm-file-list">
-    <div class="tool-bar">
-      <div class="title">{{labelTitle}}</div>
-      <div class="menu">
-        <slot v-if="slotToolBar" name="tool-bar"></slot>
-        <div v-if="!slotToolBar" :class="['btn btn-view tooltip',viewType!=='list'?'active':'']"
+    <q-toolbar>
+      <q-toolbar-title>{{labelTitle}}</q-toolbar-title>
+      <slot v-if="slotToolBar" name="tool-bar"></slot>
+      <q-btn v-if="!slotToolBar" round dense flat icon="view_module" :color="viewType!=='list'?'indigo':'blue-grey'"
              @click="onChangeView('box')">
-          <i class="icon-btn material-icons">view_module</i>
-          <span class="tooltip-text tooltip-tool-bar">{{labelViewBox}}</span>
-        </div>
-        <div v-if="!slotToolBar" :class="['btn btn-group btn-view tooltip',viewType==='list'?'active':'']"
+        <q-tooltip v-if="!$q.platform.is.mobile">{{labelViewBox}}</q-tooltip>
+      </q-btn>
+      <q-btn v-if="!slotToolBar" round dense flat icon="view_list" :color="viewType==='list'?'indigo':'blue-grey'"
              @click="onChangeView('list')">
-          <i class="icon-btn material-icons">view_list</i>
-          <span class="tooltip-text tooltip-tool-bar">{{labelViewList}}</span>
-        </div>
-      </div>
-    </div>
+        <q-tooltip v-if="!$q.platform.is.mobile">{{labelViewList}}</q-tooltip>
+      </q-btn>
+    </q-toolbar>
     <div class="panel">
       <slot v-if="slotPanelLeft" name="panel-left"></slot>
       <div class="panel-right">
-        <div v-if="loading" class="lds-roller">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
+        <q-spinner v-if="loading" style="top:50%;left:50%;position:absolute" color="primary" size="6em" :thickness="1" />
         <div class="views view-box" v-if="viewType!=='list'">
-          <div v-show="!loading" v-for="(e,i) in dataLocal" :key="i" :class="['item',onGetSelected(e)]"
-               @click="onSelectItem(e)" :style="`width:${size}px;height:${size}px`">
-            <div class="content" v-if="Extension.isImage(e)"
-                 :style="Extension.getBackgroundImage(e)+`;height:${size-4}px`" />
-            <!-- <img class="content" :src="e.fullName"> -->
-            <!-- {{e.fullName}} -->
-            <i v-else-if="Extension.isAudio(e)" class="content material-icons"
-               :style="`height:${size-4}px`">audiotrack</i>
-            <!-- <audio controls>
-            <source :src="e.fullName" type="audio/ogg">
-            <source :src="e.fullName" type="audio/mpeg">
-          </audio> -->
-            <i v-else-if="Extension.isVideo(e)" class="content material-icons"
-               :style="`height:${size-4}px`">video_library</i>
-            <!-- <video controls>
-            <source :src="e.fullName" type="video/mp4">
-            <source :src="e.fullName" type="video/ogg">
-          </video> -->
-            <i v-else-if="Extension.isPdf(e)" class="content material-icons"
-               :style="`height:${size-4}px`">picture_as_pdf</i>
-            <i v-else-if="Extension.isFlash(e)" class="content material-icons"
-               :style="`height:${size-4}px`">burst_mode</i>
-            <i v-else-if="Extension.isCode(e)" class="content material-icons" :style="`height:${size-4}px`">code</i>
-            <i v-else-if="Extension.isDoc(e)" class="content material-icons"
-               :style="`height:${size-4}px`">description</i>
-            <i v-else-if="Extension.isSheet(e)" class="content material-icons"
-               :style="`height:${size-4}px`">list_alt</i>
-            <i v-else-if="Extension.isText(e)" class="content material-icons"
-               :style="`height:${size-4}px`">assignment</i>
-            <i v-else class="content material-icons" :key="i" :style="`height:${size-4}px`">file_copy</i>
+          <div v-show="!loading" v-for="(e,i) in rows" :key="i" @click="onSelectItem(e.name)" :style="`width:${size}px;height:${size}px`"
+               :class="['item',multiple?(selected&&selected.indexOf(e.name)>-1?'selected':''):(selected===e.name?'selected':'')]">
+            <q-img v-if="Extension.isImage(e.name)" :src="e.name" spinner-color="primary" :style="{height:`${size-4}px`}">
+              <template v-slot:error>
+                <i class="content material-icons" style="font-size:60px;position:absolute;top:25%;left:25%;color:#908f8f">photo_size_select_actual</i>
+              </template>
+            </q-img>
+            <i v-else-if="Extension.isAudio(e.name)" class="content material-icons"
+               :style="`height:${size-4}px;font-size:${size-50}px`">audiotrack</i>
+            <i v-else-if="Extension.isVideo(e.name)" class="content material-icons"
+               :style="`height:${size-4}px;font-size:${size-50}px`">video_library</i>
+            <i v-else-if="Extension.isPdf(e.name)" class="content material-icons"
+               :style="`height:${size-4}px;font-size:${size-50}px`">picture_as_pdf</i>
+            <i v-else-if="Extension.isFlash(e.name)" class="content material-icons"
+               :style="`height:${size-4}px;font-size:${size-50}px`">burst_mode</i>
+            <i v-else-if="Extension.isCode(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">code</i>
+            <i v-else-if="Extension.isDoc(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">description</i>
+            <i v-else-if="Extension.isSheet(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">list_alt</i>
+            <i v-else-if="Extension.isText(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">assignment</i>
+            <i v-else class="content material-icons" :key="i" :style="`height:${size-4}px;font-size:${size-50}px`">file_copy</i>
+
             <i class="material-icons file-delete" @click="onDelete(i)">clear</i>
-            <q-tooltip>{{Extension.getNameFilePath(e)}}</q-tooltip>
-            <!-- <span class="tooltip-text tooltip-bottom">{{Extension.getNameFilePath(e)}}</span> -->
+            <q-tooltip>{{Extension.getNameFilePath(e.name)}}</q-tooltip>
           </div>
         </div>
         <div v-else class="views view-list">
-          <table :class="[isBorder?'table-border':'']">
+          <q-table flat dense :rows="rows" :columns="columns" :visible-columns="visibleColumns" row-key="name" selection="multiple"
+                   :no-data-label="$t('table.noData')" :rows-per-page-label="$t('table.rowPerPage')"
+                   :selected-rows-label="()=>`${selected.length} ${$t('table.rowSelected')}`" :rows-per-page-options="rowsPerPageOptions">
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <!-- <q-th auto-width>
+                  <q-checkbox v-model="props.selected" indeterminate-value="some" :dense="true" />
+                </q-th> -->
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  <span v-if="$q.dark.isActive" class="text-bold">{{col.label}}</span>
+                  <span v-else class="text-bold text-blue-grey-10">{{col.label}}</span>
+                </q-th>
+                <q-th auto-width>
+                  <q-btn flat round dense :color="$q.dark.isActive?'':'grey-7'" icon="menu_open">
+                    <q-tooltip v-if="!$q.platform.is.mobile">{{$t('table.displayColumns')}}</q-tooltip>
+                    <q-menu fit>
+                      <q-list dense style="min-width:100px">
+                        <template v-for="(item,index) in columns">
+                          <q-item v-if="!item.required" clickable :key="index" :active="visibleColumns.indexOf(item.name)>-1||false"
+                                  @click="onColumns(item.name)">
+                            <q-item-section>{{item.label}}</q-item-section>
+                          </q-item>
+                        </template>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <!-- <q-td auto-width key="select">
+                  <q-checkbox v-model="props.selected" color="primary" :dense="true" />
+                </q-td> -->
+                <q-td auto-width key="index" :props="props">{{props.row.index+1}}</q-td>
+                <q-td auto-width key="icon" :props="props">
+                  <q-img :src="props.row.name" spinner-color="primary" style="height:23px;max-width:25px" fit="cover"
+                         v-if="Extension.isImage(props.row.name)">
+                    <template v-slot:error>
+                      <i class="content material-icons"
+                         style="font-size:23px;position:absolute;top:0;left:0;color:#908f8f">photo_size_select_actual</i>
+                    </template>
+                  </q-img>
+                  <i v-else-if="Extension.isAudio(props.row.name)" class="content material-icons"
+                     style="font-size:20px">audiotrack</i>
+                  <i v-else-if="Extension.isVideo(props.row.name)" class="content material-icons"
+                     style="font-size:20px">video_library</i>
+                  <i v-else-if="Extension.isPdf(props.row.name)" class="content material-icons"
+                     style="font-size:20px">picture_as_pdf</i>
+                  <i v-else-if="Extension.isFlash(props.row.name)" class="content material-icons"
+                     style="font-size:20px">burst_mode</i>
+                  <i v-else-if="Extension.isCode(props.row.name)" class="content material-icons"
+                     style="font-size:20px">code</i>
+                  <i v-else-if="Extension.isDoc(props.row.name)" class="content material-icons"
+                     style="font-size:20px">description</i>
+                  <i v-else-if="Extension.isSheet(props.row.name)" class="content material-icons"
+                     style="font-size:20px">list_alt</i>
+                  <i v-else-if="Extension.isText(props.row.name)" class="content material-icons"
+                     style="font-size:20px">assignment</i>
+                  <i v-else class="content material-icons" style="font-size:20px">file_copy</i>
+                </q-td>
+                <q-td key="name" :props="props">{{Extension.getNameFilePath(props.row.name)}}</q-td>
+                <q-td auto-width key="type" :props="props">{{props.row.type}}</q-td>
+                <!-- <q-td key="size" :props="props">{{props.row.size}}</q-td> -->
+                <td auto-width>
+                  <q-btn flat round dense color="negative" icon="clear" size="sm" @click="onDelete(props.row.index)">
+                    <q-tooltip v-if="!$q.platform.is.mobile">{{labelDeleteFile}}</q-tooltip>
+                  </q-btn>
+                </td>
+              </q-tr>
+            </template>
+          </q-table>
+          <!-- <table :class="[isBorder?'table-border':'']">
             <thead v-if="isHeader">
               <tr>
                 <th v-if="isCount" class="cmd">#</th>
                 <th>{{labelFileName}}</th>
-                <!-- <th>Type</th> -->
-                <!-- <th>{{labelFileSize}}</th> -->
                 <th class="cmd">#</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(e,i) in dataLocal" :key="i" :class="['item',onGetSelected(e)]" @click="onSelectItem(e)">
+              <tr v-for="(e,i) in rows" :key="i" @click="onSelectItem(e)"
+                  :class="['item',multiple?(selected&&selected.indexOf(e)>-1?'selected':''):(selected===e?'selected':'')]">
                 <td v-if="isCount" class="cmd">{{i+1}}</td>
                 <td>{{Extension.getNameFilePath(e)}}</td>
-                <!-- <td>{{e.ext}}</td> -->
-                <!-- <td>{{e.size}}</td> -->
                 <td class="cmd"><i class="material-icons file-delete" @click="onDelete(i)">clear</i></td>
               </tr>
             </tbody>
-          </table>
+          </table> -->
         </div>
       </div>
     </div>
@@ -93,26 +139,32 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import * as extension from '@/utils/extension'
 import { useQuasar } from 'quasar'
+
 export default defineComponent({
   name: 'tm-file-list',
   props: {
-    data: { default: null },
-    selected: { type: Array, default: () => [] },
+    modelValue: { default: null },
+    selected: { default: null },
     multiple: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     isHeader: { type: Boolean, default: false },
     isCount: { type: Boolean, default: false },
     isBorder: { type: Boolean, default: false },
     size: { type: Number, default: 80 },
+    rowsPerPageOptions: { type: Array, default: () => [10, 20, 30, 50] },
     viewType: { type: String, default: 'box' },
     labelTitle: { type: String, default: '' },
     labelViewList: { type: String, default: 'View list' },
     labelViewBox: { type: String, default: 'View box' },
+    labelIndex: { type: String, default: 'Index' },
+    labelIcon: { type: String, default: 'Icon' },
+    labelType: { type: String, default: 'Type' },
     labelFileName: { type: String, default: 'File name' },
     labelFileSize: { type: String, default: 'Size' },
+    labelDeleteFile: { type: String, default: 'Delete' },
     labelConfirmTitle: { type: String, default: 'Confirm' },
     labelConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' }
   },
@@ -121,446 +173,134 @@ export default defineComponent({
     const Extension = extension
     const slotToolBar = computed(() => !!slots['tool-bar'])
     const slotPanelLeft = computed(() => !!slots['panel-left'])
-    const dataLocal = computed(() => {
-      if (props.data) {
-        if (typeof props.data === 'string') return [props.data]
-        else return props.data
-      } else return null
+    const visibleColumns = ref(['index', 'icon', 'type'])
+    const columns = ref([
+      { name: 'index', field: 'index', label: props.labelIndex, align: 'left', sortable: true },
+      { name: 'icon', field: 'icon', label: props.labelIcon, align: 'center' },
+      { name: 'name', field: 'name', label: props.labelFileName, align: 'left', required: true, sortable: true },
+      { name: 'type', field: 'type', label: props.labelType, align: 'left', sortable: true }
+      // { name: 'size', field: 'size', label: 'Size', align: 'left', sortable: true }
+    ])
+    const rows = computed(() => {
+      if (props.modelValue) {
+        if (typeof props.modelValue === 'string') return [{
+          index: 0,
+          icon: '',
+          name: props.modelValue,
+          type: Extension.getExtension(props.modelValue, false),
+          size: 0
+        }]
+        else {
+          const rs = []
+          for (let i = 0; i < props.modelValue.length; i++) {
+            rs.push({
+              index: i,
+              icon: '',
+              name: props.modelValue[i],
+              type: Extension.getExtension(props.modelValue[i], false),
+              size: 0
+            })
+          }
+          return rs
+        }
+      } else return []
     })
     return {
-      Extension, slotToolBar, slotPanelLeft, dataLocal,
+      Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns,
       onGetStyleImage: (url) => {
-        return `background-size: cover; background-position: 50% 50%; background-image: url("${url}");`
+        return `background-size:cover;background-position:50% 50%;background-image:url("${url}");`
       },
-      onSelectItem: (item) => {
-        const i = props.selected.findIndex(x => x === item)
-        if (i > -1) {
-          // props.selected.splice(i, 1)
-          emit(props.selected, props.selected.slice().splice(i, 1))
-          emit('on-unselect', item)
+      onSelectItem: (val) => {
+        // console.log(event.target.class.push('selected'))
+        // event.target.classList.toggle('selected')
+
+        let selected = props.selected
+        if (props.multiple) {
+          if (!selected) selected = []
+          const i = selected.indexOf(val)
+          if (i < 0) {
+            selected.push(val)
+            emit('update:selected', selected)
+          } else {
+            selected.splice(i, 1)
+            emit('update:selected', selected)
+            emit('on-unselect', val)
+          }
         } else {
-          if (props.multiple) emit(props.selected, props.selected.slice().push(item))// props.selected.push(item)
-          else emit('update:selected', [item])
-          emit('on-select', item)
+          if (selected === val) selected = null
+          else selected = val
+          emit('update:selected', selected)
         }
       },
-      onChangeView: (view) => {
-        emit('update:viewType', view)
+      onChangeView: (val) => {
+        emit('update:viewType', val)
+        emit('on-change-view', val)
       },
-      onGetSelected: (item) => {
-        const i = props.selected.findIndex(x => x === item)
-        return i > -1 ? 'selected' : ''
+      onGetSelected: (val) => {
+        if (props.multiple) {
+          if (props.selected.indexOf(val) > -1) return 'selected'
+        } else {
+
+        }
+        return props.multiple ? (props.selected.indexOf(val) > -1 ? 'selected' : '') : (props.selected === val ? 'selected' : '')
+        // if (!props.selected) return ''
+        // const i = props.selected.findIndex(x => x === val)
+        // return i > -1 ? 'selected' : ''
       },
-      onDelete: (i) => {
-        $q.dialog({
-          title: props.labelConfirmTitle,
-          message: props.labelConfirmContent,
-          cancel: true,
-          persistent: true
-        }).onOk(() => {
-          if (i > -1) emit(props.data, props.data.slice().splice(i, 1))// props.data.splice(index, 1)
+      onDelete: (val) => {
+        if (val > -1) $q.dialog({ title: props.labelConfirmTitle, message: props.labelConfirmContent, cancel: true, persistent: true }).onOk(() => {
+          if (props.multiple) {
+            const x = props.modelValue.slice()
+            x.splice(val, 1)
+            emit('update:modelValue', x)
+            emit('on-delete', x)
+          } else {
+            emit('update:modelValue', null)
+            emit('on-delete', null)
+          }
         })
+      },
+      onColumns: (val) => {
+        var i = visibleColumns.value.indexOf(val)
+        if (i < 0) visibleColumns.value.push(val)
+        else visibleColumns.value.splice(i, 1)
       }
     }
   }
 })
 </script>
 
-<style lang="scss">
-$tooltip-color: #757575;
-$delete-color: #b71c1c;
+<style lang="scss" scoped>
 .tm-file-list {
-  // min-height: 200px;
-  min-width: 510px;
-  .tool-bar {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    // flex-wrap: wrap;
-    .title {
-      font-size: 0.875rem;
-      font-weight: 500;
-      line-height: 1.375rem;
-      letter-spacing: 0.00714em;
-    }
-    .menu {
-      .btn-group {
-        margin-left: 0px !important;
-      }
-      .btn {
-        display: inline-block;
-        margin-left: 5px;
-      }
-      i.icon-btn {
-        padding: 6px 12px;
-        cursor: pointer;
-        color: #fff;
-      }
-      .btn-view {
-        background-color: #009688;
-        &:hover,
-        &.active {
-          background-color: #02776b;
-        }
-      }
-      .btn-accept {
-        background-color: #2196f3;
-        &:hover {
-          background-color: #2c8bd8;
-        }
-      }
-    }
+  .q-toolbar {
+    min-height: initial;
+    padding: 5px 0;
   }
-  .panel {
-    display: flex;
-    // flex-wrap: wrap;
-    // overflow: scroll;
-    // min-height: 200px;
-    .panel-right {
-      // width: 350px;
-      // overflow: auto;
+  .view-box {
+    .item {
+      border: 1px solid #ccc;
+      padding: 1px;
+      margin: 0 0 6px 6px;
+      vertical-align: middle;
+      text-align: center;
       position: relative;
-      // float: left;
-      width: 100%;
-      .item {
+      display: inline-block;
+      transition: all 0.3s;
+      .file-delete {
+        display: none;
+        color: #fff;
+        background-color: #b71c1c;
+        position: absolute;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        transition: opacity 0.3s;
         cursor: pointer;
-        transition: all 0.5s;
       }
-      .view-box {
-        .item {
-          // width: 78px;
-          // height: 78px;
-          border: 1px solid #ccc;
-          // overflow: hidden;
-          padding: 1px;
-          margin: 0 0 6px 6px;
-          vertical-align: middle;
-          text-align: center;
-          position: relative;
-          display: inline-block;
-          transition: all 0.3s;
-          .content {
-            // height: 74px;
-            // max-width: 50px;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: auto;
-          }
-          i.content {
-            font-size: 28px;
-          }
-          &.selected {
-            border-color: #2196f3;
-          }
-          &:hover {
-            border-color: #02776b;
-          }
-          // &:nth(4) {
-          //   margin-left: 0;
-          // }
-          .file-delete {
-            display: none;
-            color: #fff;
-            background-color: $delete-color;
-            position: absolute;
-            right: 0;
-            top: 0;
-            opacity: 0;
-            transition: opacity 0.3s;
-          }
-          &:hover .file-delete {
-            display: initial !important;
-            opacity: 1;
-          }
-        }
+      &:hover .file-delete {
+        display: initial !important;
+        opacity: 1;
       }
-      .view-list {
-        table {
-          width: 100%;
-          max-width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          thead tr,
-          thead th {
-            height: 28px;
-            border-color: rgba(0, 0, 0, 0.12);
-          }
-          tbody tr,
-          tbody td {
-            border-color: #fff;
-          }
-          &.table-border tbody tr,
-          &.table-border tbody td {
-            border-color: rgba(0, 0, 0, 0.12);
-          }
-          td,
-          th,
-          thead {
-            border-style: solid;
-            border-width: 0;
-          }
-          th.sortable {
-            cursor: pointer;
-          }
-          th {
-            white-space: nowrap;
-          }
-          td,
-          th,
-          thead {
-            border-style: solid;
-            border-width: 0;
-          }
-          td,
-          th {
-            padding: 3px 6px;
-            background-color: inherit;
-          }
-          th {
-            font-weight: 500;
-            font-size: 12px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            text-align: left;
-          }
-          tbody tr:not(:last-child) td,
-          thead th,
-          tbody tr:not(:last-child) td,
-          thead th {
-            border-bottom-width: 1px;
-          }
-          tbody tr {
-            // font-family: Roboto, -apple-system, Helvetica Neue, Helvetica, Arial,
-            //   sans-serif;
-            color: #393939;
-            .file-delete {
-              color: #393939;
-            }
-            &:hover {
-              color: #02776b;
-            }
-            &:hover .file-delete {
-              color: $delete-color;
-            }
-            &.selected {
-              color: #2196f3;
-            }
-          }
-          tbody tr td.cmd,
-          tbody tr th.cmd {
-            width: 1px;
-            text-align: center;
-          }
-        }
-      }
-    }
-  }
-
-  /* Tooltip text */
-  .tooltip {
-    position: relative;
-  }
-  .tooltip .tooltip-text {
-    visibility: hidden;
-    width: 120px;
-    word-break: break-word;
-    background-color: $tooltip-color;
-    color: #fff;
-    text-align: center;
-    padding: 5px;
-    border-radius: 3px;
-
-    /* Position the tooltip text */
-    position: absolute;
-    z-index: 1;
-    bottom: 108%;
-    left: 50%;
-    margin-left: -60px;
-
-    /* Fade in tooltip */
-    opacity: 0;
-    transition: opacity 0.3s;
-    // display: none;
-  }
-
-  /* Tooltip arrow */
-  .tooltip .tooltip-text::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: $tooltip-color transparent transparent transparent;
-  }
-
-  /* Show the tooltip text when you mouse over the tooltip container */
-  .tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-    display: initial;
-  }
-  .tooltip-top {
-    bottom: 108% !important;
-    left: 50% !important;
-    right: initial !important;
-    top: initial !important;
-    margin-left: -60px !important;
-  }
-  .tooltip-top::after {
-    top: 100% !important;
-    left: 50% !important;
-    right: initial !important;
-    bottom: initial !important;
-    border-color: $tooltip-color transparent transparent transparent !important;
-  }
-  .tooltip-right {
-    top: -5px !important;
-    left: 108% !important;
-    right: initial !important;
-    bottom: initial !important;
-  }
-  .tooltip-right::after {
-    top: 50% !important;
-    right: 100% !important;
-    left: initial !important;
-    bottom: initial !important;
-    border-color: transparent $tooltip-color transparent transparent !important;
-  }
-  .tooltip-bottom {
-    top: 108% !important;
-    left: 50% !important;
-    right: initial !important;
-    bottom: initial !important;
-    margin-left: -60px !important;
-  }
-  .tooltip-bottom::after {
-    bottom: 100% !important;
-    left: 50% !important;
-    right: initial !important;
-    top: initial !important;
-    border-color: transparent transparent $tooltip-color transparent !important;
-  }
-  .tooltip-left {
-    top: 28% !important;
-    bottom: auto !important;
-    right: 107% !important;
-    left: initial !important;
-  }
-  .tooltip-left::after {
-    top: 38% !important;
-    left: 104% !important;
-    right: initial !important;
-    bottom: initial !important;
-    border-color: transparent transparent transparent $tooltip-color !important;
-  }
-  .tooltip-tool-bar {
-    top: 121% !important;
-    left: -216% !important;
-    right: initial !important;
-    bottom: initial !important;
-    margin-left: 0 !important;
-    // width: fit-content !important;
-  }
-  .tooltip-tool-bar::after {
-    bottom: 100% !important;
-    left: initial !important;
-    right: 12% !important;
-    top: initial !important;
-    border-color: transparent transparent $tooltip-color transparent !important;
-  }
-
-  /* Loading files*/
-  .lds-roller {
-    display: inline-block;
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    top: 30%;
-    left: 38%;
-  }
-  .lds-roller div {
-    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    transform-origin: 40px 40px;
-  }
-  .lds-roller div:after {
-    content: " ";
-    display: block;
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #009688;
-    margin: -4px 0 0 -4px;
-  }
-  .lds-roller div:nth-child(1) {
-    animation-delay: -0.036s;
-  }
-  .lds-roller div:nth-child(1):after {
-    top: 63px;
-    left: 63px;
-  }
-  .lds-roller div:nth-child(2) {
-    animation-delay: -0.072s;
-  }
-  .lds-roller div:nth-child(2):after {
-    top: 68px;
-    left: 56px;
-  }
-  .lds-roller div:nth-child(3) {
-    animation-delay: -0.108s;
-  }
-  .lds-roller div:nth-child(3):after {
-    top: 71px;
-    left: 48px;
-  }
-  .lds-roller div:nth-child(4) {
-    animation-delay: -0.144s;
-  }
-  .lds-roller div:nth-child(4):after {
-    top: 72px;
-    left: 40px;
-  }
-  .lds-roller div:nth-child(5) {
-    animation-delay: -0.18s;
-  }
-  .lds-roller div:nth-child(5):after {
-    top: 71px;
-    left: 32px;
-  }
-  .lds-roller div:nth-child(6) {
-    animation-delay: -0.216s;
-  }
-  .lds-roller div:nth-child(6):after {
-    top: 68px;
-    left: 24px;
-  }
-  .lds-roller div:nth-child(7) {
-    animation-delay: -0.252s;
-  }
-  .lds-roller div:nth-child(7):after {
-    top: 63px;
-    left: 17px;
-  }
-  .lds-roller div:nth-child(8) {
-    animation-delay: -0.288s;
-  }
-  .lds-roller div:nth-child(8):after {
-    top: 56px;
-    left: 12px;
-  }
-  @keyframes lds-roller {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
     }
   }
 }
