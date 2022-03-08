@@ -41,66 +41,77 @@
         <!-- <q-tab name="about" :label="$t('tabs.about')" /> -->
         <q-tab name="images" :label="$t('global.images')" />
         <q-tab name="attributes" :label="$t('global.attributes')" />
+        <q-tab name="qrcode" :label="$t('qrCode.qrCode')" />
       </q-tabs>
       <q-separator />
       <!-- <q-card-section> -->
-      <q-scroll-area style="height:calc(100vh - 180px)">
-        <q-tab-panels v-model="tabs">
-          <q-tab-panel name="inf">
-            <div class="row q-gutter-xs">
-              <div class="col-12">
-                <select-category v-model="selectedCategory" v-model:parents="selectedCategories" :categories="categories" option-value="_id"
-                                 option-label="label" :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')"
-                                 :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
-                                 :rules="[v=>v&&v.length>0||$t('error.required')]" />
-              </div>
+      <q-scroll-area style="height:calc(100vh - 300px)">
+        <!-- <q-tab-panels> -->
+        <q-tab-panel id="tab-inf" name="inf">
+          <div class="row q-gutter-xs">
+            <div class="col-12">
+              <select-category v-model="selectedCategory" v-model:parents="selectedCategories" :categories="categories" option-value="_id"
+                               :rules="[v=>v&&v.length>0||$t('error.required')]" :expanded="expanded" option-label="label"
+                               :dense="$store.getters.dense.input" :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
+                               :labelTitle="$t('category.titleproduct')" />
             </div>
-            <div class="row q-gutter-xs">
-              <div class="col-12 col-md-5">
-                <q-input v-model.trim="data.title" v-upperCaseFirst :dense="$store.getters.dense.input" :label="$t('product.name')"
-                         :rules="[v=>v&&v.length>0||$t('error.required')]" />
-              </div>
-              <q-space />
-              <div class="col-12 col-md-5">
-                <q-input v-model.trim="data.code" v-uppercase debounce="500" :dense="$store.getters.dense.input" :label="$t('product.code')"
-                         :rules="[v=>v&&v.length>0||$t('error.required'),v=>checkExistCode(v)]" />
-              </div>
+          </div>
+          <div class="row q-gutter-xs">
+            <div class="col-12 col-md-5">
+              <q-input v-model.trim="data.title" v-upperCaseFirst :dense="$store.getters.dense.input" :label="$t('product.name')"
+                       :rules="[v=>v&&v.length>0||$t('error.required')]" />
             </div>
-            <div class="row q-gutter-xs">
-              <div class="col-5">
-                <q-input v-model.trim="data.price" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceSale')" />
-              </div>
-              <q-space />
-              <div class="col-5">
-                <q-input v-model="data.priceDiscount" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceDiscount')" />
-              </div>
+            <q-space />
+            <div class="col-12 col-md-5">
+              <q-input v-model.trim="data.code" v-uppercase debounce="500" :dense="$store.getters.dense.input" :label="$t('product.code')"
+                       :rules="[v=>v&&v.length>0||$t('error.required'),v=>checkExistCode(v)]" />
             </div>
-            <div class="row q-gutter-xs">
-              <div class="col-5">
-                <q-input v-model="data.priceImport" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceImport')" />
-              </div>
-              <q-space />
-              <div class="col-5">
-                <q-input v-model="data.priceExport" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceExport')" />
-              </div>
+          </div>
+          <div class="row q-gutter-xs">
+            <div class="col-12 col-md-5">
+              <q-input v-model.trim="data.origin" :dense="$store.getters.dense.input" :label="$t('product.origin')" />
             </div>
-            <div class="row q-gutter-xs">
-              <div class="col-3">
-                <q-input v-model="data.quantity" type="number" :dense="$store.getters.dense.input" :label="$t('product.quantityStore')" />
-              </div>
-              <div class="col-2">
-                <q-select v-model="data.unit" use-input emit-value map-options hide-selected fill-input input-debounce="200"
-                          :dense="$store.getters.dense.input" :options="units" :label="$t('global.unit')" @filter="onFilterUnit" option-value="code"
-                          :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''" :rules="[v=>v&&v.length>0||$t('error.required')]"
-                          @update:model-value="onUpdateValueUnit">
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">{{$t('table.noData')}}</q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-2">
+            <q-space />
+            <div class="col-12 col-md-5">
+              <q-input v-model.trim="data.date" :dense="$store.getters.dense.input" :label="$t('product.date')" />
+            </div>
+          </div>
+          <div class="row q-gutter-xs">
+            <div class="col-12 col-md-5">
+              <q-input v-model.trim="data.price" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceSale')" />
+            </div>
+            <q-space />
+            <div class="col-12 col-md-5">
+              <q-input v-model="data.priceDiscount" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceDiscount')" />
+            </div>
+          </div>
+          <div class="row q-gutter-xs">
+            <div class="col-12 col-md-5">
+              <q-input v-model="data.priceImport" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceImport')" />
+            </div>
+            <q-space />
+            <div class="col-12 col-md-5">
+              <q-input v-model="data.priceExport" type="number" :dense="$store.getters.dense.input" :label="$t('product.priceExport')" />
+            </div>
+          </div>
+          <div class="row q-gutter-xs">
+            <div class="col-12 col-md-3">
+              <q-input v-model="data.quantity" type="number" :dense="$store.getters.dense.input" :label="$t('product.quantityStore')" />
+            </div>
+            <q-space />
+            <div class="col-12 col-md-3">
+              <q-select v-model="data.unit" use-input emit-value map-options hide-selected fill-input input-debounce="200"
+                        :dense="$store.getters.dense.input" :options="units" :label="$t('global.unit')" @filter="onFilterUnit" option-value="code"
+                        :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''" :rules="[v=>v&&v.length>0||$t('error.required')]"
+                        @update:model-value="onUpdateValueUnit">
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">{{$t('table.noData')}}</q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <!-- <div class="col-2">
                 <q-select v-model="data.priceUnit" use-input emit-value map-options hide-selected fill-input input-debounce="200"
                           :dense="$store.getters.dense.input" :options="unitsPrice" :label="$t('product.priceUnit')" @filter="onFilterUnitPrice"
                           option-value="code" :option-label="x=>Object(x)===x&&'name'in x?x.name.toHtml():''"
@@ -111,40 +122,30 @@
                     </q-item>
                   </template>
                 </q-select>
-                <!-- <q-input v-model="data.priceUnit" type="number" :dense="$store.getters.dense.input" :label="$t('global.priceUnit')" /> -->
-              </div>
-              <q-space />
-              <div class="col-3">
-                <q-input v-model="data.order" type="number" :dense="$store.getters.dense.input" :label="$t('global.order')"
-                         :rules="[v=>v!==null&&v!==''||$t('error.required')]" class="col-md-4" />
-              </div>
+              </div> -->
+            <q-space />
+            <div class="col-12 col-md-3">
+              <q-input v-model="data.order" type="number" :dense="$store.getters.dense.input" :label="$t('global.order')"
+                       :rules="[v=>v!==null&&v!==''||$t('error.required')]" class="col-md-4" />
             </div>
-            <div class="row q-gutter-xs">
-              <div class="col-12 col-md-5">
-                <q-input v-model.trim="data.origin" :dense="$store.getters.dense.input" :label="$t('product.origin')" />
-              </div>
-              <q-space />
-              <div class="col-12 col-md-6">
-                <q-input v-model.trim="data.date" :dense="$store.getters.dense.input" :label="$t('product.date')" />
-              </div>
+          </div>
+          <div class="row q-gutter-sm q-mb-lg">
+            <div class="col-12">
+              <q-input v-model.trim="data.desc" autogrow :dense="$store.getters.dense.input" :label="$t('global.desc')" />
             </div>
-            <div class="row q-gutter-sm q-mb-lg">
-              <div class="col-12">
-                <q-input v-model.trim="data.desc" autogrow :dense="$store.getters.dense.input" :label="$t('global.desc')" />
-              </div>
+          </div>
+          <div class="row q-gutter-sm">
+            <div class="col-12">{{$t('global.content')}}</div>
+            <div class="col-12">
+              <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple :max-file-size="1024*1024*2" min-height=""
+                         accept=".jpg,.jpeg,.png,.gif" iconAccept="add_task" minHeight="13rem" :labelFileSize="$t('files.fileSize')"
+                         :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
+                         :labelFileName="$t('files.fileName')"
+                         :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]" />
             </div>
-            <div class="row q-gutter-sm">
-              <div class="col-12">{{$t('global.content')}}</div>
-              <div class="col-12">
-                <tm-editor v-model="data.content" :upload-url="$store.state.app.apiFileUpload" multiple :max-file-size="1024*1024*2"
-                           :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
-                           accept=".jpg,.jpeg,.png,.gif" iconAccept="add_task" :labelAccept="$t('global.accept')"
-                           :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')" :labelFileName="$t('files.fileName')"
-                           :labelFileSize="$t('files.fileSize')" />
-              </div>
-            </div>
-          </q-tab-panel>
-          <!-- <q-tab-panel name="about">
+          </div>
+        </q-tab-panel>
+        <!-- <q-tab-panel name="about">
             <div class="row q-gutter-xs">
               <div class="col-12 col-md-5">
                 <q-input v-model.trim="data.origin" :dense="$store.getters.dense.input"
@@ -171,43 +172,60 @@
               </div>
             </div>
           </q-tab-panel> -->
-          <q-tab-panel name="images">
-            <div class="row">
-              <div class="col-12 q-gutter-sm images">
-                <tm-upload v-model="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
-                           :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
-                           accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="true" v-model:view-type="viewType" :size="121"
-                           :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
-                           :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
-                           :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
-                           :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
-                           :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
-                           :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
-              </div>
+        <q-tab-panel id="tab-images" name="images">
+          <div class="row">
+            <div class="col-12 q-gutter-sm images">
+              <tm-upload v-model="data.images" :upload-url="$store.state.app.apiFileUpload" :max-file-size="1024*1024*2"
+                         :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]"
+                         accept=".jpg,.jpeg,.png,.gif,.jfif" :multiple="true" v-model:view-type="viewType" :size="121"
+                         :labelTitleUpload="$t('files.upload')" :labelTitleFiles="$t('files.title')" :labelTitle="$t('files.title')"
+                         :labelOpenFile="$t('files.openFile')" :labelOpenData="$t('files.openData')" iconAccept="add_task"
+                         :labelAccept="$t('global.accept')" :labelViewList="$t('files.ViewList')" :labelViewBox="$t('files.viewBox')"
+                         :labelIndex="$t('files.index')" :labelIcon="$t('files.icon')" :labelFileName="$t('files.fileName')"
+                         :labelType="$t('files.type')" :labelFileSize="$t('files.fileSize')" :labelCancel="$t('global.cancel')"
+                         :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')" />
             </div>
-          </q-tab-panel>
-          <q-tab-panel name="attributes">
-            <div class="row q-gutter-md">
-              <div class="col-12">{{$t('global.pin')}}:</div>
-              <div class="col-12">
-                <q-option-group v-model="data.pins" :options="pins" type="checkbox" inline :dense="$store.getters.dense.input" />
-              </div>
+          </div>
+        </q-tab-panel>
+        <q-tab-panel id="tab-attributes" name="attributes">
+          <div class="row q-gutter-md">
+            <div class="col-12">{{$t('global.pin')}}:</div>
+            <div class="col-12">
+              <q-option-group v-model="data.pins" :options="pins" type="checkbox" inline :dense="$store.getters.dense.input" />
             </div>
-            <q-separator class="q-mt-md" />
-            <tm-tags v-model="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
-                     :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
-                     tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
-                     :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')" />
-            <q-separator class="q-mb-md q-mt-md" />
-            <tm-attributes v-model="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
-                           :labelTitle="$t('global.attributes')+':'" :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')"
-                           :labelInputKey="$t('global.key')" :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')"
-                           :btnDeleteLabel="$t('global.delete')" :labelConfirmTitle="$t('messageBox.confirm')"
-                           :labelConfirmContent="$t('messageBox.delete')" :labelWarningTitle="$t('messageBox.warning')"
-                           :labelWarningContent="$t('error.required')" :labelNoData="$t('table.noData')" :hintKey="$t('hint.newValue')"
-                           :hintVal="$t('hint.newValue')" :on-filter-key="onFilterAttrKey" :on-filter-value="onFilterAttrValue" />
-          </q-tab-panel>
-        </q-tab-panels>
+          </div>
+          <q-separator class="q-mt-md" />
+          <tm-tags v-model="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
+                   :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
+                   tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
+                   :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')" />
+          <q-separator class="q-mb-md q-mt-md" />
+          <tm-attributes v-model="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
+                         :labelTitle="$t('global.attributes')+':'" :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')"
+                         :labelInputKey="$t('global.key')" :labelInputValue="$t('global.value')" :btnEditLabel="$t('global.edit')"
+                         :btnDeleteLabel="$t('global.delete')" :labelConfirmTitle="$t('messageBox.confirm')"
+                         :labelConfirmContent="$t('messageBox.delete')" :labelWarningTitle="$t('messageBox.warning')"
+                         :labelWarningContent="$t('error.required')" :labelNoData="$t('table.noData')" :hintKey="$t('hint.newValue')"
+                         :hintVal="$t('hint.newValue')" :on-filter-key="onFilterAttrKey" :on-filter-value="onFilterAttrValue" />
+        </q-tab-panel>
+        <q-tab-panel id="tab-qrcode" name="qrcode">
+          <div class="row q-gutter-xs q-mb-lg">
+            <div class="col-12 col-md-5">
+              <tm-qrcodegenerator v-model="data.qrcode" :defaultValue="$store.state.products.item._id"
+                                  :title="$t('qrCode.qrCode')" :labelDefault="$t('qrCode.qrCodeDefault')"
+                                  :labelScanner="$t('qrCode.qrCodeScanner')" :labelEdit="$t('qrCode.qrCodeEdit')"
+                                  :labelHelper="$t('qrCode.qrCodeEditHelp')" />
+            </div>
+            <q-space />
+            <div class="col-12 col-md-5">
+              <tm-barcodegenerator v-model="data.barcode" @onSetRandom="onSetRandomCode" :displayValue="true"
+                                   :labelDefault="$t('qrCode.barCodeRandom')" :title="$t('qrCode.barCode')"
+                                   :labelScanner="$t('qrCode.barCodeScanner')" :labelEdit="$t('qrCode.barCodeEdit')"
+                                   :labelHelper="$t('qrCode.barCodeEditHelp')" />
+            </div>
+          </div>
+        </q-tab-panel>
+        <!-- </q-tab-panels> -->
       </q-scroll-area>
       <!-- </q-card-section> -->
     </q-form>
@@ -216,10 +234,11 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from 'vue';
+import { defineComponent, defineAsyncComponent, ref, computed, watch, onMounted } from 'vue';
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import normalize from '@/utils/search'
+import { getRndInteger } from '@/utils/number'
 export default defineComponent({
   name: 'ProductAdd',
   components: {
@@ -227,7 +246,9 @@ export default defineComponent({
     tmUpload: defineAsyncComponent(() => import('@/components/tm-upload')),
     tmTags: defineAsyncComponent(() => import('@/components/tm-tags')),
     tmAttributes: defineAsyncComponent(() => import('@/components/tm-attributes')),
-    selectCategory: defineAsyncComponent(() => import('pages/category/components/select-category'))
+    selectCategory: defineAsyncComponent(() => import('pages/category/components/select-category')),
+    tmQrcodegenerator: defineAsyncComponent(() => import('@/components/tm-qrcode-generator')),
+    tmBarcodegenerator: defineAsyncComponent(() => import('@/components/tm-barcode-generator'))
   },
   props: {
     dialog: { type: Boolean, default: false },
@@ -243,28 +264,47 @@ export default defineComponent({
     const attrValues = ref([])
     const viewType = ref('box')
     const categories = ref([])
-    const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pin_product').map(x => { return { label: x.name, value: x.code } }))
+    const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pinProduct').map(x => { return { label: x.name, value: x.code } }))
     const unitsSource = computed(() => $store.state.types.items.filter(x => x.key === 'unit'))
-    const unitsPriceSource = computed(() => $store.state.types.items.filter(x => x.key === 'unit_price'))
+    const unitsPriceSource = computed(() => $store.state.types.items.filter(x => x.key === 'unitPrice'))
     const units = ref(unitsSource.value)
     const unitsPrice = ref(unitsPriceSource.value)
-    const selectedCategory = ref([])
+    const selectedCategory = ref(null)
     const selectedCategories = ref([])
+    const expanded = ref(null)
 
     $store.dispatch('categories/get', { type: 'product', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })
 
     const onReset = () => {
       return new Promise((resolve, reject) => {
         if ($store.state.products.item) data.value = { ...$store.state.products.item }
-        if ($store.state.products.item._id) { }
+        if (data.value.categories && data.value.categories.length > 0) {
+          selectedCategory.value = data.value.categories[data.value.categories.length - 1]
+          expanded.value = data.value.categories
+        }
+        if (!data.value.content) data.value.content = ''
+        // const a = data.value.categories
+        // console.log(categories.value)
+        // if ($store.state.products.item._id) { }
         resolve()
       }).then(() => { if (form.value) form.value.resetValidation() })
     }
 
     onReset()
 
+    const changeTab = () => {
+      const tabsHiden = document.getElementsByClassName('q-tab-panel')
+      for (let i = 0; i < tabsHiden.length; i++) {
+        tabsHiden[i].style.transition = 'all 2s'
+        if (tabsHiden[i].getAttribute('id') === `tab-${tabs.value}`) tabsHiden[i].classList.remove('hidden')
+        else tabsHiden[i].classList.add('hidden')
+      }
+    }
+    onMounted(() => { changeTab() })
+    watch(() => tabs.value, (state, prevState) => { changeTab() }, { deep: true })
+
     return {
-      tabs, form, data, attrKeys, attrValues, viewType, categories, pins, units, unitsPrice, selectedCategory, selectedCategories,
+      tabs, form, data, attrKeys, attrValues, viewType, categories, pins, units, unitsPrice, selectedCategory, selectedCategories, expanded,
       onFilterAttrKey (val) {
         if (!val) return
         attrKeys.value = []
@@ -307,7 +347,7 @@ export default defineComponent({
       onSubmit () {
         form.value.validate().then(async (valid) => {
           if (valid) {
-            data.value.categories = selectedCategories.value.map(x => x._id)
+            if (selectedCategories.value && selectedCategories.value.length) data.value.categories = selectedCategories.value.map(x => x._id)
             if ($store.state.products.item._id) {
               $store.dispatch('products/put', data.value).then(() => {
                 emit('on-finish', data.value)
@@ -318,6 +358,9 @@ export default defineComponent({
             })
           }
         })
+      },
+      onSetRandomCode () {
+        data.value.barcode = getRndInteger(1234567890123, 9999999999999).toString()
       }
     }
   }

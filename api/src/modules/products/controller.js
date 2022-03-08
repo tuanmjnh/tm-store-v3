@@ -1,15 +1,13 @@
 const mongoose = require('mongoose'),
   MProducts = require('./model'),
-  Actions = require('./actions'),
+  AProducts = require('./actions'),
   pagination = require('../../utils/pagination'),
-  request = require('../../utils/request'),
   Logger = require('../../services/logger')
 
-const name = 'products'
-module.exports.name = name
+module.exports.name = MProducts.collection.collectionName
 module.exports.get = async function (req, res, next) {
   try {
-    let conditions = { $and: [{ flag: req.query.flag ? req.query.flag : 1 }] }
+    let conditions = { $and: [{ flag: req.query.flag ? parseInt(req.query.flag) : 1 }] }
     if (req.query.filter) {
       // conditions.$and.push({
       //   $or: [
@@ -20,10 +18,10 @@ module.exports.get = async function (req, res, next) {
       // })
       conditions.$and.push({ $text: { $search: req.query.filter } })
     }
+    // req.query.categories = '612c8dc594b6cc2da8c47d06'
     if (req.query.categories) conditions.$and.push({ categories: { $in: [req.query.categories] } })
     if (!req.query.sortBy) req.query.sortBy = 'orders'
     req.query.rowsNumber = await MProducts.where(conditions).countDocuments()
-
     // const options = {
     //   skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
     //   limit: parseInt(req.query.rowsPerPage),
@@ -34,33 +32,35 @@ module.exports.get = async function (req, res, next) {
     //   // if (!rs) return res.status(404).send('No data exist!')
     //   return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
     // })
-    const rs = await MProducts.aggregate([
-      { $match: conditions },
-      {
-        $lookup: {
-          from: 'types',
-          let: { unit: { $toString: '$unit' } },
-          as: 'units',
-          pipeline: [
-            { $match: { $expr: { $and: [{ $eq: ['$code', '$$unit'] }] } } },
-            { $project: { _id: 0, unitName: '$name' } }
-          ]
-        }
-      },
-      {
-        $lookup: {
-          from: 'types',
-          let: { priceUnit: { $toString: '$priceUnit' } },
-          as: 'priceUnits',
-          pipeline: [
-            { $match: { $expr: { $and: [{ $eq: ['$code', '$$priceUnit'] }] } } },
-            { $project: { _id: 0, priceUnitName: '$name' } }
-          ]
-        }
-      },
-      { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$priceUnits', 0] }, { $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
-      { $project: { units: 0, priceUnits: 0 } }
-    ]).skip((parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage))
+    // const rs = await MProducts.aggregate([
+    //   { $match: conditions },
+    //   {
+    //     $lookup: {
+    //       from: 'types',
+    //       let: { unit: { $toString: '$unit' } },
+    //       as: 'units',
+    //       pipeline: [
+    //         { $match: { $expr: { $and: [{ $eq: ['$code', '$$unit'] }] } } },
+    //         { $project: { _id: 0, unitName: '$name' } }
+    //       ]
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'types',
+    //       let: { priceUnit: { $toString: '$priceUnit' } },
+    //       as: 'priceUnits',
+    //       pipeline: [
+    //         { $match: { $expr: { $and: [{ $eq: ['$code', '$$priceUnit'] }] } } },
+    //         { $project: { _id: 0, priceUnitName: '$name' } }
+    //       ]
+    //     }
+    //   },
+    //   { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$priceUnits', 0] }, { $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
+    //   { $project: { units: 0, priceUnits: 0 } }
+    // ])
+    const rs = await AProducts.get({ conditions: conditions })
+      .skip((parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage))
       .limit(parseInt(req.query.rowsPerPage))
       .sort({ [(req.query.sortBy) || 'orders']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
       .exec()
@@ -71,25 +71,36 @@ module.exports.get = async function (req, res, next) {
     return res.status(500).send('invalid')
   }
 }
-
 module.exports.find = async function (req, res, next) {
   try {
-    if (req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        MProducts.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
+    if (req.query.id) {
+      if (mongoose.Types.ObjectId.isValid(req.query.id)) {
+        if (Array.isArray(req.query.id)) {
+          const conditions = { $and: [{ _id: { $in: req.query.id } }] }
+          const rs = await AProducts.get({ conditions: conditions }).exec()
           if (!rs) return res.status(404).send('no_exist')
           return res.status(200).json(rs)
-        })
+        } else {
+          const conditions = { $and: [{ _id: mongoose.Types.ObjectId(req.query.id) }] }
+          const rs = await AProducts.get({ conditions: conditions }).exec()
+          if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+          return res.status(200).json(rs[0])
+        }
       } else {
         return res.status(500).send('invalid')
       }
     } else if (req.query.code) {
-      MProducts.findOne({ code: req.query.code }, (e, rs) => {
-        if (e) return res.status(500).send(e)
+      if (Array.isArray(req.query.code)) {
+        const conditions = { $and: [{ code: { $in: req.query.code } }] }
+        const rs = await AProducts.get({ conditions: conditions }).exec()
         if (!rs) return res.status(404).send('no_exist')
         return res.status(200).json(rs)
-      })
+      } else {
+        const conditions = { $and: [{ code: req.query.code }] }
+        const rs = await AProducts.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
+      }
     }
   } catch (e) {
     return res.status(500).send('invalid')
@@ -122,7 +133,7 @@ module.exports.getAttr = async function (req, res, next) {
         if (e) return res.status(500).send(e)
         const rowsNumber = rs.length
         if (req.query.page && req.query.rowsPerPage) {
-          return res.status(200).json(pagination.get(rs, req.query.page, req.query.rowsPerPage))
+          return res.status(200).json(pagination.get(rs, parseInt(req.query.page), parseInt(req.query.rowsPerPage)))
         } else {
           return res.status(200).json({ rowsNumber: rowsNumber, data: rs })
         }
@@ -135,22 +146,26 @@ module.exports.getAttr = async function (req, res, next) {
 
 module.exports.post = async function (req, res, next) {
   try {
-    if (
-      !req.body ||
-      Object.keys(req.body).length < 1 ||
-      !req.body.title ||
-      !req.body.code ||
-      req.body.categories.length < 1
-    ) { return res.status(500).send('invalid') }
+    // if (
+    //   !req.body ||
+    //   Object.keys(req.body).length < 1 ||
+    //   !req.body.title ||
+    //   !req.body.code ||
+    //   req.body.categories.length < 1
+    // ) { return res.status(500).send('invalid') }
+    const rs = await AProducts.insert({ request: req, item: req.body })
+    if (rs.error && rs.error.length) return res.status(501).send(rs.error)
 
-    const rs = await Actions.insert(req.body, req.verify._id, request.getIp(req))
-    console.log(rs)
-    if (rs.error) return res.status(501).send(rs.error)
-    else {
-      // Push logs
-      Logger.set(req, name, rs._id, 'insert')
-      return res.status(201).json(rs.success)
-    }
+    // get again for type unit and unitPrice
+    const conditions = { $and: [{ _id: mongoose.Types.ObjectId(rs.success[0]) }] }
+    const reGet = await AProducts.get({ conditions: conditions }).exec()
+    if (!reGet || reGet.length < 1) return res.status(201).json(rs.data)
+    else return res.status(201).json(reGet[0])
+    // else {
+    //   // Push logs
+    //   Logger.set(req, name, rs._id, 'insert')
+    //   return res.status(201).json(rs.success)
+    // }
     // const x = await MProducts.findOne({ code: req.body.code })
     // if (x) return res.status(501).send('exist')
     // req.body.created = { at: new Date(), by: req.verify._id, ip: request.getIp(req) }
@@ -194,6 +209,8 @@ module.exports.put = async function (req, res, next) {
             tags: req.body.tags,
             attr: req.body.attr,
             meta: req.body.meta,
+            qrcode: req.body.qrcode,
+            barcode: req.body.barcode,
             // start_at: req.body.start_at,
             // end_at: req.body.end_at,
             order: req.body.order,
@@ -204,7 +221,7 @@ module.exports.put = async function (req, res, next) {
           // { multi: true, new: true },
           if (e) return res.status(500).send(e)
           // Push logs
-          Logger.set(req, name, req.body._id, 'update')
+          Logger.set(req, MProducts.collection.collectionName, req.body._id, 'update')
           return res.status(202).json(rs)
         }
       )
@@ -212,6 +229,7 @@ module.exports.put = async function (req, res, next) {
       return res.status(500).send('invalid')
     }
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -226,7 +244,7 @@ module.exports.patch = async function (req, res, next) {
         if (_x.nModified) {
           rs.success.push(_id)
           // Push logs
-          Logger.set(req, name, _id, x.flag === 1 ? 'lock' : 'unlock')
+          Logger.set(req, MProducts.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
         } else rs.error.push(_id)
       }
     }
@@ -242,7 +260,7 @@ module.exports.delete = async function (req, res, next) {
       MProducts.deleteOne({ _id: req.params._id }, (e, rs) => {
         if (e) return res.status(500).send(e)
         // Push logs
-        Logger.set(req, name, req.params._id, 'delete')
+        Logger.set(req, MProducts.collection.collectionName, req.params._id, 'delete')
         return res.status(204).json(rs)
       })
     } else {

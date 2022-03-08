@@ -1,0 +1,72 @@
+{
+  "name": "tm-store-mobile",
+  "version": "0.0.1",
+  "description": "A Quasar Framework app",
+  "productName": "TM Store",
+  "author": "tuanmjnh",
+  "private": true,
+  "scripts": {
+    "dev": "quasar dev",
+    "dev:srr": "quasar dev -m ssr",
+    "dev:pwa": "quasar dev -m pwa",
+    "dev:android": "quasar dev -m cordova -T android",
+    "dev:ios": "quasar dev -m cordova -T ios",
+    "dev:electron": "quasar dev -m electron",
+    "dev:capacitor-android": "quasar dev -m capacitor -T android",
+    "dev:capacitor-ios": "quasar dev -m capacitor -T ios",
+    "build": "quasar build",
+    "build:cordovaandroid": "quasar build -m cordova -T android --packageType=apk",
+    "build:android": "quasar build -m capacitor -T android",
+    "build:cordovaios": "quasar build -m cordova -T ios",
+    "build:ios": "quasar build -m capacitor -T ios",
+    "build:electron": "quasar build -m electron",
+    "lint": "eslint --ext .js,.vue ./",
+    "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0",
+    "icongenie": "icongenie generate -m capacitor -i /path/to/source/icon.png [-b /path/to/background.png]",
+    "keytool": "keytool -genkey -v -keystore my-release-key.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 20000",
+    "jarsigner": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore dist/capacitor/android/apk/release/app-release-unsigned.apk alias_name",
+    "update": "npm update",
+    "upgrade": "npm upgrade",
+    "upgrade-quasar": "quasar upgrade",
+    "upgrade-quasar:linux": "~/.npm-global/bin/quasar upgrade",
+    "upgrade-quasar:install": "quasar upgrade -i",
+    "upgrade-quasar:install-linux": "~/.npm-global/bin/quasar upgrade -i"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "axios": "^0.21.1",
+    "core-js": "^3.6.5",
+    "html5-qrcode": "^2.2.0",
+    "quasar": "^2.0.0",
+    "vue": "^3.0.0",
+    "vue-i18n": "^9.0.0",
+    "vue-router": "^4.0.0",
+    "vuex": "^4.0.1"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app": "^3.0.0",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^7.0.0",
+    "eslint-webpack-plugin": "^2.4.0",
+    "prettier": "^2.5.1"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 12.22.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

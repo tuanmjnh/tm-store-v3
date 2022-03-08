@@ -144,7 +144,7 @@
               </div>
               <q-space />
               <div class="col-6 col-md-3">
-                <q-select v-model="gender" :options="$store.getters.genders" :dense="$store.getters.dense.input" :hint="$t('users.gender')"
+                <q-select v-model="gender" :options="genders" :dense="$store.getters.dense.input" :hint="$t('users.gender')"
                           :options-dense="$store.getters.dense.input" option-value="id" :option-label="v=>$t(`gender.${v.code}`)"
                           :rules="[v=>!!v||$t('error.required')]" />
               </div>
@@ -225,8 +225,8 @@ export default defineComponent({
     const $store = useStore()
     const $q = useQuasar()
     const roles = computed(() => $store.state.roles.items)
-    const groups = computed(() => $store.state.types.items.filter(x => x.key === 'user_group'))
-
+    const groups = computed(() => $store.state.types.items.filter(x => x.key === 'userGroup'))
+    const genders = computed(() => $store.state.types.items.filter(x => x.key === 'gender'))
     const tabs = ref('main')
     const form = ref(null)
     const data = ref({})
@@ -234,7 +234,7 @@ export default defineComponent({
     const viewType = ref('box')
     const regions = ref(regionData)
     const selectedRegion = ref(regions.value[202])
-    const gender = ref($store.getters.genders[0])
+    const gender = ref(genders.value[0])
     const group = ref(groups.value[0])
 
     const onReset = () => {
@@ -243,13 +243,10 @@ export default defineComponent({
         if ($store.state.users.item._id) {
           const userRegion = regions.value.find(x => x.id === parseInt(data.value.region))
           if (userRegion) selectedRegion.value = userRegion
-          gender.value = $store.getters.genders.find(x => x.id === data.value.gender)
+          gender.value = genders.value.find(x => x.code === data.value.gender)
           group.value = groups.value.find(x => x.code === data.value.group)
           data.value.note = data.value.note || ''
-        } // else {
-        //   selectedRegion.value = regions.value[202]
-        //   gender.value = $store.getters.genders[0]
-        // }
+        }
         resolve()
       }).then(() => { if (form.value) form.value.resetValidation() })
     }
@@ -257,7 +254,7 @@ export default defineComponent({
     onReset()
 
     return {
-      passwordType, tabs, viewType, regions, selectedRegion, form, data, gender, group, roles, groups,
+      passwordType, tabs, viewType, regions, selectedRegion, form, data, genders, gender, group, roles, groups,
       onSelectCategory (item) {
         if (!item.children || !item.children.length) {
           data.value.group = item._id
@@ -274,7 +271,7 @@ export default defineComponent({
         form.value.validate().then(async (valid) => {
           if (valid) {
             data.value.region = selectedRegion.value.id
-            data.value.gender = gender.value.id
+            data.value.gender = gender.value.code
             data.value.group = group.value.code
             if ($store.state.users.item._id) $store.dispatch('users/put', data.value)
             else $store.dispatch('users/post', data.value).then((x) => {

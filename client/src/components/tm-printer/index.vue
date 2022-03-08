@@ -10,19 +10,21 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
   name: 'tm-printer',
   props: {
-    hidden: { type: Boolean, default: true }
+    hidden: { type: Boolean, default: true },
+    title: { type: String, default: 'TM Printer' },
+    styles: { type: String, default: '' },
+    width: { type: Number, default: 800 },
+    height: { type: Number, default: 600 },
+    timeout: { type: Number, default: 1000 }
     // styles: { type: String, default: '' },
     // width: { type: Number, default: 800 },
     // height: { type: Number, default: 900 },
     // timeout: { type: Number, default: 1000 }
   },
-  setup () {
+  setup (props) {
     const tmPrinter = ref(null)
     // const idElement = 'id' + (new Date()).getTime()
-    const onExc = ({ title, styles, width, height, timeout }) => {
-      width = width || 800
-      height = height || 600
-      timeout = timeout || 1000
+    const onPrinting = () => {
       // Get HTML to print from element
       // const prtHtml = document.getElementById('tm-print').innerHTML
       // Get all stylesheets HTML
@@ -30,14 +32,14 @@ export default defineComponent({
       for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
         stylesHtml += node.outerHTML
       }
-      stylesHtml += styles ? styles : ''
+      stylesHtml += props.styles ? props.styles : ''
       // Open the print window
-      const WinPrint = window.open('', '', `left=0,top=0,width=${width},height=${height},toolbar=0,scrollbars=0,status=0`)
+      const WinPrint = window.open('', '', `left=0,top=0,width=${props.width},height=${props.height},toolbar=0,scrollbars=0,status=0`)
 
       WinPrint.document.write(`<!DOCTYPE html>
         <html>
           <head>
-          <title>${title ? title : 'Printer'}</title>
+          <title>${props.title ? props.title : 'Printer'}</title>
             ${stylesHtml ? stylesHtml : ''}
           </head>
           <body>
@@ -50,9 +52,9 @@ export default defineComponent({
         WinPrint.print()
         WinPrint.close()
         // prtHtml.innerHTML = ''
-      }, timeout)
+      }, props.timeout)
     }
-    return { tmPrinter, onExc }
+    return { tmPrinter, onPrinting }
   }
 })
 </script>

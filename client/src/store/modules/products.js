@@ -21,8 +21,11 @@ const constant = {
   tags: null,
   attr: [],
   meta: null,
+  qrcode: null,
+  barcode: null,
   order: 1,
-  flag: 1
+  flag: 1,
+  created: null
 }
 
 const state = {

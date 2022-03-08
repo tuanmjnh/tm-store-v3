@@ -26,37 +26,6 @@ export const constant = [
     // ]
   }
   // {
-  //   path: '/profile',
-  //   name: 'profile',
-  //   meta: {
-  //     title: 'profile',
-  //     icon: 'assignment_ind',
-  //     hidden: true,
-  //     constant: true
-  //   },
-  //   component: () => import('@/views/profile'),
-  //   children: [
-  //     {
-  //       path: 'information',
-  //       name: 'profile-information',
-  //       meta: { title: 'information', icon: 'assignment', constant: true },
-  //       component: () => import('@/views/profile/information')
-  //     },
-  //     {
-  //       path: 'security',
-  //       name: 'profile-security',
-  //       meta: { title: 'security', icon: 'security', constant: true },
-  //       component: () => import('@/views/profile/security')
-  //     },
-  //     {
-  //       path: 'setting',
-  //       name: 'profile-setting',
-  //       meta: { title: 'userSetting', icon: 'settings', constant: true },
-  //       component: () => import('@/views/profile/setting')
-  //     }
-  //   ]
-  // },
-  // {
   //   path: '/login',
   //   name: 'login',
   //   meta: { title: 'login', icon: 'login', hidden: true, constant: true },
@@ -414,13 +383,13 @@ export const dynamic = [
       {
         path: 'import',
         name: 'store-import',
-        meta: { title: 'import', icon: 'playlist_add', parent: 'store' },
+        meta: { title: 'import', icon: 'addchart', parent: 'store' },
         component: () => import('pages/store/import')
       },
       {
         path: 'export-list',
         name: 'store-export-list',
-        meta: { title: 'exportList', icon: 'playlist_remove', parent: 'store' },
+        meta: { title: 'exportList', icon: 'playlist_play', parent: 'store' },
         component: () => import('pages/store/export-list')
       },
       {
@@ -428,6 +397,38 @@ export const dynamic = [
         name: 'store-export',
         meta: { title: 'export', icon: 'double_arrow', parent: 'store' },
         component: () => import('pages/store/export')
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    meta: {
+      title: 'profile',
+      icon: 'assignment_ind'
+      // hidden: true,
+      // constant: true
+    },
+    component: () => import('pages/profile'),
+    redirect: '/profile/information',
+    children: [
+      {
+        path: 'information',
+        name: 'profile-information',
+        meta: { title: 'information', icon: 'assignment', constant: true },
+        component: () => import('pages/profile/information')
+      },
+      {
+        path: 'security',
+        name: 'profile-security',
+        meta: { title: 'security', icon: 'security', constant: true },
+        component: () => import('pages/profile/security')
+      },
+      {
+        path: 'setting',
+        name: 'profile-setting',
+        meta: { title: 'setting', icon: 'settings', constant: true },
+        component: () => import('pages/profile/setting')
       }
     ]
   },

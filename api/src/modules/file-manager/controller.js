@@ -1,6 +1,6 @@
 const formidable = require('formidable'),
   io = require('../../utils/io'),
-  request = require('../../utils/request')
+  Request = require('../../utils/Request')
 
 const name = 'file-manager'
 module.exports.name = name
@@ -44,7 +44,7 @@ module.exports.getDirectories = async function (req, res, next) {
 module.exports.getFiles = async function (req, res, next) {
   try {
     req.query.dir = req.query.dir || process.env.UPLOAD_PATH
-    const result = io.getFiles({ dir: req.query.dir, host: request.getHost(req) })
+    const result = io.getFiles({ dir: req.query.dir, host: Request.getHost(req) })
     if (result) res.status(201).json(result).end()
     else res.status(404).json({ msg: 'exist', params: 'data' }).end()
   } catch (e) {
@@ -68,7 +68,7 @@ module.exports.post = async function (req, res, next) {
     form.on('file', (field, file) => {
       // rename the incoming file to the file's name
       if (rename) {
-        const tmp = file.path.split('\\')
+        const tmp = file.path.split('/')
         file.name = tmp[tmp.length - 1].replace('upload_', '')
       }
       io.rename(file.path, `${form.uploadDir}/${file.name}`)
@@ -101,7 +101,7 @@ module.exports.post = async function (req, res, next) {
         file = files[file]
         rs.push({
           name: file.name,
-          fullName: `${request.getHost(req)}/${process.env.UPLOAD_PATH}/${req.headers['upload-path']}/${file.name}`,
+          fullName: `${Request.getHost(req)}/${process.env.UPLOAD_PATH}/${req.headers['upload-path']}/${file.name}`,
           size: file.size,
           ext: io.getExtention(file.name),
           icon: 'file',
@@ -109,8 +109,8 @@ module.exports.post = async function (req, res, next) {
           type: file.type
         })
       }
-      if (rs) res.status(201).json(rs).end()
-      else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+      if (rs) res.status(201).json(rs)
+      else res.status(404).json({ msg: 'exist', params: 'data' })
     })
     // const tmp_file = {
     //   path: req.headers['upload-path'],

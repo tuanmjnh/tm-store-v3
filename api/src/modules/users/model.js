@@ -13,7 +13,7 @@ const schema = new mongoose.Schema({
   avatar: { type: String, default: null },
   note: { type: String, default: null },
   dateBirth: { type: Date, default: null },
-  gender: { type: Number, default: 1 },
+  gender: { type: String, default: null },
   address: { type: String, default: null },
   roles: { type: Array, default: null },
   verified: { type: Boolean, default: false },

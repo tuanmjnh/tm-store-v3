@@ -42,11 +42,11 @@
               <q-tooltip v-if="!$q.platform.is.mobile">{{$t('table.action')}}</q-tooltip>
               <q-menu auto-close>
                 <q-list dense bordered>
-                  <q-item clickable>
+                  <q-item clickable :active="pagination.flag===1">
                     <q-item-section no-wrap @click="pagination.flag=1">{{$t('global.working')}}</q-item-section>
                   </q-item>
-                  <q-item clickable>
-                    <q-item-section no-wrap @click="pagination.flag=0">{{$t('global.trash')}}</q-item-section>
+                  <q-item clickable :active="pagination.flag===0">
+                    <q-item-section no-wrap @click="pagination.flag=0">{{$t('global.locked')}}</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -57,12 +57,12 @@
           <div class="col-xs-12 col-sm-5 col-md-4">
             <q-select v-model="pagination.key" :options="$store.state.types.keys" dense options-dense :label="$t('global.types')">
               <template v-slot:selected>
-                <div v-html="$t(`types.${pagination.key}`)"></div>
+                <div v-html="`${$t(`types.${pagination.key}`)} - ${pagination.key}`"></div>
               </template>
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
-                    <q-item-label v-html="$t(`types.${scope.opt}`)" />
+                    <q-item-label v-html="`${$t(`types.${scope.opt}`)} - ${scope.opt}`" />
                   </q-item-section>
                 </q-item>
               </template>

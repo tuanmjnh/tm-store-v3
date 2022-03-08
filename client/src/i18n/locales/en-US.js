@@ -11,7 +11,7 @@ export default {
     profile: 'Profile',
     information: 'Information',
     security: 'Security',
-    userSetting: 'User settings',
+    setting: 'Setting',
     manager: 'Manager',
     users: 'Users',
     roles: 'Roles',
@@ -95,7 +95,7 @@ export default {
     unit: 'Unit',
     pin: 'Pin',
     tags: 'Tags',
-    keyword: 'Từ khóa',
+    keyword: 'Keyword',
     avatar: 'Avatar',
     attach: 'Attach',
     format: 'Format',
@@ -118,7 +118,8 @@ export default {
     index: 'Index',
     icon: 'Icon',
     range: 'Range',
-    new: 'New'
+    new: 'New',
+    dependent: 'Dependent'
   },
   success: {
     insert: 'Insert success',
@@ -143,7 +144,10 @@ export default {
     accountNoExist: 'Account does not exist',
     accountLocked: 'The account has been locked, please contact Admin',
     wrongPassword: 'Wrong password, please try again',
-    timeout: 'Connection error, please try again!'
+    timeout: 'Connection error, please try again!',
+    qrNotLoad: 'Can not decode this QR Code, Please try again!',
+    qrError: 'Code scanning system error, please try again!',
+    qrNotExist: 'This code does not exist in the system'
   },
   messageBox: {
     title: 'Message box',
@@ -238,13 +242,13 @@ export default {
     titleList: 'Types list',
     category: 'Category',
     gender: 'Gender',
-    pin_news: 'Pin news',
-    pin_product: 'Pin product',
+    pinNews: 'Pin news',
+    pinProduct: 'Pin product',
     position: 'Position',
     unit: 'Unit',
-    unit_price: 'Unit price',
-    user_group: 'User group',
-    user_setting: 'User setting'
+    unitPrice: 'Unit price',
+    userGroup: 'User group',
+    settings: 'User setting'
   },
   position: {
     top: 'Trên',
@@ -279,7 +283,7 @@ export default {
     select: 'Select product in collection',
     add: 'Add new product',
     unitPrice: 'Unit price',
-    priceSale: 'Price',
+    priceSale: 'Price selling',
     priceDiscount: 'Price of discount',
     priceUnit: 'Unit of price',
     priceImport: 'Import price',
@@ -304,7 +308,7 @@ export default {
     printTotal: 'Print ballot total',
     ballotCode: 'Code ballot',
     importDate: 'Import date',
-    exportRate: 'Export date',
+    exportDate: 'Export date',
     importBallotTotal: 'Import ballot total',
     importBallotDetails: 'Import ballot details',
     exportBallotTotal: 'Export ballot total',
@@ -314,7 +318,11 @@ export default {
     importExistResult: 'Import form completed, please create new',
     exportExistResult: 'Export form completed, please create new',
     importConfirm: 'Are you sure you want to import warehousing?',
-    exportConfirm: 'Are you sure you want to export warehousing?'
+    exportConfirm: 'Are you sure you want to export warehousing?',
+    exportConfirmPrice: 'Are you sure you want to restore the export price?',
+    exportConfirmPriceSale: 'Are you sure you want to update the export price with the selling price?',
+    importConfirmPrice: 'Are you sure you want to restore the import price?',
+    importConfirmPriceSale: 'Are you sure you want to update the import price with the selling price?'
   },
   news: {
     title: 'News',
@@ -408,6 +416,18 @@ export default {
     close: 'Close',
     closeOthers: 'Close Others',
     closeAll: 'Close All'
+  },
+  qrCode: {
+    qrCode: 'QR Code',
+    qrCodeScanner: 'QR Code Scanner',
+    qrCodeDefault: 'Set ID for QR Code',
+    qrCodeEdit: 'Edit QR Code',
+    qrCodeEditHelp: 'Click QR Code to change value',
+    barCode: 'Barcode',
+    barCodeScanner: 'Barcode Scanner',
+    barCodeRandom: 'Ranndom Barcode',
+    barCodeEdit: 'Edit Barcode',
+    barCodeEditHelp: 'Click Barcode to change value'
   },
   setting: {
     title: 'Setting',

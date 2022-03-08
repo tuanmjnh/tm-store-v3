@@ -54,9 +54,11 @@
             <q-icon name="border_clear" />
           </template>
         </q-input>
-        <q-chip v-for="(e,i) in sheets" :key="i" square color="primary" text-color="white" icon="description" clickable @click="onGetDataSheet(e)">
-          {{e.properties.title}}
-        </q-chip>
+        <div class="text-left">
+          <q-chip v-for="(e,i) in sheets" :key="i" square color="primary" text-color="white" icon="description" clickable @click="onGetDataSheet(e)">
+            {{e.properties.title}}
+          </q-chip>
+        </div>
       </div>
       <div v-if="sheets==='error'">
         <q-icon name="error" color="negative" /> {{errorNoExist}}

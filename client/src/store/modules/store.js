@@ -1,7 +1,7 @@
 import { api } from '@/boot/axios'
-const collectionImports = '/store-imports'
-const collectionExports = '/store-exports'
-const collectionReports = '/store-reports'
+const collectionImports = '/product-imports'
+const collectionExports = '/product-exports'
+const collectionReports = '/product-reports'
 
 const state = {
   importItems: [],
@@ -17,28 +17,37 @@ const mutations = {
 }
 const actions = {
   // collection Imports
-  importsGet ({ commit }, params) {
+  importGet ({ commit }, params) {
     return api.get(collectionImports, { params }).then((res) => {
       if (res && res.data) commit('IMPORT_SET_ITEMS', res.data)
       return res
     })
   },
-  importsFinds ({ commit }, params) {
-    return api.post(`${collectionImports}/finds`, params)
+  importGetDetail ({ commit }, params) {
+    return api.get(`${collectionImports}/get-sub`, { params })
   },
-  importsUpdate ({ commit }, params) {
-    return api.put(collectionImports, params)
+  importsFinds ({ commit }, params) {
+    return api.post(`${collectionImports}/select`, params)
+  },
+  importsInsert ({ commit }, params) {
+    return api.post(collectionImports, params)
   },
 
   // collection Exports
   exportGet ({ commit }, params) {
-    return api.get(collectionExports, { params })
+    return api.get(collectionExports, { params }).then((res) => {
+      if (res && res.data) commit('EXPORT_SET_ITEMS', res.data)
+      return res
+    })
+  },
+  exportGetDetail ({ commit }, params) {
+    return api.get(`${collectionExports}/get-sub`, { params })
   },
   exportFinds ({ commit }, params) {
-    return api.post(`${collectionExports}/finds`, params)
+    return api.post(`${collectionExports}/select`, params)
   },
-  exportUpdate ({ commit }, params) {
-    return api.put(collectionExports, params)
+  exportInsert ({ commit }, params) {
+    return api.post(collectionExports, params)
   },
 
   //collectionReports

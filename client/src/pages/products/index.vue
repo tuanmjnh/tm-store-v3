@@ -47,13 +47,11 @@
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t('table.action')}}</q-tooltip>
                 <q-menu auto-close>
                   <q-list dense bordered>
-                    <q-item clickable>
-                      <q-item-section no-wrap @click="onChangeFlag(1)">{{$t('global.working')}}
-                      </q-item-section>
+                    <q-item clickable :active="pagination.flag===1">
+                      <q-item-section no-wrap @click="onChangeFlag(1)">{{$t('global.working')}}</q-item-section>
                     </q-item>
-                    <q-item clickable>
-                      <q-item-section no-wrap @click="onChangeFlag(0)">{{$t('global.locked')}}
-                      </q-item-section>
+                    <q-item clickable :active="pagination.flag===0">
+                      <q-item-section no-wrap @click="onChangeFlag(0)">{{$t('global.locked')}}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -103,23 +101,23 @@
             {{props.row.code}}
           </q-td>
           <q-td key="quantity" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.quantity.NumberFormat($store.getters.language)}}</div>
+            <div class="q-pr-xs flex inline">{{parseInt(props.row.quantity).NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.unitName" color="orange" transparent />
           </q-td>
           <q-td key="price" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.price.NumberFormat($store.getters.language)}}</div>
+            <div class="q-pr-xs flex inline">{{parseInt(props.row.price).NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.priceUnitName" color="blue" transparent />
           </q-td>
           <q-td key="priceDiscount" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceDiscount.NumberFormat($store.getters.language)}}</div>
+            <div class="q-pr-xs flex inline">{{parseInt(props.row.priceDiscount).NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.priceUnitName" color="red" transparent />
           </q-td>
           <q-td key="priceImport" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceImport.NumberFormat($store.getters.language)}}</div>
+            <div class="q-pr-xs flex inline">{{parseInt(props.row.priceImport).NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
           </q-td>
           <q-td key="priceExport" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceExport.NumberFormat($store.getters.language)}}</div>
+            <div class="q-pr-xs flex inline">{{parseInt(props.row.priceExport).NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.priceUnitName" color="indigo" transparent />
           </q-td>
           <q-td key="order" :props="props">
@@ -135,18 +133,16 @@
             <q-badge v-else color="blue-grey-10">{{$t('global.undefined')}}</q-badge>
           </q-td> -->
           <q-td v-if="isRoutes.edit||isRoutes.trash" auto-width class="text-center">
-            <q-btn v-if="isRoutes.edit" flat round dense icon="edit" color="light-green"
-                   :size="$store.getters.dense.table?'sm':'md'" @click="onEdit(props.row)">
-              <q-tooltip v-if="!$q.platform.is.mobile">
-                {{$t('global.update')}}</q-tooltip>
+            <q-btn v-if="isRoutes.edit" flat round dense icon="edit" color="light-green" :size="$store.getters.dense.table?'sm':'md'"
+                   @click="onEdit(props.row)">
+              <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.update')}}</q-tooltip>
             </q-btn>
             <template v-if="isRoutes.trash">
-              <q-btn v-if="pagination.flag" flat round dense color="negative" icon="clear"
-                     :size="$store.getters.dense.table?'sm':'md'" @click="onTrash(props.row)">
+              <q-btn v-if="pagination.flag" flat round dense color="negative" icon="clear" :size="$store.getters.dense.table?'sm':'md'"
+                     @click="onTrash(props.row)">
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.lock')}}</q-tooltip>
               </q-btn>
-              <q-btn v-else flat round dense color="amber" icon="restore"
-                     :size="$store.getters.dense.table?'sm':'md'" @click="onTrash(props.row)">
+              <q-btn v-else flat round dense color="amber" icon="restore" :size="$store.getters.dense.table?'sm':'md'" @click="onTrash(props.row)">
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.unlock')}}</q-tooltip>
               </q-btn>
             </template>
@@ -207,7 +203,7 @@ export default defineComponent({
     const columns = ref([
       { name: 'title', field: 'title', label: 'product.name', align: 'left', sortable: true, required: true }, // row => $t(`roles.${row.name}`)
       { name: 'code', field: 'code', label: 'product.code', align: 'left', sortable: true, required: true },
-      { name: 'quantity', field: 'quantity', label: 'product.quantityStore', align: 'right', sortable: true, required: true },
+      { name: 'quantity', field: 'quantity', label: 'global.quantity', align: 'right', sortable: true, required: true },
       { name: 'price', field: 'price', label: 'product.priceSale', align: 'right', sortable: true },
       { name: 'priceDiscount', field: 'priceDiscount', label: 'product.priceDiscount', align: 'right', sortable: true },
       { name: 'priceImport', field: 'priceImport', label: 'product.priceImport', align: 'right', sortable: true },

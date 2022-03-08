@@ -1,8 +1,13 @@
-get http://localhost:8001/ HTTP/1.1
+# get http://localhost:8001/ HTTP/1.1
 #
-get http://localhost:8000/api/types/get-all
+get http://localhost:8000/api/store-imports/get-sub?key=61e3d239d885b646e5ca0143
 Accept: application/json, text/plain, */*
 Accept-Encoding: gzip, deflate, br
 Accept-Language: en-US,en;q=0.9
-x-access-token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZWNjYmM5ZTkwNzEwMDFkODdmZDRkZjEiLCJjb2RlIjoiYWRtaW4iLCJpYXQiOjE2Mjg2Njg3NDEsImV4cCI6MTYyODc1NTE0MX0.ed6L7YuwU4Wzrbz-Bmmd9UN_6QvuWtXjBczXrPhhk3g
+x-access-token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZWNjYmM5ZTkwNzEwMDFkODdmZDRkZjEiLCJjb2RlIjoiYWRtaW4iLCJpYXQiOjE2NDI2NDc4ODgsImV4cCI6MTY0MjczNDI4OH0.j-yuo_y7-tc8Gwp4PiAZiu6VPNn_FTEdh4fbzSZrp_0
 
+get http://localhost:8000/api/products/find-one?id=61e7c51e892287e13ed158dc
+Accept: application/json, text/plain, */*
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+x-access-token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZWNjYmM5ZTkwNzEwMDFkODdmZDRkZjEiLCJjb2RlIjoiYWRtaW4iLCJpYXQiOjE2NDI2NDc4ODgsImV4cCI6MTY0MjczNDI4OH0.j-yuo_y7-tc8Gwp4PiAZiu6VPNn_FTEdh4fbzSZrp_0

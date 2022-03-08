@@ -1,4 +1,5 @@
 const name = 'test'
+module.exports.name = name
 module.exports.get = async (req, res, next) => {
   try {
     return res.status(200).json({ data: true, method: 'get' })

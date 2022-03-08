@@ -4,7 +4,7 @@
       <q-toolbar-title>{{$t('report.title')}}</q-toolbar-title>
     </q-toolbar>
     <q-card-section class="q-pa-none">
-      <report-list-button v-model:selected="typeTime" @on-selected="onGetData" />
+      <report-list-button v-model="typeTime" @on-selected="onGetData" />
     </q-card-section>
     <q-card-section>
       <div class="row" v-show="(importData&&importData.length)||(exportData&&exportData.length)">
@@ -120,65 +120,67 @@ export default defineComponent({
       chartBarRef.value.update(1000)
     }
 
-    const onBeforeRenderLogic = (event) => {
-      //...
-      //if(a === b) {
-      //  event.preventDefault()
-      //}
-    }
-    const onGetData = (query) => {
-      if (typeTime.value === 'weekly') {
-        $store.dispatch('store/getReportWeekly', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          // groups.value = x ? Object.keys(x.imports[0].data) : null
-          labels.value = importData.value.map(x => t(`dayWeek.${x.labels}`))
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
-      } else if (typeTime.value === 'month') {
-        $store.dispatch('store/getReportMonth', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          labels.value = importData.value.map(x => `D${x.labels}`)
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
-      } else if (typeTime.value === 'quarter') {
-        $store.dispatch('store/getReportQuarter', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          labels.value = importData.value.map(x => t(`quarter.${x.labels}`))
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
-      } else if (typeTime.value === 'year') {
-        $store.dispatch('store/getReportYear', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          labels.value = importData.value.map(x => `${t('global.month')} ${x.labels}`)
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
-      } else if (typeTime.value === 'fiveYear') {
-        $store.dispatch('store/getReportFiveYear', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          labels.value = importData.value.map(x => `${t('global.year')} ${x.labels}`)
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
-      } else {
-        $store.dispatch('store/getReportDate', query).then((x) => {
-          importData.value = x.imports
-          exportData.value = x.exports
-          labels.value = importData.value.map(x => `D${x.labels}`)
-        }).then(() => {
-          onChartBarRef(groups.value ? groups.value[0] : null)
-        })
+    return {
+      chartBarRef, importData, exportData, typeTime, groups, typeGroup, chartBar, onChartBarRef,
+      onBeforeRenderLogic (event) {
+        //...
+        //if(a === b) {
+        //  event.preventDefault()
+        //}
+      },
+      onGetData (query) {
+        if (typeTime.value === 'weekly') {
+          $store.dispatch('store/reportGetWeekly', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            // groups.value = x ? Object.keys(x.imports[0].data) : null
+            labels.value = importData.value.map(x => t(`dayWeek.${x.labels}`))
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        } else if (typeTime.value === 'month') {
+          $store.dispatch('store/reportGetMonth', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            labels.value = importData.value.map(x => `${t('global.day')} ${x.labels}`)
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        } else if (typeTime.value === 'quarter') {
+          $store.dispatch('store/reportGetQuarter', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            labels.value = importData.value.map(x => t(`quarter.${x.labels}`))
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        } else if (typeTime.value === 'year') {
+          $store.dispatch('store/reportGetYear', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            labels.value = importData.value.map(x => `${t('global.month')} ${x.labels}`)
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        } else if (typeTime.value === 'fiveYear') {
+          $store.dispatch('store/reportGetFiveYear', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            labels.value = importData.value.map(x => `${t('global.year')} ${x.labels}`)
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        } else {
+          $store.dispatch('store/reportGetDate', query).then((x) => {
+            importData.value = x.imports
+            exportData.value = x.exports
+            labels.value = importData.value.map(x => `D${x.labels}`)
+          }).then(() => {
+            onChartBarRef(groups.value ? groups.value[0] : null)
+          })
+        }
       }
     }
-    return { chartBarRef, importData, exportData, typeTime, groups, typeGroup, onGetData, onChartBarRef, chartBar, onBeforeRenderLogic }
   }
 })
 </script>

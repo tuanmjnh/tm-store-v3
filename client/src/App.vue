@@ -31,10 +31,9 @@ export default defineComponent({
       }
     })
 
-    $store.commit('userSetting/INIT')
+    $store.commit('settings/INIT')
     // $store.dispatch('userSetting/set', $store.state.userSetting)
     $q.dark.set($store.getters.darkMode)
-
     return { layout }
   }
 })

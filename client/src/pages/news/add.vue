@@ -47,10 +47,18 @@
         <q-tab-panels v-model="tabs">
           <q-tab-panel name="main">
             <div class="row q-gutter-xs">
-              <div class="col-12">
-                <select-category :categories="categories" v-model:selected="data.categories" data-key="_id" :dense="$store.getters.dense.input"
-                                 :labelTitle="$t('category.titlenews')" :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
+              <div class="col-12 col-md-5">
+                <select-category v-model="data.categories" :categories="categories" option-value="_id" option-label="label"
+                                 :dense="$store.getters.dense.input" :labelTitle="$t('category.titlenews')" :labelSelect="$t('category.select')"
+                                 :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')"
                                  :rules="[v=>v&&v.length>0||$t('error.required')]" />
+                <!-- <select-category :categories="categories" v-model:selected="data.categories" data-key="_id" :dense="$store.getters.dense.input"
+                                 :labelTitle="$t('category.titlenews')" :labelSelect="$t('category.select')" :labelClose="$t('global.cancel')"
+                                 :rules="[v=>v&&v.length>0||$t('error.required')]" /> -->
+              </div>
+              <q-space />
+              <div class="col-12 col-md-6">
+                <q-input v-model.trim="data.code" :dense="$store.getters.dense.input" :label="$t('news.code')" />
               </div>
             </div>
             <div class="row q-gutter-xs">
@@ -215,7 +223,7 @@ export default defineComponent({
     const attrValues = ref([])
     const viewTypeImage = ref('box')
     const viewTypeAttach = ref('list')
-    const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pin_news').map(x => { return { label: x.name, value: x.code } }))
+    const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pinNews').map(x => { return { label: x.name, value: x.code } }))
     const categories = ref([])
 
     $store.dispatch('categories/get', { type: 'news', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })

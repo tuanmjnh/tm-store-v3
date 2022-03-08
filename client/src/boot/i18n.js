@@ -1,13 +1,10 @@
-import { nextTick } from 'vue'
 import { boot } from 'quasar/wrappers'
 // import { createI18n } from 'vue-i18n'
 import { createI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
 import region from '../i18n/region.js'
 
-// Get COOKIE_DATA
-const COOKIE_DATA = Cookies.get('user-setting') ? JSON.parse(Cookies.get('user-setting')) : {}
-const defaultLanguage = COOKIE_DATA && COOKIE_DATA.language ? COOKIE_DATA.language : 'vi-VN'
+const defaultLanguage = 'vi-VN'
 
 // import js locales
 // https://webpack.js.org/guides/dependency-management/#requirecontext
@@ -33,9 +30,8 @@ const locales = localesFiles.keys().reduce((locales, modulePath) => {
 // }
 
 const Get = () => {
-  const chooseLanguage = Cookies.get('language')
+  const chooseLanguage = Cookies.get('settings')
   if (chooseLanguage) return chooseLanguage
-
   // if has not choose language
   const language = (navigator.language || navigator.browserLanguage).toLowerCase()
   const _locales = Object.keys(locales)
@@ -80,17 +76,17 @@ const setI18nLanguage = (i18n, locale) => {
    */
   document.querySelector('html').setAttribute('lang', locale)
 }
-
+let i18nInstant = null
 const i18n = () => {
-  const _i18n = createI18n({
+  i18nInstant = createI18n({
     globalInjection: true,
     // legacy: false,
     locale: defaultLanguage,
     fallbackLocale: defaultLanguage,
     messages: locales
   })
-  document.querySelector('html').setAttribute('lang', _i18n.global.locale)
-  return _i18n
+  document.querySelector('html').setAttribute('lang', i18nInstant.global.locale)
+  return i18nInstant
 }
 
 export default boot(({ app }) => {
@@ -98,4 +94,4 @@ export default boot(({ app }) => {
   app.use(i18n())
 })
 
-export { i18n, Get, Set, GetAll, setI18nLanguage }
+export { i18n, i18nInstant, Get, Set, GetAll, setI18nLanguage }

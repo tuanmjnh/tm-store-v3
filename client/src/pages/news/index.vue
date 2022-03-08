@@ -46,11 +46,11 @@
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t('table.action')}}</q-tooltip>
                 <q-menu auto-close>
                   <q-list dense bordered>
-                    <q-item clickable>
+                    <q-item clickable :active="pagination.flag===1">
                       <q-item-section no-wrap @click="onChangeFlag(1)">{{$t('global.working')}}
                       </q-item-section>
                     </q-item>
-                    <q-item clickable>
+                    <q-item clickable :active="pagination.flag===0">
                       <q-item-section no-wrap @click="onChangeFlag(0)">{{$t('global.locked')}}
                       </q-item-section>
                     </q-item>
@@ -62,11 +62,9 @@
         </div>
         <div class="col-12 row">
           <div class="col-xs-12 col-sm-5 col-md-4">
-            <select-category :categories="categories" v-model:selected="pagination.categories"
-                             data-key="_id" data-all :dense="$store.getters.dense.input"
-                             :labelTitle="$t('category.titlenews')" :labelSelect="$t('category.select')"
-                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')"
-                             @on-selected="onSelectCategory" />
+            <select-category v-model="pagination.categories" :categories="categories" option-value="_id" option-label="label" data-all
+                             :dense="$store.getters.dense.input" :labelTitle="$t('category.titlenews')" :labelSelect="$t('category.select')"
+                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')" @on-selected="onSelectCategory" />
           </div>
           <q-space />
           <div class="col-xs-12 col-sm-5 col-md-4">
@@ -107,7 +105,7 @@
             {{props.row.author}}
           </q-td>
           <q-td key="date" :props="props">
-            {{props.row.date?$moment(props.row.date).format($store.getters.format.date):''}}
+            {{props.row.date?$moment(props.row.date).format(`${$store.getters.format.date} HH:mm`):''}}
           </q-td>
           <q-td key="orders" :props="props">
             {{props.row.orders}}

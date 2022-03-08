@@ -38,11 +38,9 @@
       <template v-slot:top>
         <div class="col-12 row">
           <div class="col-xs-12 col-sm-5 col-md-4">
-            <select-category :categories="categories" v-model:selected="pagination.categories"
-                             data-key="_id" data-all :dense="$store.getters.dense.input"
-                             :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
-                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')"
-                             @on-selected="onSelectCategory" />
+            <select-category v-model="pagination.categories" :categories="categories" option-value="_id" option-label="label" data-all
+                             :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
+                             :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')" @on-selected="onSelectCategory" />
           </div>
           <q-space />
           <div class="col-xs-12 col-sm-3">
@@ -98,17 +96,8 @@
             <div class="q-pr-xs flex inline">{{props.row.priceExport.NumberFormat($store.getters.language)}}</div>
             <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
           </q-td>
-          <q-td key="orders" :props="props">
+          <!-- <q-td key="orders" :props="props">
             {{props.row.orders}}
-          </q-td>
-          <!-- <q-td key="roles" :props="props" class="q-gutter-xs">
-            <template v-if="props.row.roles&&props.row.roles.length>0">
-              <q-badge v-for="(item,index) in onFilterRoles(props.row.roles)" :key="index"
-                :style="{backgroundColor:item.color}">
-                {{item.label}}
-              </q-badge>
-            </template>
-            <q-badge v-else color="blue-grey-10">{{$t('global.undefined')}}</q-badge>
           </q-td> -->
           <q-td auto-width class="text-center">
             <q-btn flat round dense icon="input" color="blue" :size="$store.getters.dense.table?'sm':'md'" @click="onSelected(props.row)">
@@ -151,11 +140,11 @@ export default defineComponent({
       { name: 'title', field: 'title', label: 'product.name', align: 'left', sortable: true, required: true }, // row => this.$t(`roles.${row.name}`)
       { name: 'code', field: 'code', label: 'product.code', align: 'left', sortable: true, required: true },
       { name: 'quantity', field: 'quantity', label: 'product.quantityStore', align: 'right', sortable: true, required: true },
-      { name: 'price', field: 'price', label: 'product.priceSale', align: 'right', sortable: true },
+      { name: 'price', field: 'price', label: 'product.priceSale', align: 'right', sortable: true, required: true },
       { name: 'priceDiscount', field: 'priceDiscount', label: 'product.priceDiscount', align: 'right', sortable: true },
       { name: 'priceImport', field: 'priceImport', label: 'product.priceImport', align: 'right', sortable: true },
-      { name: 'priceExport', field: 'priceExport', label: 'product.priceExport', align: 'right', sortable: true },
-      { name: 'order', field: 'order', label: 'global.order', align: 'right', sortable: true }
+      { name: 'priceExport', field: 'priceExport', label: 'product.priceExport', align: 'right', sortable: true }
+      // { name: 'order', field: 'order', label: 'global.order', align: 'right', sortable: true }
     ])
     const rows = computed(() => $store.state.products.items || [])
     const onFetch = (props) => {

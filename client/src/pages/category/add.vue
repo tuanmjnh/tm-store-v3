@@ -47,11 +47,12 @@
           <q-tab-panel name="main">
             <div class="row q-gutter-xs">
               <div class="col-12 col-md-5">
-                Parent: <q-badge color="blue">{{$store.state.categories.dependent?$store.state.categories.dependent.label:'Root'}}</q-badge>
+                {{$t('global.dependent')}}:
+                <q-badge color="blue">{{$store.state.categories.dependent?$store.state.categories.dependent.label:'Root'}}</q-badge>
               </div>
               <q-space />
               <div class="col-12 col-md-6">
-                Level: <q-badge color="blue">{{data.level}}</q-badge>
+                {{$t('global.level')}}: <q-badge color="blue">{{data.level}}</q-badge>
               </div>
             </div>
             <div class="row q-gutter-xs">
@@ -87,6 +88,7 @@
                 {{$t('global.colorPick')}}:
                 <q-badge class="cursor-pointer" :style="{backgroundColor:data.color}" @click="isDialogColorPick=true">{{data.color}}</q-badge>
                 <div class="float-right q-mr-sm">
+                  <q-icon name="update" class="cursor-pointer text-secondary" style="font-size:20px" @click="data.color='#607d8b'" />
                   <q-icon name="sync" class="cursor-pointer text-primary" style="font-size:20px" @click="onRandomColor" />
                 </div>
               </div>

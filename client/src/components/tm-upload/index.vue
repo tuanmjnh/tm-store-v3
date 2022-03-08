@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed, watch } from 'vue';
+import { defineComponent, defineAsyncComponent, ref, computed } from 'vue';
 export default defineComponent({
   name: 'tm-upload',
   components: {
@@ -118,11 +118,11 @@ export default defineComponent({
 
     return {
       isDialogFiles, dialogUpload, viewTypeFiles, selected, selectedFileList, slotToolBar, slotPanelLeft,
-      onChangeView: (val) => {
+      onChangeView (val) {
         emit('update:viewType', val)
         emit('on-change-view', val)
       },
-      onFinishBrowse: (val) => {
+      onFinishBrowse (val) {
         isDialogFiles.value = false
         if (val) {
           if (props.multiple) {
@@ -133,15 +133,18 @@ export default defineComponent({
         }
         emit('finish-browse', val)
       },
-      onFinishUpload: (val) => {
+      onFinishUpload (val) {
         var res = JSON.parse(val.xhr.response)
         if (res.length > 0) {
-          if (props.multiple) emit(props.modelValue, props.modelValue.slice().push(res[0].fullName))
-          else emit('update:modelValue', res[0].fullName)
+          if (props.multiple) {
+            const rs = props.modelValue.slice()
+            rs.push(res[0].fullName)
+            emit('update:modelValue', rs)
+          } else emit('update:modelValue', res[0].fullName)
         }
         emit('finish-uploaded', res)
       },
-      onDeleteImage: (val) => {
+      onDeleteImage (val) {
         emit('update:modelValue', val)
       }
     }

@@ -19,7 +19,7 @@ module.exports.createDir = async function (opts) {
     if (!fs.existsSync(result.path)) await fs.mkdirSync(result.path)
     // loop list path to create
     for await (const e of list_dir) {
-      result.path = `${result.path}\\${e}\\`
+      result.path = `${result.path}/${e}/`
       if (!fs.existsSync(result.path)) {
         await fs.mkdirSync(result.path)
         result.list.push(e)

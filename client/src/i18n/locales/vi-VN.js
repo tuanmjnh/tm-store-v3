@@ -11,7 +11,7 @@ export default {
     profile: 'Hồ sơ',
     information: 'Thông tin',
     security: 'Bảo mật',
-    userSetting: 'Cài đặt người dùng',
+    setting: 'Cài đặt',
     manager: 'Quản trị',
     users: 'Tài khoản',
     roles: 'Quyền',
@@ -118,7 +118,8 @@ export default {
     index: 'Thứ tự',
     icon: 'Biểu tượng',
     range: 'Phạm vi',
-    new: 'Mới'
+    new: 'Mới',
+    dependent: 'Thuộc'
   },
   success: {
     insert: 'Thêm mới thành công',
@@ -143,7 +144,10 @@ export default {
     accountNoExist: 'Tài khoản không tồn tại',
     accountLocked: 'Tài khoản đã bị khóa, vui lòng liên hệ Admin',
     wrongPassword: 'Sai mật khẩu, vui lòng thử lại',
-    timeout: 'Lỗi kết nối, vui lòng thử lại!'
+    timeout: 'Lỗi kết nối, vui lòng thử lại!',
+    qrNotLoad: 'Không thể  giải mã QR này, vui lòng thử lại!',
+    qrError: 'Lỗi hệ thống quét mã, vui lòng thử lại!',
+    qrNotExist: 'Mã này không tồn tại trong hệ thống'
   },
   messageBox: {
     title: 'Thông báo',
@@ -239,13 +243,13 @@ export default {
     titleList: 'Danh sách kiểu dữ liệu',
     category: 'Danh mục',
     gender: 'Giới tính',
-    pin_news: 'Ghim tin tức',
-    pin_product: 'Ghim sản phẩm',
+    pinNews: 'Ghim tin tức',
+    pinProduct: 'Ghim sản phẩm',
     position: 'Vị trí',
     unit: 'Đơn vị',
-    unit_price: 'Đơn vị tiền',
-    user_group: 'Nhóm người dùng',
-    user_setting: 'Cài đặt người dùng'
+    unitPrice: 'Đơn vị tiền',
+    userGroup: 'Nhóm người dùng',
+    settings: 'Cài đặt'
   },
   position: {
     top: 'Trên',
@@ -309,13 +313,17 @@ export default {
     exportBallotTotal: 'Tổng hợp phiếu xuất kho',
     exportBallotDetails: 'Chi tiết phiếu xuất kho',
     importDate: 'Ngày nhập',
-    exportRate: 'Ngày xuất',
+    exportDate: 'Ngày xuất',
     importSuccess: 'Nhập kho thành công - Mã phiếu: ',
     exportSuccess: 'Xuất kho thành công - Mã phiếu: ',
     importExistResult: 'Phiếu nhập đã hoàn thành, vui lòng tạo mới',
     exportExistResult: 'Phiếu xuất đã hoàn thành, vui lòng tạo mới',
     importConfirm: 'Bạn có chắc chắn muốn thực hiện nhập kho?',
-    exportConfirm: 'Bạn có chắc chắn muốn thực hiện xuất kho?'
+    exportConfirm: 'Bạn có chắc chắn muốn thực hiện xuất kho?',
+    exportConfirmPrice: 'Bạn có chắc chắn muốn khôi phục lại giá xuất?',
+    exportConfirmPriceSale: 'Bạn có chắc chắn muốn cập nhật giá xuất bằng giá bán?',
+    importConfirmPrice: 'Bạn có chắc chắn muốn khôi phục lại giá nhập?',
+    importConfirmPriceSale: 'Bạn có chắc chắn muốn cập nhật giá nhập bằng giá bán?'
   },
   news: {
     title: 'Tin tức',
@@ -409,6 +417,18 @@ export default {
     close: 'Đóng',
     closeOthers: 'Đóng thẻ khác',
     closeAll: 'Đóng tất cả'
+  },
+  qrCode: {
+    qrCode: 'Mã QR',
+    qrCodeScanner: 'Quét mã QR',
+    qrCodeDefault: 'Đặt bằng ID',
+    qrCodeEdit: 'Cập nhật mã QR',
+    qrCodeEditHelp: 'Ấn vào mã QR để cập nhật',
+    barCode: 'Mã Bar',
+    barCodeScanner: 'Quét mã Bar',
+    barCodeRandom: 'Đặt Mã Bar ngẫu nhiên',
+    barCodeEdit: 'Cập nhật mã Bar',
+    barCodeEditHelp: 'Ấn vào mã Bar để cập nhật'
   },
   setting: {
     title: 'Cài đặt',

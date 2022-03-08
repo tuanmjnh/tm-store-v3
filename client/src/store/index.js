@@ -30,7 +30,6 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   modules[moduleName] = value.default;
   return modules;
 }, {});
-
 // export default store(function (/* { ssrContext } */) {
 //   const Store = createStore({
 //     modules,

@@ -3,7 +3,8 @@ const MUser = require('../users/model'),
   MRoutes = require('../routes/model'),
   middleware = require('../../services/middleware'),
   crypto = require('../../utils/crypto'),
-  constantCommon = require('../../config/common')
+  constantCommon = require('../../config/common'),
+  moment = require('moment')
 
 const name = 'auth'
 module.exports.name = name
@@ -82,6 +83,8 @@ module.exports.get = async function (req, res, next) {
       rs = rs.toJSON()
       // Routes
       rs.routes = await getAuthRoutes(rs.roles)
+      // fix date
+      rs.dateBirth = moment(rs.dateBirth).format('YYYY-MM-DD')
     }
     return res.status(200).json({ user: rs })
     // return res.status(200).json({ data: req.verify._id as any })
@@ -116,6 +119,8 @@ module.exports.post = async function (req, res, next) {
       // Routes
       rs = rs.toJSON()
       rs.routes = await getAuthRoutes(rs.roles)
+      // fix date
+      rs.dateBirth = moment(rs.dateBirth).format('YYYY-MM-DD')
       // Update last login
       await MUser.updateOne(
         { _id: rs._id },

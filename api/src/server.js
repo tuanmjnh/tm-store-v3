@@ -102,3 +102,48 @@ app
   .on('error', (err) => {
     console.log(err)
   })
+
+// const a = [
+//   {
+//     _id: '61f25f7a439e7e9b60ee4c96',
+//     categories: ['6125b5d69b2efc2d4c4befe1', '612c8dc594b6cc2da8c47d06'],
+//     category: 'Hanvico',
+//     subCategory: 'Bộ',
+//     code: 'HVC-BO-BSM66-200220',
+//     title: 'Bộ Hanvico HVC-BO-BSM66-200220',
+//     price: 7060000,
+//     priceOld: 7060000,
+//     priceExport: 7060000,
+//     priceDiscount: 0,
+//     quantity: 10,
+//     quantityOld: 1,
+//     quantityStore: 10,
+//     priceUnit: 'vnd',
+//     priceUnitName: 'vnđ',
+//     unit: 'cai',
+//     unitName: 'Cái',
+//     amount: 0
+//   },
+//   {
+//     _id: '61f25f7a439e7e9b60ee4c9c',
+//     categories: ['6125b5d69b2efc2d4c4befe1', '612c8dc594b6cc2da8c47d06'],
+//     category: 'Hanvico',
+//     subCategory: 'Bộ',
+//     code: 'HVC-BO-BSM72-200220',
+//     title: 'Bộ Hanvico HVC-BO-BSM72-200220',
+//     price: 6550000,
+//     priceOld: 6550000,
+//     priceExport: 6550000,
+//     priceDiscount: 0,
+//     quantity: 2,
+//     quantityOld: 1,
+//     quantityStore: 4,
+//     priceUnit: 'vnd',
+//     priceUnitName: 'vnđ',
+//     unit: 'cai',
+//     unitName: 'Cái',
+//     amount: 0
+//   }
+// ]
+// const b = a.map(x => x.priceExport * x.quantity).sum()
+// console.log(b)

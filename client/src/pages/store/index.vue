@@ -1,26 +1,25 @@
 <template>
-  <div>
-    <q-table :rows="rows" :columns="columns" row-key="_id" flat :visible-columns="visibleColumns"
-             :loading="$store.state.app.loading.get||$store.state.app.loading.patch" v-model:selected="selected"
-             :dense="$store.getters.dense.table" selection="multiple" :no-data-label="$t('table.noData')"
-             :no-results-label="$t('table.noFilterData')" :rows-per-page-label="$t('table.rowPerPage')"
-             :selected-rows-label="()=>`${selected.length} ${$t('table.rowSelected')}`"
-             :rows-per-page-options="$store.state.app.rowsPerPageOptions" v-model:pagination="pagination"
-             @request="onFetch" :filter="pagination.filter" binary-state-sort>
-      <template v-slot:top="props">
-        <div class="col-12 row">
-          <div class="col-xs-12 col-sm-auto q-table__title text-h6">{{$t('product.warehouse')}}
-          </div>
-          <q-space />
-          <div class="col-xs-12 col-sm-auto self-center row">
-            <q-chip v-if="isRoutes.add" clickable square icon="playlist_add" color="indigo" text-color="white" @click="$router.push('import')">
-              {{$t('product.import')}}</q-chip>
-            <q-chip v-if="isRoutes.add" clickable square icon="double_arrow" color="green" text-color="white" @click="$router.push('export')">
-              {{$t('product.export')}}</q-chip>
-            <q-btn v-if="isRoutes.add" flat dense no-caps color="blue" class="q-ml-sm" :label="$t('global.add')"
-                   @click="onAdd">
-            </q-btn>
-          </div>
+  <q-card flat>
+    <q-toolbar>
+      <q-toolbar-title>{{$t('product.warehouse')}}</q-toolbar-title>
+      <q-chip v-if="isRoutes.add" clickable square icon="playlist_add" color="indigo" text-color="white" @click="$router.push('import')">
+        {{$t('product.import')}}</q-chip>
+      <q-chip v-if="isRoutes.add" clickable square icon="double_arrow" color="green" text-color="white" @click="$router.push('export')">
+        {{$t('product.export')}}</q-chip>
+      <q-btn v-if="isRoutes.add" flat dense no-caps color="blue" class="q-ml-sm" :label="$t('global.add')"
+             @click="onAdd">
+      </q-btn>
+    </q-toolbar>
+    <q-separator />
+    <q-form ref="form">
+      <q-table :rows="rows" :columns="columns" row-key="_id" flat :visible-columns="visibleColumns"
+               :loading="$store.state.app.loading.get||$store.state.app.loading.patch" v-model:selected="selected"
+               :dense="$store.getters.dense.table" selection="multiple" :no-data-label="$t('table.noData')"
+               :no-results-label="$t('table.noFilterData')" :rows-per-page-label="$t('table.rowPerPage')"
+               :selected-rows-label="()=>`${selected.length} ${$t('table.rowSelected')}`"
+               :rows-per-page-options="$store.state.app.rowsPerPageOptions" v-model:pagination="pagination"
+               @request="onFetch" :filter="pagination.filter" binary-state-sort>
+        <template v-slot:top="props">
           <div class="col-12 text-right">
             <q-btn icon="filter_list" flat round dense color="teal">
               <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
@@ -46,7 +45,8 @@
                 </div>
               </q-menu>
             </q-btn>
-            <q-btn v-if="isRoutes.trash&&selected.length>0&&!pagination.flag" flat round dense color="warning" icon="restore_page" @click="onTrash()">
+            <q-btn v-if="isRoutes.trash&&selected.length>0&&!pagination.flag" flat round dense color="warning" icon="restore_page"
+                   @click="onTrash()">
               <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.recover')}}</q-tooltip>
             </q-btn>
             <q-btn flat round dense :color="$store.state.app.darkMode?'':'grey-7'" icon="menu_open">
@@ -67,60 +67,60 @@
               <q-tooltip v-if="!$q.platform.is.mobile">{{props.inFullscreen?$t('global.normalScreen'):$t('global.fullScreen')}}</q-tooltip>
             </q-btn>
           </div>
-        </div>
-      </template>
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th auto-width>
-            <q-checkbox v-model="props.selected" indeterminate-value="some" :dense="$store.getters.dense.table" />
-          </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props">
-            <span v-if="$store.state.app.darkMode" class="text-bold">{{$t(col.label)}}</span>
-            <span v-else class="text-bold text-blue-grey-10">{{$t(col.label)}}</span>
-          </q-th>
-        </q-tr>
-      </template>
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <q-checkbox v-model="props.selected" color="primary" :dense="$store.getters.dense.table" />
-          </q-td>
-          <q-td key="title" :props="props">
-            {{props.row.title}}
-          </q-td>
-          <q-td key="code" :props="props">
-            {{props.row.code}}
-          </q-td>
-          <q-td key="quantity" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.quantity.NumberFormat($store.getters.language)}}</div>
-            <q-badge v-html="props.row.unitName" color="orange" transparent />
-          </q-td>
-          <q-td key="priceImport" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceImport.NumberFormat($store.getters.language)}}</div>
-            <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
-          </q-td>
-          <q-td key="priceExport" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceExport.NumberFormat($store.getters.language)}}</div>
-            <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
-          </q-td>
-          <q-td key="price" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.price.NumberFormat($store.getters.language)}}</div>
-            <q-badge v-html="props.row.priceUnitName" color="blue" transparent />
-          </q-td>
-          <q-td key="priceDiscount" :props="props">
-            <div class="q-pr-xs flex inline">{{props.row.priceDiscount.NumberFormat($store.getters.language)}}</div>
-            <q-badge v-html="props.row.priceUnitName" color="red" transparent />
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
+        </template>
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th auto-width>
+              <q-checkbox v-model="props.selected" indeterminate-value="some" :dense="$store.getters.dense.table" />
+            </q-th>
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              <span v-if="$store.state.app.darkMode" class="text-bold">{{$t(col.label)}}</span>
+              <span v-else class="text-bold text-blue-grey-10">{{$t(col.label)}}</span>
+            </q-th>
+          </q-tr>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td auto-width>
+              <q-checkbox v-model="props.selected" color="primary" :dense="$store.getters.dense.table" />
+            </q-td>
+            <q-td key="title" :props="props">
+              {{props.row.title}}
+            </q-td>
+            <q-td key="code" :props="props">
+              {{props.row.code}}
+            </q-td>
+            <q-td key="quantity" :props="props">
+              <div class="q-pr-xs flex inline">{{props.row.quantity.NumberFormat($store.getters.language)}}</div>
+              <q-badge v-html="props.row.unitName" color="orange" transparent />
+            </q-td>
+            <q-td key="priceImport" :props="props">
+              <div class="q-pr-xs flex inline">{{props.row.priceImport.NumberFormat($store.getters.language)}}</div>
+              <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
+            </q-td>
+            <q-td key="priceExport" :props="props">
+              <div class="q-pr-xs flex inline">{{props.row.priceExport.NumberFormat($store.getters.language)}}</div>
+              <q-badge v-html="props.row.priceUnitName" color="teal" transparent />
+            </q-td>
+            <q-td key="price" :props="props">
+              <div class="q-pr-xs flex inline">{{props.row.price.NumberFormat($store.getters.language)}}</div>
+              <q-badge v-html="props.row.priceUnitName" color="blue" transparent />
+            </q-td>
+            <q-td key="priceDiscount" :props="props">
+              <div class="q-pr-xs flex inline">{{props.row.priceDiscount.NumberFormat($store.getters.language)}}</div>
+              <q-badge v-html="props.row.priceUnitName" color="red" transparent />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+    </q-form>
     <!-- Add dialog -->
     <q-dialog v-model="isDialogAdd" :maximized="isMaximizedView" persistent>
       <q-card flat :style="{minWidth:'60%'}">
         <tpl-add v-model:dialog="isDialogAdd" v-model:maximized="isMaximizedView" />
       </q-card>
     </q-dialog>
-  </div>
+  </q-card>
 </template>
 
 <script>

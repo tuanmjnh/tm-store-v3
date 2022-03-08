@@ -2,15 +2,13 @@ export default {
   // sidebar: state => state.app.sidebar,
   routes: state => state.auth.routesConstant.concat(state.auth.routes),
   languages: state => state.app.languages,
-  genders: state => state.app.genders,
-  // User setting
-  // userSetting: state => state.userSetting.data,
-  language: state => state.userSetting.language,
-  font: state => state.userSetting.font,
-  dense: state => state.userSetting.dense,
-  darkMode: state => state.userSetting.darkMode,
-  format: state => state.userSetting.format,
-  shadow: state => state.userSetting.shadow
+  language: state => state.settings.language,
+  unitPrice: state => state.settings.unitPrice,
+  font: state => state.settings.font,
+  dense: state => state.settings.dense,
+  darkMode: state => state.settings.darkMode,
+  format: state => state.settings.format,
+  shadow: state => state.settings.shadow
 
   // device: state => state.app.device,
   // useLogs: state => state.app.useLogs,

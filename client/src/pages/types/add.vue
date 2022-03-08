@@ -52,12 +52,12 @@
                 <q-select v-model="data.key" :options="$store.state.types.keys" :label="$t('global.types')"
                           :rules="[v=>v&&v.length>0||$t('error.required')]">
                   <template v-slot:selected>
-                    <div v-html="data.key?$t(`types.${data.key}`):''"></div>
+                    <div v-html="data.key?`${$t(`types.${data.key}`)} - ${data.key}`:''"></div>
                   </template>
                   <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
-                        <q-item-label v-html="$t(`types.${scope.opt}`)" />
+                        <q-item-label v-html="`${$t(`types.${scope.opt}`)} - ${scope.opt}`" />
                       </q-item-section>
                     </q-item>
                   </template>
@@ -65,8 +65,8 @@
               </div>
               <q-space />
               <div class="col-12 col-md-6">
-                <q-input v-model.trim="data.code" v-lowerCase :dense="$store.getters.dense.input"
-                         :label="$t('global.code')" :rules="[v=>v&&v.length>0||$t('error.required')]" />
+                <q-input v-model.trim="data.code" :dense="$store.getters.dense.input" :label="$t('global.code')"
+                         :rules="[v=>v&&v.length>0||$t('error.required')]" />
               </div>
             </div>
             <div class="row q-gutter-xs">

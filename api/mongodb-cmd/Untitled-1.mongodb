@@ -1,0 +1,32 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('tm-store');
+// db.products.deleteOne({code:'DFHDFH'});
+// db.products.find({code:'HVC-BO-BSM66-200220'});
+
+db.products.drop();
+db['product-exports'].drop();
+db['product-export-items'].drop();
+db['product-imports'].drop();
+db['product-import-items'].drop();
+db.logs.drop();
+
+// db.products.find({barcode:'3683251856748'});
+// db.products.find({qrcode:'62134378a93f01540a26d21e'});
+
+// Import
+// db.products.find({code:'HVC-BO-BSM66-200220'});
+// db.product_imports.find({_id:ObjectId('61dc34c383aa5be073919a9e')});
+// db.product_import_items.countDocuments({key:ObjectId('61dc34c383aa5be073919a9e')});
+// db.products.count({categories: {$in:[ObjectId('6125b6bf9b2efc2d4c4befec'),ObjectId('612c8f8594b6cc2da8c47d1f')]}});
+// 612c8f8594b6cc2da8c47d1f
+// 6125b6bf9b2efc2d4c4befec
+
+// db.categories.count({_id: {$in:['612c8f8594b6cc2da8c47d1f','6125b6bf9b2efc2d4c4befec']}});
+// db.categories.count({_id: ObjectId('612c8f8594b6cc2da8c47d1f')});
+
+

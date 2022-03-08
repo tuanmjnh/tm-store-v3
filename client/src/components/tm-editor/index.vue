@@ -1,7 +1,8 @@
 <template>
   <div>
-    <q-editor :modelValue="modelValue" :dense="$q.screen.lt.md" :toolbar="toolbar" :definitions="definitions"
-              :fonts="fonts" @update:model-value="$emit('update:modelValue', $event)" />
+    <!-- :dense="$q.screen.lt.md" -->
+    <q-editor :modelValue="modelValue" :toolbar="toolbar" :definitions="definitions" :min-height="minHeight" :fonts="fonts"
+              @update:model-value="$emit('update:modelValue', $event)" />
     <!-- Dialog Files -->
     <q-dialog v-model="isDialogFile">
       <q-card style="width:672px;max-width:80vw;">
@@ -49,12 +50,13 @@ export default defineComponent({
     tmFiles: defineAsyncComponent(() => import('components/tm-files'))
   },
   props: {
-    modelValue: { type: String },
+    modelValue: { type: String, default: '' },
     uploadUrl: { type: String, required: true },
     headers: { type: Array, required: true },
     accept: { type: String, default: '.jpg,.jpeg,.png,.gif' },
     maxFileSize: { type: Number, default: 1024 * 1024 * 2 },
     multiple: { type: Boolean, default: false },
+    minHeight: { type: String, default: '10rem' },
     iconAccept: { type: String, default: null },
     labelAccept: { type: String, default: 'Accept' },
     labelViewList: { type: String, default: 'View list' },

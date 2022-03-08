@@ -49,10 +49,10 @@
                 <q-tooltip v-if="!$q.platform.is.mobile">{{$t("table.action")}}</q-tooltip>
                 <q-menu auto-close>
                   <q-list dense bordered>
-                    <q-item clickable>
+                    <q-item clickable :active="pagination.enable">
                       <q-item-section no-wrap @click="onChangeEnable(true)">{{$t("global.working")}}</q-item-section>
                     </q-item>
-                    <q-item clickable>
+                    <q-item clickable :active="!pagination.enable">
                       <q-item-section no-wrap @click="onChangeEnable(false)">{{$t("global.locked")}}</q-item-section>
                     </q-item>
                   </q-list>
@@ -197,7 +197,7 @@ export default defineComponent({
     ])
     const rows = computed(() => $store.state.users.items || [])
     const roles = computed(() => $store.state.roles.items)
-    const groups = computed(() => $store.state.types.items.filter(x => x.key === 'user_group'))
+    const groups = computed(() => $store.state.types.items.filter(x => x.key === 'userGroup'))
     const group = ref(groups.value ? groups.value[0] : { code: 'client', name: 'Client' }) // client or manager
 
     const onFetch = (props) => {

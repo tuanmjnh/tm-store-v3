@@ -32,14 +32,14 @@
               </template>
             </tm-tree> -->
 
-            <q-tree :nodes="categoriesLocal" v-model:selected="selectedTree" :node-key="optionValue" default-expand-all
-                    :no-nodes-label="$t('table.noData')" :no-results-label="$t('table.noData')">
+            <q-tree :nodes="categoriesLocal" v-model:selected="selectedTree" :node-key="optionValue" :default-expand-all="defaultExpandAll"
+                    v-model:expanded="expandedLocal" :no-nodes-label="$t('table.noData')" :no-results-label="$t('table.noData')">
               <template v-slot:default-header="prop">
                 <div class="row items-center" @click="onSelected(prop.node)" clickable v-close-popup>
                   <q-icon :name="prop.node.icon||'share'" color="blue-grey" size="20px" class="q-mr-sm" />
-                  <div :class="['node-label q-pr-md']"
-                       :style="{color:selectedTree===prop.node[optionValue]?'#2196f3':(prop.node.color?prop.node.color:'#607d8b')}">
+                  <div :class="['node-label q-pr-md']" :style="onStyleSelected(prop.node)">
                     {{prop.node[optionLabel]}}
+                    <!-- :style="{color:selectedTree===prop.node[optionValue]?'#2196f3':(prop.node.color?prop.node.color:'#607d8b')}"> -->
                   </div>
                 </div>
               </template>
@@ -66,6 +66,8 @@ export default defineComponent({
     dataAll: { type: Boolean, default: false },
     // dialog: { type: Boolean, default: true },
     dense: { type: Boolean, default: true },
+    defaultExpandAll: { type: Boolean, default: false },
+    expanded: { type: Array, default: null },
     labelTitle: { type: String, default: 'Category of product' },
     labelSelect: { type: String, default: 'Select category' },
     labelAll: { type: String, default: '-- Select all --' },
@@ -77,6 +79,7 @@ export default defineComponent({
     const selectedLocal = ref(null)
     const selectedTree = ref(null)
     const categoriesLocal = ref([])
+    const expandedLocal = ref([])
     // onMounted(() => {
     //   const all = [{ _id: null, dependent: null, icon: 'graphic_eq', color: '#3f51b5', flag: 1, label: props.labelAll }]
     //   categoriesLocal.value = props.dataAll ? [...all, ...generateCategory(props.categories)] : generateCategory(props.categories)
@@ -98,6 +101,7 @@ export default defineComponent({
       if (props.dataAll) selectedLocal.value = item ? item : all[0]
       else selectedLocal.value = item
       selectedTree.value = item ? item[props.optionValue] : null
+      if (props.expanded) expandedLocal.value = props.expanded
       // }
     }, { deep: true, immediate: true })
 
@@ -106,11 +110,12 @@ export default defineComponent({
     // }, { deep: true, immediate: true })
 
     return {
-      isDialog, categoriesLocal, selectedLocal, selectedTree,
+      isDialog, categoriesLocal, selectedLocal, selectedTree, expandedLocal,
       // categories: [],
       onSelected: (val) => {
         // if (!props.selected) props.selected = value
         const parents = getParent(categoriesLocal.value, val, props.optionValue)
+        expandedLocal.value = parents.map(x => x._id)
         if (val) selectedLocal.value = val
         if (props.modelValue !== val[props.optionValue]) {
           emit('update:modelValue', val[props.optionValue])
@@ -118,6 +123,19 @@ export default defineComponent({
           emit('on-selected', val)
         }
         isDialog.value = false
+      },
+      onStyleSelected (node) {
+        if (selectedTree.value === node[props.optionValue]) {
+          return {
+            color: '#2196f3',
+            // boxShadow: '0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f'
+            fontWeight: 600
+          }
+        } else {
+          return {
+            color: node.color ? node.color : '#607d8b'
+          }
+        }
       }
     }
   }

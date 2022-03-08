@@ -1,16 +1,15 @@
 const mongoose = require('mongoose'),
   MCategories = require('./model'),
   pagination = require('../../utils/pagination'),
-  request = require('../../utils/request'),
+  Request = require('../../utils/Request'),
   Logger = require('../../services/logger')
 
-const name = 'categories'
-module.exports.name = name
+module.exports.name = MCategories.collection.collectionName
 module.exports.get = async function (req, res, next) {
   try {
     // let conditions = { $and: [{ flag: req.query.flag ? req.query.flag : 1 }] }
     let conditions = { $and: [] }
-    if (req.query.flag) conditions.$and.push({ flag: req.query.flag })
+    if (req.query.flag) conditions.$and.push({ flag: parseInt(req.query.flag) })
     if (req.query.type) conditions.$and.push({ type: req.query.type })
     else conditions.$and.push({ type: 'product' })
     if (req.query.filter) {
@@ -83,7 +82,7 @@ module.exports.getMeta = async function (req, res, next) {
       if (e) return res.status(500).send(e)
       const rowsNumber = rs.length
       if (req.query.page && req.query.rowsPerPage) {
-        return res.status(200).json(pagination.get(rs, req.query.page, req.query.rowsPerPage))
+        return res.status(200).json(pagination.get(rs, parseInt(req.query.page), parseInt(req.query.rowsPerPage)))
       } else {
         return res.status(200).json({ rowsNumber: rowsNumber, data: rs })
       }
@@ -101,13 +100,13 @@ module.exports.post = async function (req, res, next) {
     }
     const x = await MCategories.findOne({ code: req.body.code })
     if (x) return res.status(501).send('exist')
-    req.body.created = { at: new Date(), by: req.verify._id, ip: request.getIp(req) }
+    req.body.created = { at: new Date(), by: req.verify._id, ip: Request.getIp(req) }
     const data = new MCategories(req.body)
     // data.validate()
     data.save((e, rs) => {
       if (e) return res.status(500).send(e)
       // Push logs
-      Logger.set(req, name, rs._id, 'insert')
+      Logger.set(req, MCategories.collection.collectionName, rs._id, 'insert')
       return res.status(201).json(rs)
     })
   } catch (e) {
@@ -159,7 +158,7 @@ module.exports.put = async function (req, res, next) {
           // { multi: true, new: true },
           if (e) return res.status(500).send(e)
           // Push logs
-          Logger.set(req, name, req.body._id, 'update')
+          Logger.set(req, MCategories.collection.collectionName, req.body._id, 'update')
           return res.status(202).json(rs)
         }
       )
@@ -217,7 +216,7 @@ module.exports.patch = async function (req, res, next) {
         if (_x.nModified) {
           rs.success.push(_id)
           // Push logs
-          Logger.set(req, name, _id, x.flag === 1 ? 'lock' : 'unlock')
+          Logger.set(req, MCategories.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
         } else rs.error.push(_id)
       }
     }
@@ -233,7 +232,7 @@ module.exports.delete = async function (req, res, next) {
       MCategories.deleteOne({ _id: req.params._id }, (e, rs) => {
         if (e) return res.status(500).send(e)
         // Push logs
-        Logger.set(req, name, req.params._id, 'delete')
+        Logger.set(req, MCategories.collection.collectionName, req.params._id, 'delete')
         return res.status(204).json(rs)
       })
     } else {

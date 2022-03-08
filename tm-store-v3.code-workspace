@@ -1,11 +1,17 @@
 {
   "folders": [
-	{
-		"path": "client"
-	},
-	{
-		"path": "api"
-	}
-],
+    {
+      "name": "api",
+      "path": "api"
+    },
+    {
+      "name": "client",
+      "path": "client"
+    },
+    {
+      "name": "mobile",
+      "path": "mobile"
+    }
+  ],
   "settings": {}
 }
