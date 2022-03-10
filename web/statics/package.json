@@ -1,0 +1,19 @@
+{
+  "name": "tm-store-quasar",
+  "version": "0.0.1",
+  "description": "TM Store Quasar Framework app",
+  "productName": "TM Store",
+  "cordovaId": "tm.store.quasar",
+  "capacitorId": "",
+  "author": "tuanmjnh <minhtuan200990@gmail.com>",
+  "private": true,
+  "scripts": {
+    "dev": "node build/dev-server.js",
+    "start": "node server.js",
+    "heroku-postbuild": "npm run prod"
+  },
+  "dependencies": {
+    "connect-history-api-fallback": "^1.6.0",
+    "express": "^4.17.1"
+  }
+}

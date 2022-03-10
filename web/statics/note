@@ -1,0 +1,22 @@
+To create a new app named “example”, install the Heroku CLI and run the following command:
+heroku create tm-store
+
+If you haven't already, log in to your Heroku account and follow the prompts to create a new SSH public key.
+$ heroku login
+
+Deploy your changes
+Make some changes to the code you just cloned and deploy them to Heroku using Git.
+$ heroku git:remote --app tm-store
+$ heroku config:set NODE_MODULES_CACHE=false
+$ git init
+$ git add .
+$ git commit -am "deploy heroku dist"
+$ git push heroku master -f
+
+Clone the repository
+Use Git to clone tm-store's source code to your local machine.
+$ heroku git:clone -a tm-store
+$ cd tm-store
+
+Start your app locally using the heroku local command, which is installed as part of the Heroku CLI
+heroku local web

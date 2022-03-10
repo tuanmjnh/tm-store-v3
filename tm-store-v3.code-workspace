@@ -5,8 +5,12 @@
       "path": "api"
     },
     {
-      "name": "client",
-      "path": "client"
+      "name": "global",
+      "path": "global"
+    },
+    {
+      "name": "web",
+      "path": "web"
     },
     {
       "name": "mobile",

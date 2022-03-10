@@ -5,7 +5,8 @@
 
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
-
+const path = require('path')
+const CopyPlugin = require('copy-webpack-plugin')
 /* eslint-env node */
 const ESLintPlugin = require("eslint-webpack-plugin");
 const { configure } = require("quasar/wrappers");
@@ -68,6 +69,51 @@ module.exports = configure(function (ctx) {
           .plugin("eslint-webpack-plugin")
           .use(ESLintPlugin, [{ extensions: ["js", "vue"] }]);
       },
+      // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
+      extendWebpack (cfg) {
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias,
+          // Add your own alias like this
+          // 'vue$': 'vue/dist/vue.esm.js',
+          '@': path.resolve('src')
+          // 'Vue': 'vue/dist/vue.esm-bundler.js'
+        }
+
+        // cfg.plugins.push(new CopyPlugin([{ from: './statics/', to: '../' }]))
+        cfg.plugins.push(new CopyPlugin({ patterns: [{ from: './statics/', to: '../' }] }))
+
+        // for i18n resources (json/json5/yaml)
+        cfg.module.rules.push({
+          test: /\.(json5?|ya?ml)$/, // target json, json5, yaml and yml files
+          type: 'javascript/auto',
+          // Use `Rule.include` to specify the files of locale messages to be pre-compiled
+          include: [path.resolve(__dirname, './src/i18n')],
+          loader: '@intlify/vue-i18n-loader'
+        })
+
+        // for i18n custom block
+        cfg.module.rules.push({
+          resourceQuery: /blockType=i18n/,
+          type: 'javascript/auto',
+          loader: '@intlify/vue-i18n-loader'
+        })
+      },
+      // environment
+      env: ctx.dev
+        ? { // so on dev we'll have
+          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'http://localhost:8001/api', // JSON.stringify('http://localhost:8001/api'),
+          API_UPLOAD: 'http://localhost:8001/uploads', // JSON.stringify('http://localhost:8001/uploads'),
+          API_PUBLIC: 'http://localhost:8001/public', // JSON.stringify('http://localhost:8001/public'),
+          API_FILE_UPLOAD: 'http://localhost:8001/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
+        }
+        : { // and on build (production):
+          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'https://tm-store-express.herokuapp.com/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
+          API_UPLOAD: 'https://tm-store-express.herokuapp.com/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
+          API_PUBLIC: 'https://tm-store-express.herokuapp.com/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
+          API_FILE_UPLOAD: 'https://tm-store-express.herokuapp.com/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
+        }
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer

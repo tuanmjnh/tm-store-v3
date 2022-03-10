@@ -3,8 +3,8 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="leftDrawerOpen=!leftDrawerOpen" />
-        <q-btn flat round dense icon="qr_code_scanner" aria-label="QRCode" @click="isDialogQRCode=!isDialogQRCode">
-          <q-tooltip>{{$t('global.qrCodeScanner')}}</q-tooltip>
+        <q-btn flat round dense color="blue" icon="qr_code_scanner" @click="isDialogQRCode=!isDialogQRCode">
+          <q-tooltip v-if="!$q.platform.is.mobile">{{$t('qrCode.qrCodeScanner')}}</q-tooltip>
         </q-btn>
         <q-space />
         <!-- <div>Quasar v{{ $q.version }}</div> -->
@@ -39,9 +39,9 @@
       <router-view />
     </q-page-container>
 
-    <!-- Dialog QR Code Scanner -->
+    <!-- QR Code Scanner dialog -->
     <q-dialog v-model="isDialogQRCode" :maximized="true">
-      <qr-code v-model:isDialog="isDialogQRCode" />
+      <tm-html5qrcode :title="$t('qrCode.qrCodeScanner')" :cancelLabel="$t('global.cancel')" @onDecode="onDecodeQR" @onError="onErrorQR" />
     </q-dialog>
   </q-layout>
 </template>
@@ -49,7 +49,6 @@
 <script>
 import essentialLink from "./essential-link/index";
 import menuBottom from "./menu-bottom/index";
-import qrCode from "components/qr-code";
 
 const linksList = [
   {
@@ -96,7 +95,7 @@ const linksList = [
   },
 ];
 
-import { defineComponent, ref } from "vue";
+import { defineComponent, defineAsyncComponent, ref } from "vue";
 
 export default defineComponent({
   name: "MainLayout",
@@ -104,7 +103,7 @@ export default defineComponent({
   components: {
     essentialLink,
     menuBottom,
-    qrCode
+    tmHtml5qrcode: defineAsyncComponent(() => import('components/tm-html5qrcode'))
   },
 
   setup () {
