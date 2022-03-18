@@ -124,12 +124,12 @@ export default defineComponent({
       onAddAttr: () => {
         setTimeout(() => {
           if (!key.value || !val.value) {
-            $q.notify({ color: props.colorWarning, timeout: props.timeoutWarning, message: props.labelWarningContent })
+            $q.notify({ message: props.labelWarningContent, color: props.colorWarning, timeout: props.timeoutWarning })
             return
           }
           const modelValue = props.modelValue.slice()
           if (indexItem.value != null) {
-            damodelValueta.splice(indexItem.value, 1, { key: key.value, value: val.value })
+            modelValue.splice(indexItem.value, 1, { key: key.value, value: val.value })
             indexItem.value = null
           } else modelValue.push({ key: key.value, value: val.value })
           emit('update:modelValue', modelValue)

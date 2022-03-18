@@ -22,16 +22,7 @@ module.exports = configure(function (ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
-    boot: [
-      'prototypes',
-      'i18n',
-      'middleware',
-      'axios',
-      'moment',
-      'directive'
-      // 'gapi'
-      // 'filter'
-    ],
+    boot: ['prototypes', 'i18n', 'middleware', 'axios', 'moment', 'directive'],
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
@@ -109,18 +100,18 @@ module.exports = configure(function (ctx) {
       // environment
       env: ctx.dev
         ? { // so on dev we'll have
-          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: 'http://localhost:8001/api', // JSON.stringify('http://localhost:8001/api'),
-          API_UPLOAD: 'http://localhost:8001/uploads', // JSON.stringify('http://localhost:8001/uploads'),
-          API_PUBLIC: 'http://localhost:8001/public', // JSON.stringify('http://localhost:8001/public'),
-          API_FILE_UPLOAD: 'http://localhost:8001/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
+          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'http://localhost:8080/api', // JSON.stringify('http://localhost:8001/api'),
+          API_UPLOAD: 'http://localhost:8080/uploads', // JSON.stringify('http://localhost:8001/uploads'),
+          API_PUBLIC: 'http://localhost:8080/public', // JSON.stringify('http://localhost:8001/public'),
+          API_FILE_UPLOAD: 'http://localhost:8080/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
         }
         : { // and on build (production):
-          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: 'https://tm-store-express.herokuapp.com/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
-          API_UPLOAD: 'https://tm-store-express.herokuapp.com/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
-          API_PUBLIC: 'https://tm-store-express.herokuapp.com/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
-          API_FILE_UPLOAD: 'https://tm-store-express.herokuapp.com/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
+          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
+          API_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
+          API_PUBLIC: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
+          API_FILE_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
         }
     },
 
@@ -128,15 +119,15 @@ module.exports = configure(function (ctx) {
     devServer: {
       https: false,
       port: 8000,
-      open: false,// opens browser window automatically
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8001',
-          // pathRewrite: { '^/api': '' },
-          changeOrigin: true,
-          secure: true
-        }
-      }
+      open: false// opens browser window automatically
+      // proxy: {
+      //   '/api': {
+      //     target: 'http://localhost:8080',
+      //     // pathRewrite: { '^/api': '' },
+      //     changeOrigin: true,
+      //     secure: true
+      //   }
+      // }
     },
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -152,11 +143,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [
-        'Notify',
-        'AppFullscreen',
-        'Dialog'
-      ],
+      plugins: ['Notify', 'AppFullscreen', 'Dialog'],
       config: {
         // loadingBar: {
         //   color: 'purple'

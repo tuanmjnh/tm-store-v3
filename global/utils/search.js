@@ -1,10 +1,10 @@
-export default function normalize(str) {
+export function normalize (str) {
   return str.normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D')
 }
 
-export function removeAccents(str) {
+export function removeAccents (str) {
   var AccentsMap = [
     'aàảãáạăằẳẵắặâầẩẫấậ',
     'AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬ',

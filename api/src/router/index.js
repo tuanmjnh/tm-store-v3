@@ -20,6 +20,7 @@ const mapRouter = (controller) => {
   if (controller.getMeta) router.route(`/${controller.name}/get-meta`).get(controller.getMeta)
   if (controller.getAttr) router.route(`/${controller.name}/get-attr`).get(controller.getAttr)
   if (controller.import) router.route(`/${controller.name}/import`).post(controller.import)
+  if (controller.update) router.route(`/${controller.name}/update`).put(controller.update)
   if (controller.updateOrder) { router.route(`/${controller.name}/update-order`).put(controller.updateOrder) }
   // Extras users
   if (controller.verified) router.route(`/${controller.name}/verified`).post(controller.verified)
@@ -50,8 +51,8 @@ router.route(`/${ProductReportsController.name}/five-year`).get(ProductReportsCo
 // Controller FileManager
 const FileManagerController = require('../modules/file-manager/controller')
 mapRouter(FileManagerController)
-router.route(`/${FileManagerController.name}/directories`).get(FileManagerController.getDirectories)
-router.route(`/${FileManagerController.name}/files`).get(FileManagerController.getFiles)
+// router.route(`/${FileManagerController.name}/directories`).get(FileManagerController.getDirectories)
+// router.route(`/${FileManagerController.name}/files`).get(FileManagerController.getFiles)
 // Test
 mapRouter(require('../modules/test/controller'))
 

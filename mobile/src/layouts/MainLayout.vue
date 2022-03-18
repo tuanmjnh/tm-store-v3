@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import essentialLink from "./essential-link/index";
-import menuBottom from "./menu-bottom/index";
+import essentialLink from "./components/essential-link";
+import menuBottom from "./components/menu-bottom";
 
 const linksList = [
   {

@@ -10,8 +10,9 @@ export const CANCEL_TOKEN = axios.CancelToken
 
 // Create API
 // const api = axios.create({ baseURL: 'https://api.example.com' })
-const api = axios.create({ // uploadURL: 'http://localhost:8001/api/upload',
-  baseURL: '/api', // `${process.env.API}/`, // 'http://localhost:8001/api',
+const api = axios.create({ // uploadURL: 'http://localhost:8080/api/upload',
+  baseURL: process.env.API,// '/api', // `${process.env.API}/`, // 'http://localhost:8080/api',
+  // baseURL: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api',
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 10000 // request timeout
   // proxy: {
@@ -72,22 +73,22 @@ api.interceptors.response.use(
   response => {
     switch (response.status) {
       case 201:
-        Notify.create({ message: i18n().global.t('success.insert'), color: 'positive' })
+        Notify.create({ message: i18n.global.t('success.insert'), color: 'positive' })
         break
       case 202:
-        Notify.create({ message: i18n().global.t('success.update'), color: 'positive' })
+        Notify.create({ message: i18n.global.t('success.update'), color: 'positive' })
         break
       case 203:
         Notify.create({
           message: response.data.success
-            ? `${i18n().global.t('success.update')}: ${response.data.success.length
-            } ${i18n().global.t('global.records')}`
-            : i18n().global.t('success.update'),
+            ? `${i18n.global.t('success.update')}: ${response.data.success.length
+            } ${i18n.global.t('global.records')}`
+            : i18n.global.t('success.update'),
           color: 'positive'
         })
         break
       case 204:
-        Notify.create({ message: i18n().global.t('success.delete'), color: 'positive' })
+        Notify.create({ message: i18n.global.t('success.delete'), color: 'positive' })
         break
     }
     // if the custom code is not 20000, it is judged as an error.
@@ -127,7 +128,7 @@ api.interceptors.response.use(
     // console.log(error)
     var reg = /Error: timeout+/
     if (reg.test(error.toString())) {
-      Notify.create({ message: i18n().global.t('error.timeout'), color: 'negative' })
+      Notify.create({ message: i18n.global.t('error.timeout'), color: 'negative' })
       // Loading end
       store.dispatch('app/setLoading')
       return
@@ -137,7 +138,7 @@ api.interceptors.response.use(
       return
     }
     if (!error.response) {
-      Notify.create({ message: i18n().global.t('error.system'), color: 'negative' })
+      Notify.create({ message: i18n.global.t('error.system'), color: 'negative' })
       // Loading end
       store.dispatch('app/setLoading')
       return
@@ -145,52 +146,52 @@ api.interceptors.response.use(
     switch (error.response.status) {
       case 401:
         Notify.create({
-          message: i18n().global.t('error.tokenNoExist'),
+          message: i18n.global.t('error.tokenNoExist'),
           color: 'negative'
         })
         break
       case 402:
         Notify.create({
-          message: i18n().global.t('error.tokenInvalid'),
+          message: i18n.global.t('error.tokenInvalid'),
           color: 'negative'
         })
         break
       case 404:
-        Notify.create({ message: i18n().global.t('error.noExist'), color: 'negative' })
+        Notify.create({ message: i18n.global.t('error.noExist'), color: 'negative' })
         break
       case 500:
-        Notify.create({ message: i18n().global.t('error.system'), color: 'negative' })
+        Notify.create({ message: i18n.global.t('error.system'), color: 'negative' })
         break
       case 501:
-        Notify.create({ message: i18n().global.t('error.exist'), color: 'negative' })
+        Notify.create({ message: i18n.global.t('error.exist'), color: 'negative' })
         break
       case 502:
         Notify.create({
-          message: i18n().global.t('error.accountNoExist'),
+          message: i18n.global.t('error.accountNoExist'),
           color: 'negative'
         })
         break
       case 503:
         Notify.create({
-          message: i18n().global.t('error.accountNoExist'),
+          message: i18n.global.t('error.accountNoExist'),
           color: 'negative'
         })
         break
       case 504:
         Notify.create({
-          message: i18n().global.t('error.accountLocked'),
+          message: i18n.global.t('error.accountLocked'),
           color: 'negative'
         })
         break
       case 505:
         Notify.create({
-          message: i18n().global.t('error.wrongPassword'),
+          message: i18n.global.t('error.wrongPassword'),
           color: 'negative'
         })
         break
       default:
         Notify.create({
-          message: `${i18n().global.t('error.errorCode')}: ${error.response.status}`,
+          message: `${i18n.global.t('error.errorCode')}: ${error.response.status}`,
           color: 'negative'
         })
         break

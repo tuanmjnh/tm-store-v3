@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack')
 // const fs = require('fs');
 const nodeExternals = require('webpack-node-externals')
-const HtmlWebPackPlugin = require('html-webpack-plugin')
+// const HtmlWebPackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin');
 // var dotenv = require('dotenv').config({ path: __dirname + '.env' });
 // const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -63,11 +63,19 @@ module.exports = {
   plugins: [
     new webpack.ProgressPlugin(),
     // new CleanWebpackPlugin(),
-    new CopyPlugin([
-      { from: './src/public/', to: './public/' },
-      { from: '.env', to: './' },
-      { from: './statics/', to: './' }
-    ])
+    // new CopyPlugin([
+    //   { from: './src/public/', to: './public/' },
+    //   { from: '.env', to: './' },
+    //   { from: './statics/', to: './' }
+    // ])
+
+    new CopyPlugin({
+      patterns: [
+        { from: './src/public/', to: './public/' },
+        { from: '.env', to: './' },
+        { from: './statics/', to: './' }
+      ]
+    })
     // new webpack.DefinePlugin({
     //   // 'process.env': dotenv.parsed
     //   'process.env': {
@@ -91,11 +99,11 @@ module.exports = {
   //     }
   //   ]
   target: 'node',
-  devtool: 'sourcemap',
+  // devtool: 'sourcemap',
   node: {
     // Need this when working with express, otherwise the build fails
     __dirname: false, // if you don't put this is, __dirname
     __filename: false, // and __filename return blank or /
-    fs: 'empty'
+    // fs: 'empty'
   }
 }

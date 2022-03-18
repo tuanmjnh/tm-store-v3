@@ -166,6 +166,7 @@ module.exports.put = async function (req, res, next) {
         {
           $set: {
             group: req.body.group,
+            email: req.body.email,
             fullName: req.body.fullName,
             phone: req.body.phone,
             personNumber: req.body.personNumber,

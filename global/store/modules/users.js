@@ -38,14 +38,24 @@ const mutations = {
     else state.items.push(value)
   },
   UPDATE_ITEMS (state, value) {
-    if (Array.isArray(value)) {
-      value.forEach(e => {
-        const i = state.items.findIndex(x => x._id === e._id)
-        if (i > -1) state.items.splice(i, 1, e)
+    if (state.items && state.items.length) {
+      if (Array.isArray(value)) {
+        value.forEach(e => {
+          const i = state.items.findIndex(x => x._id === e._id)
+          if (i > -1) state.items.splice(i, 1, e)
+        })
+      } else {
+        const i = state.items.findIndex(x => x._id === value._id)
+        if (i > -1) state.items.splice(i, 1, value)
+      }
+    }
+  },
+  UPDATE_ONE (state, value) {
+    const i = state.items.findIndex(x => x._id === value._id)
+    if (i > -1) {
+      Object.keys(value).forEach(e => {
+        state.items[i][e] = value[e]
       })
-    } else {
-      const i = state.items.findIndex(x => x._id === value._id)
-      if (i > -1) state.items.splice(i, 1, value)
     }
   },
   FLAG_REMOVE_ITEMS (state, value) {
@@ -98,6 +108,18 @@ const actions = {
   put ({ commit }, params) {
     return api.put(collection, params).then((res) => {
       commit('UPDATE_ITEMS', params)
+      return res
+    })
+  },
+  update ({ commit }, params) {
+    // return api.put(`${collection}/update`, params.update).then((res) => {
+    //   // commit('UPDATE_ONE', params)
+    //   commit('UPDATE_ITEMS', params.data)
+    //   console.log(res)
+    //   return res
+    // })
+    return api.put(`${collection}/update`, params.update).then((res) => {
+      commit('UPDATE_ITEMS', params.data)
       return res
     })
   },

@@ -168,65 +168,108 @@ export const dynamic = [
             component: () => import('pages/category/index')
           }
         ]
+      }
+    ]
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    meta: { title: 'orders', icon: 'class' },
+    component: fakeLayout,
+    redirect: '/orders/view',
+    children: [
+      {
+        path: 'view',
+        name: 'orders-view',
+        meta: {
+          title: 'view',
+          icon: 'list',
+          // hidden: true,
+          noCache: true,
+          flag: 1,
+          parent: 'orders'
+        },
+        component: () => import('pages/orders/index')
       },
       {
-        path: 'orders',
-        name: 'product-orders',
-        meta: { title: 'orders', icon: 'class', parent: 'product' },
-        component: fakeLayout,
-        redirect: '/product/orders/view',
-        children: [
-          {
-            path: 'view',
-            name: 'product-orders-view',
-            meta: {
-              title: 'view',
-              icon: 'list',
-              hidden: true,
-              noCache: true,
-              flag: 1,
-              parent: 'product-orders'
-            },
-            component: () => import('pages/orders/index')
-          },
-          {
-            path: 'add',
-            name: 'product-orders-add',
-            meta: {
-              title: 'add',
-              icon: 'add',
-              hidden: true,
-              parent: 'product-orders'
-            },
-            component: () => import('pages/orders/add')
-          },
-          {
-            path: 'edit/:id?',
-            name: 'product-orders-edit',
-            meta: {
-              title: 'edit',
-              icon: 'edit',
-              hidden: true,
-              noCache: true,
-              activeMenu: '/product-orders/view',
-              parent: 'product-orders'
-            },
-            component: () => import('pages/orders/add')
-          },
-          {
-            path: 'trash',
-            name: 'product-orders-trash',
-            meta: {
-              title: 'trash',
-              icon: 'delete',
-              hidden: true,
-              noCache: true,
-              flag: 0,
-              parent: 'product-orders'
-            },
-            component: () => import('pages/orders/index')
-          }
-        ]
+        path: 'add',
+        name: 'orders-add',
+        meta: {
+          title: 'add',
+          icon: 'add',
+          // hidden: true,
+          parent: 'orders'
+        },
+        component: () => import('pages/orders/add')
+      },
+      {
+        path: 'edit/:id?',
+        name: 'orders-edit',
+        meta: {
+          title: 'edit',
+          icon: 'edit',
+          hidden: true,
+          noCache: true,
+          activeMenu: '/orders/view'
+        },
+        component: () => import('pages/orders/add')
+      },
+      {
+        path: 'trash',
+        name: 'orders-trash',
+        meta: {
+          title: 'trash',
+          icon: 'delete',
+          hidden: true,
+          noCache: true,
+          flag: 0
+        },
+        component: () => import('pages/orders/index')
+      }
+    ]
+  },
+  {
+    path: '/store',
+    name: 'store',
+    redirect: '/store/warehouse',
+    meta: { title: 'store', icon: 'store' },
+    component: fakeLayout,
+    children: [
+      {
+        path: 'warehouse',
+        name: 'store-warehouse',
+        meta: { title: 'data', icon: 'home_work', parent: 'store' },
+        component: () => import('pages/store/index')
+      },
+      {
+        path: 'report',
+        name: 'store-report',
+        meta: { title: 'report', icon: 'pie_chart', parent: 'store' },
+        component: () => import('pages/store/report')
+      },
+      {
+        path: 'import-list',
+        name: 'store-import-list',
+        meta: { title: 'importList', icon: 'playlist_add_check', parent: 'store' },
+        component: () => import('pages/store/import-list')
+      },
+      {
+        path: 'import',
+        name: 'store-import',
+        meta: { title: 'import', icon: 'addchart', parent: 'store' },
+        component: () => import('pages/store/import')
+      },
+      {
+        path: 'export-list',
+        name: 'store-export-list',
+        meta: { title: 'exportList', icon: 'playlist_play', parent: 'store' },
+        component: () => import('pages/store/export-list')
+      },
+      {
+        path: 'export',
+        name: 'store-export',
+        meta: { title: 'export', icon: 'double_arrow', parent: 'store' },
+        component: () => import('pages/store/export')
       }
     ]
   },
@@ -358,51 +401,6 @@ export const dynamic = [
             component: () => import('pages/category/index')
           }
         ]
-      }
-    ]
-  },
-  {
-    path: '/store',
-    name: 'store',
-    redirect: '/store/warehouse',
-    meta: { title: 'store', icon: 'store' },
-    component: fakeLayout,
-    children: [
-      {
-        path: 'warehouse',
-        name: 'store-warehouse',
-        meta: { title: 'data', icon: 'home_work', parent: 'store' },
-        component: () => import('pages/store/index')
-      },
-      {
-        path: 'report',
-        name: 'store-report',
-        meta: { title: 'report', icon: 'pie_chart', parent: 'store' },
-        component: () => import('pages/store/report')
-      },
-      {
-        path: 'import-list',
-        name: 'store-import-list',
-        meta: { title: 'importList', icon: 'playlist_add_check', parent: 'store' },
-        component: () => import('pages/store/import-list')
-      },
-      {
-        path: 'import',
-        name: 'store-import',
-        meta: { title: 'import', icon: 'addchart', parent: 'store' },
-        component: () => import('pages/store/import')
-      },
-      {
-        path: 'export-list',
-        name: 'store-export-list',
-        meta: { title: 'exportList', icon: 'playlist_play', parent: 'store' },
-        component: () => import('pages/store/export-list')
-      },
-      {
-        path: 'export',
-        name: 'store-export',
-        meta: { title: 'export', icon: 'double_arrow', parent: 'store' },
-        component: () => import('pages/store/export')
       }
     ]
   },

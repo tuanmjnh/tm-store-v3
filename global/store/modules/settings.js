@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import { api } from '@/boot/axios'
-import { i18nInstant, setI18nLanguage } from '@/boot/i18n'
+import { setI18nLanguage } from '@/boot/i18n'
 const collection = '/settings'
 const COOKIE_NAME = 'settings'
 const COOKIE_DATA = Cookies.get(COOKIE_NAME) ? JSON.parse(Cookies.get(COOKIE_NAME)) : {}
@@ -61,7 +61,7 @@ const mutations = {
     document.body.style.fontFamily = state.font.family
     document.body.style.color = state.font.color
     document.body.style.lineHeight = state.font.lineHeight
-    setI18nLanguage(i18nInstant, state.language)
+    setI18nLanguage(state.language)
     Cookies.set(COOKIE_NAME, JSON.stringify(state))
   },
   SET_DARK_MODE: (state, value) => {
@@ -127,10 +127,10 @@ const actions = {
       if (params.dense) commit('SET_DENSE', params.dense)
       if (params.shadow) commit('SET_SHADOW', params.shadow)
       commit('INIT')
-      api.post(collection, params)
+      if (Cookies.get('token')) api.post(collection, params)
     } else {
       commit('INIT')
-      api.post(collection, state)
+      if (Cookies.get('token')) api.post(collection, state)
     }
   },
   reload ({ commit, state }) {

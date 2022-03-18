@@ -6,7 +6,7 @@ require('./config')
 
 const express = require('express'),
   bodyParser = require('body-parser'),
-  // cors = require('cors'),
+  cors = require('cors'),
   session = require('express-session'),
   flash = require('express-flash'),
   compression = require('compression'),
@@ -14,7 +14,7 @@ const express = require('express'),
   router = require('./router'),
   mongoose = require('./services/mongoose'),
   middleware = require('./services/middleware'),
-  packageData = require(process.env.PACKAGE)
+  packageData = require('../package.json')
 
 // console.log(process.env.ROOT_PATH)
 // if (process.env.NODE_ENV.toString() === 'development') dotenv.config({ path: '.env.development' })
@@ -41,7 +41,7 @@ app.use(`${process.env.BASE_URL}${process.env.UPLOAD_PATH}`, express.static(proc
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 // CORS middleware
-// app.use(cors())
+app.use(cors())
 // app.options('*', cors())
 // compression
 app.use(compression())

@@ -1,5 +1,9 @@
 export default {
-  // sidebar: state => state.app.sidebar,
+  apiUrl: state => state.app.apiUrl,
+  apiUpload: state => state.app.apiUpload,
+  avatar: state => state.app.avatar,
+  iconApp: state => state.app.iconApp,
+  loading: state => state.app.loading,
   routes: state => state.auth.routesConstant.concat(state.auth.routes),
   languages: state => state.app.languages,
   language: state => state.settings.language,
@@ -9,7 +13,7 @@ export default {
   darkMode: state => state.settings.darkMode,
   format: state => state.settings.format,
   shadow: state => state.settings.shadow
-
+  // sidebar: state => state.app.sidebar,
   // device: state => state.app.device,
   // useLogs: state => state.app.useLogs,
   // visitedViews: state => state.tagsView.visitedViews,

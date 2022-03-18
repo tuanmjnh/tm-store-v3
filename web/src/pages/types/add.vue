@@ -101,8 +101,7 @@
                            :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
                            :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')"
                            :labelNoData="$t('table.noData')" :hintKey="$t('hint.newValue')" :hintVal="$t('hint.newValue')"
-                           :on-filter-key="onFilterMetaKey" :on-filter-value="onFilterMetaValue">
-            </tm-attributes>
+                           :on-filter-key="onFilterMetaKey" :on-filter-value="onFilterMetaValue" />
           </q-tab-panel>
         </q-tab-panels>
       </q-scroll-area>

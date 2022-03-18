@@ -1,1 +1,68 @@
 // app global css in SCSS form
+@import "flag.css";
+//
+.body--light {
+  .q-header {
+    background-color: #1976d2;
+    color: #fff;
+  }
+  .q-footer {
+    background-color: #fff;
+    color: #9e9e9e;
+  }
+  // .q-page-container {
+  //   background-color: #e7e7e7;
+  // }
+}
+//
+.body--dark {
+  .q-header,
+  .q-footer {
+    background-color: #121212;
+    color: #fff;
+  }
+}
+//
+.headder-row {
+  padding: 9px;
+  .text-subtitle1 {
+    line-height: 2.1rem;
+  }
+}
+//
+.q-dialog-plugin {
+  .q-card__actions {
+    .q-btn {
+      font-weight: initial;
+    }
+  }
+}
+// Flat Button
+.q-btn--square {
+  border-radius: initial;
+  padding: 0 16px !important;
+  &:before {
+    box-shadow: initial;
+  }
+  .q-btn__wrapper::before {
+    box-shadow: initial;
+  }
+  &.q-btn--dense .q-btn__wrapper {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+.q-btn--square.q-btn-group {
+  box-shadow: initial;
+  .q-btn--dense.q-btn-dropdown--current {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+.btn-language-list {
+  .q-item__section--avatar {
+    min-width: initial;
+    padding-right: 9px;
+  }
+}

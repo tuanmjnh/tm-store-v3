@@ -274,7 +274,7 @@ export default defineComponent({
         fontColor.value = fontColors.value.find(x => x.value === $store.getters.font.color)
         //lineHeight
         lineHeights.value = _settings.fontColor
-        lineHeight.value = fontColors.value.find(x => x.value === $store.getters.font.color)
+        lineHeight.value = lineHeights.value.find(x => x.value === $store.getters.font.color)
         //formatDates
         formatDates.value = _settings.formatDate
         formatDate.value = formatDates.value.find(x => x.value === $store.getters.format.date)

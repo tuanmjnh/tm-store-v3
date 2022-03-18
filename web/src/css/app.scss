@@ -1,4 +1,5 @@
 // app global css in SCSS form
+@import "flag.css";
 //
 .bri {
   border-radius: initial;
@@ -9,6 +10,13 @@
 }
 .q-inner-loading {
   z-index: 999;
+}
+// Language
+.btn-language-list {
+  .q-item__section--avatar {
+    min-width: initial;
+    padding-right: 9px;
+  }
 }
 
 // Flat Button

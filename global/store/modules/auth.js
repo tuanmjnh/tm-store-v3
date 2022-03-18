@@ -50,21 +50,27 @@ const actions = {
   },
   async verify ({ commit, dispatch, rootState }, params) {
     let rs
-    if (params) rs = await api.post(collection, params)
-    else rs = await api.get(collection, { params })
-    if (rs) {
-      commit('SET_VERIFIED', true)
-      if (rs.token) commit('SET_TOKEN', rs.token)
-      if (rs.user) commit('SET_USER', rs.user)
-      if (rs.user && rs.user.routes) {
-        const routes = await generateRoutes(rs.user.routes)
-        for await (const r of routes) {
-          Router.addRoute(r)
+    try {
+      if (params) rs = await api.post(collection, params)
+      else rs = await api.get(collection, { params })
+      if (rs) {
+        commit('SET_VERIFIED', true)
+        if (rs.token) commit('SET_TOKEN', rs.token)
+        if (rs.user) commit('SET_USER', rs.user)
+        if (rs.user && rs.user.routes) {
+          const routes = await generateRoutes(rs.user.routes)
+          for await (const r of routes) {
+            Router.addRoute(r)
+          }
+          commit('SET_ROUTES', routes)
         }
-        commit('SET_ROUTES', routes)
+      } else {
+        dispatch('logout')
       }
-    } else dispatch('logout')
-    return rs
+      return rs
+    } catch (e) {
+      return null
+    }
   },
   logout ({ commit }) {
     commit('SET_VERIFIED', false)

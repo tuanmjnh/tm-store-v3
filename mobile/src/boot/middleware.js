@@ -1,9 +1,9 @@
-import { Router } from '@/router';
-import store from '@/store';
-// import * as auth from '@/api/auth';
+import { Router } from '@/router'
+import store from '@/store'
+// import * as auth from '@/api/auth'
 // import * as userSetting from '@/api/user-setting'
-import NProgress from 'nprogress'; // progress bar
-import '@/css/nprogress.css'; // progress bar style
+import NProgress from 'nprogress' // progress bar
+import '@/css/nprogress.css' // progress bar style
 
 // NProgress Configuration
 NProgress.configure({
@@ -13,7 +13,7 @@ NProgress.configure({
   trickle: true,
   trickleSpeed: 200,
   minimum: 0.08
-});
+})
 
 export function onSetGlobalData () {
   return new Promise(async (resolve, reject) => {
@@ -22,32 +22,37 @@ export function onSetGlobalData () {
       if (!store.state.roles.items) await store.dispatch('roles/getAll')// .then(() => { console.log(store.state.roles.items) })
     }
     return resolve(true)
-  });
+  })
 }
 
-const whiteList = ['/login']; // no redirect whitelist
+const whiteList = ['/login'] // no redirect whitelist
 Router.beforeEach(async (to, from, next) => {
   // start progress bar
-  NProgress.start();
+  NProgress.start()
   await onSetGlobalData()
-  const token = store.state.auth.token;
+  const token = store.state.auth.token
   if (token) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' });
-      NProgress.done();
+      next({ path: '/' })
+      NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
       if (store.state.auth.user && store.state.auth.routes) {
-        next();
+        next()
       } else {
         try {
           // get user info
-          await store.dispatch('auth/verify').then(() => {
-            // next(to.path);
-            next({ path: to.path, params: to.params, query: to.query });
-          });
-          // if (!data.user) store.dispatch('auth/logout'); // || !data.routes.length
+          const rs = await store.dispatch('auth/verify')//.then(() => {
+          // next(to.path)
+          // next({ path: to.path, params: to.params, query: to.query })
+          // })
+          if (rs) next({ path: to.path, params: to.params, query: to.query })
+          else {
+            store.dispatch('auth/logout')
+            next()
+          }
+          // if (!data.user) store.dispatch('auth/logout') // || !data.routes.length
           // if (!store.state.userSetting.data) {
           //   const us = await userSetting.get()
           //   store.dispatch('userSetting/set', us)
@@ -59,16 +64,16 @@ Router.beforeEach(async (to, from, next) => {
           //       replace: true
           //     })
           //   )
-          //   .then(next(to.path)); // next({ ...to, replace: true })
-        } catch (err) {
+          //   .then(next(to.path)) // next({ ...to, replace: true })
+        } catch (e) {
           // console.log(err)
           // remove token and go to login page to re-login
-          await store.dispatch('auth/logout');
+          await store.dispatch('auth/logout')
           // Message.error(error || 'Has Error')
           // console.log(err)
-          next(`/login?redirect=${to.path}`);
+          next(`/login?redirect=${to.path}`)
           // stop progress bar
-          NProgress.done();
+          NProgress.done()
         }
       }
       // // Check is added routes
@@ -91,16 +96,16 @@ Router.beforeEach(async (to, from, next) => {
     // has no token
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
-      next();
+      next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`);
-      NProgress.done();
+      next(`/login?redirect=${to.path}`)
+      NProgress.done()
     }
   }
-});
+})
 
 Router.afterEach(() => {
   // finish progress bar
-  NProgress.done();
-});
+  NProgress.done()
+})

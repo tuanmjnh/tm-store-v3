@@ -58,7 +58,7 @@ export default {
     deleted: 'Đã xóa',
     accept: 'Chấp nhận',
     confirm: 'Xác nhận',
-    cancel: 'Hủy bỏ',
+    cancel: 'Hủy',
     back: 'Quay lại',
     note: 'Ghi chú',
     desc: 'Miêu tả',
@@ -119,7 +119,9 @@ export default {
     icon: 'Biểu tượng',
     range: 'Phạm vi',
     new: 'Mới',
-    dependent: 'Thuộc'
+    dependent: 'Thuộc',
+    notification: 'Thông báo',
+    strong: 'Mạnh',
   },
   success: {
     insert: 'Thêm mới thành công',
@@ -162,7 +164,9 @@ export default {
     resetPassword: 'Bạn có chắc chắn muốn đặt lại mật khẩu cho tài khoản {username} không?',
     totalWrong: 'Có tổng số <b>{total}</b> bản ghi không hợp lệ',
     wrongIndex: 'Chi tiết vị trí:',
-    print: 'In dữ liệu'
+    print: 'In dữ liệu',
+    noNotification: 'Chưa có thông báo',
+    noProblem: 'không có vấn đề gì'
   },
   hint: {
     newValue: 'Nhập giá trị sau đó ấn \'Enter\' để thêm giá trị mới'
@@ -219,12 +223,20 @@ export default {
     avatar: 'Ảnh đại diện',
     note: 'Gới thiệu',
     region: 'Quốc gia',
-    verified: 'Xác thực',
+    verify: 'Xác thực',
+    verified: 'Đã xác thực',
+    unverified: 'Chưa xác thực',
     aboutMe: 'Thông tin',
+    region: 'Quốc gia',
     selectRegion: 'Lựa chọn quốc gia',
+    changePassword: 'Thay đổi mật khẩu',
     resetPassword: 'Đặt lại mật khẩu',
     msgResetPassword: 'Mật khẩu mới của tài khoản {username}: {password}',
-    msgNewRePassword: 'Mật khẩu mới và xác nhận phải giống nhau'
+    msgNewRePassword: 'Mật khẩu mới chưa chính xác',
+    information: 'Thông tin tài khoản',
+    securityCheck: 'Kiểm tra bảo mật',
+    securityStatus: 'Tình trạng bảo mật',
+    loginHistory: 'Lịch sử đăng nhập',
   },
   profile: {
     title: 'Hồ sơ của tôi',
@@ -438,21 +450,26 @@ export default {
     sidebarLogo: 'Hiển thị Logo',
     language: 'Ngôn ngữ',
     darkMode: 'Dark mode',
+    font: 'Phông chữ',
     fontSize: 'Cỡ chữ',
     fontFamily: 'Phông chữ',
     fontColor: 'Mầu chữ',
     fontLineHeight: 'Khoảng cách chữ',
+    format: 'Định dạng',
     formatDate: 'Định dạng ngày',
     formatTime: 'Định dạng giờ',
+    dense: 'Độ dầy',
     denseForm: 'Độ dầy khung nhập',
     denseButton: 'Độ dầy nút',
     denseInput: 'Độ dầy đầu vào',
     denseTable: 'Độ dầy bảng',
     denseMenu: 'Độ dầy Menu',
+    shadow: 'Đổ bóng',
+    shadowTable: 'Đổ bóng bảng',
     msgChangeTheme: 'Thay đổi mầu chủ đề thành công',
     msgChangeLanguage: 'Thay đổi ngôn ngữ thành công',
     msgChangeSize: 'Thay đổi kích thước chữ thành công',
-    shadowTable: 'Đổ bóng bảng'
+    userControl: 'Điều khiển'
   },
   size: {
     md: 'Mặc định',

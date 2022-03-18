@@ -193,35 +193,60 @@ module.exports.put = async function (req, res, next) {
     // if (!req.body._id) return res.status(500).send('invalid')
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
     if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      MUsers.updateOne(
-        { _id: req.body._id },
-        {
-          $set: {
-            group: req.body.group,
-            fullName: req.body.fullName,
-            phone: req.body.phone,
-            personNumber: req.body.personNumber,
-            region: req.body.region,
-            avatar: req.body.avatar,
-            note: req.body.note,
-            dateBirth: req.body.dateBirth,
-            gender: req.body.gender,
-            address: req.body.address,
-            roles: req.body.roles
-          }
-        },
-        (e, rs) => {
-          // { multi: true, new: true },
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
-          return res.status(202).json(rs)
-        }
-      )
+      const set = {}
+      if (req.body.group) set.group = req.body.group
+      if (req.body.email) set.email = req.body.email
+      if (req.body.fullName) set.fullName = req.body.fullName
+      if (req.body.phone) set.phone = req.body.phone
+      if (req.body.personNumber) set.personNumber = req.body.personNumber
+      if (req.body.region) set.region = req.body.region
+      if (req.body.avatar) set.avatar = req.body.avatar
+      if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
+      if (req.body.gender) set.gender = req.body.gender
+      if (req.body.address) set.address = req.body.address
+      if (req.body.roles) set.roles = req.body.roles
+      if (req.body.note !== undefined) set.note = req.body.note
+      const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
+      if (rs) {
+        Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
+        return res.status(200).json(rs)
+      }
+      else return res.status(200).json(null)
     } else {
       return res.status(500).send('invalid')
     }
   } catch (e) {
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.update = async function (req, res, next) {
+  try {
+    if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
+    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
+      const set = {}
+      if (req.body.group) set.group = req.body.group
+      if (req.body.email) set.email = req.body.email
+      if (req.body.fullName) set.fullName = req.body.fullName
+      if (req.body.phone) set.phone = req.body.phone
+      if (req.body.personNumber) set.personNumber = req.body.personNumber
+      if (req.body.region) set.region = req.body.region
+      if (req.body.avatar) set.avatar = req.body.avatar
+      if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
+      if (req.body.gender) set.gender = req.body.gender
+      if (req.body.address) set.address = req.body.address
+      if (req.body.note !== undefined) set.note = req.body.note
+      const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
+      if (rs) {
+        Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
+        return res.status(200).json(rs)
+      }
+      else return res.status(200).json(null)
+    } else {
+      return res.status(500).send('invalid')
+    }
+  } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }

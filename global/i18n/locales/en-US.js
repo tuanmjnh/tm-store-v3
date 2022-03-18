@@ -119,7 +119,9 @@ export default {
     icon: 'Icon',
     range: 'Range',
     new: 'New',
-    dependent: 'Dependent'
+    dependent: 'Dependent',
+    notification: 'Notification',
+    strong: 'Strong'
   },
   success: {
     insert: 'Insert success',
@@ -162,7 +164,9 @@ export default {
     resetPassword: 'Are you sure you want to reset password for {username}?',
     totalWrong: 'There are a total of <b>{total}</b> invalid records',
     wrongIndex: 'Detail index:',
-    print: 'Print data'
+    print: 'Print data',
+    noNotification: 'No notification',
+    noProblem: 'No problem'
   },
   hint: {
     newValue: 'Type the value then press \'Enter\' to add a new value'
@@ -218,12 +222,20 @@ export default {
     avatar: 'Avatar',
     note: 'Introduction',
     region: 'Phone region',
+    verify: 'Verify',
     verified: 'Verified',
+    unverified: 'Unverified',
     aboutMe: 'About me',
+    region: 'Region',
     selectRegion: 'Select the region',
+    changePassword: 'Change password',
     resetPassword: 'Reset password',
     msgResetPassword: 'New password of {username}: {password}',
-    msgNewRePassword: 'The new password and repeat password must be same'
+    msgNewRePassword: 'New password is not correct',
+    information: 'Account information',
+    securityCheck: 'Security check',
+    securityStatus: 'Security status',
+    loginHistory: 'Login history',
   },
   profile: {
     title: 'My profile',
@@ -436,22 +448,27 @@ export default {
     fixedHeader: 'Fixed Header',
     sidebarLogo: 'Sidebar Logo',
     language: 'Language',
+    darkMode: 'Dark mode',
+    font: 'Font',
     fontSize: 'Font size',
     fontFamily: 'Font family',
     fontColor: 'Font color',
     fontLineHeight: 'Line height',
+    format: 'Format',
     formatDate: 'Format date',
     formatTime: 'Format time',
+    dense: 'Dense',
     denseForm: 'Dense Form',
     denseButton: 'Dense Button',
     denseInput: 'Dense Input',
     denseTable: 'Dense Table',
     denseMenu: 'Dense Menu',
-    darkMode: 'Dark mode',
+    shadow: 'Shadow',
+    shadowTable: 'Box shadow table',
     msgChangeTheme: 'Change the theme color success',
     msgChangeLanguage: 'Change language success',
     msgChangeSize: 'Change font size success',
-    shadowTable: 'Box shadow table'
+    userControl: 'User control'
   },
   size: {
     md: 'Default',

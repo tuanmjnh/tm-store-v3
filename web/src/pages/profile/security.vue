@@ -14,7 +14,8 @@
             <!-- <q-input v-model.trim="form.oldPassword" :dense="$store.getters.dense.input" :label="$t('users.oldPassword')"
               :rules="[v=>v&&v.length>0||$t('error.required')]" /> -->
             <q-input v-model.trim="oldPassword.value" :type="oldPassword.type" :dense="$store.getters.dense.input" :label="$t('users.oldPassword')"
-                     @keyup="oldPassword.caps=checkCapslock($event)" @blur="oldPassword.caps=false" :rules="[v=>v&&v.length>0||$t('error.required')]"
+                     @keyup="oldPassword.caps=onCheckCapslock($event)" @blur="oldPassword.caps=false"
+                     :rules="[v=>v&&v.length>0||$t('error.required')]"
                      class="capsTooltip">
               <template v-slot:append>
                 <q-icon v-if="oldPassword.type==='password'" name="visibility_off" @click="oldPassword.type='text'" class="cursor-pointer" />
@@ -31,7 +32,8 @@
             <!-- <q-input v-model.trim="form.newPassword" :dense="$store.getters.dense.input"
               :label="$t('users.newPassword')" :rules="[v=>v&&v.length>0||$t('error.required')]" /> -->
             <q-input v-model.trim="newPassword.value" :type="newPassword.type" :dense="$store.getters.dense.input" :label="$t('users.newPassword')"
-                     @keyup="newPassword.caps=checkCapslock($event)" @blur="newPassword.caps=false" :rules="[v=>v&&v.length>0||$t('error.required')]"
+                     @keyup="newPassword.caps=onCheckCapslock($event)" @blur="newPassword.caps=false"
+                     :rules="[v=>v&&v.length>0||$t('error.required')]"
                      class="capsTooltip">
               <template v-slot:append>
                 <q-icon v-if="newPassword.type==='password'" name="visibility_off" @click="newPassword.type='text'" class="cursor-pointer" />
@@ -46,7 +48,7 @@
         <!-- <div class="row q-gutter-xs">
           <div class="col-12 col-md-6">
             <q-input v-model.trim="rePassword.value" :type="rePassword.type" :dense="$store.getters.dense.input"
-              :placeholder="$t('users.re_password')" @keyup.native="rePassword.caps=checkCapslock($event)"
+              :placeholder="$t('users.re_password')" @keyup.native="rePassword.caps=onCheckCapslock($event)"
               @blur="rePassword.caps=false" :rules="[v=>v&&v.length>0||$t('error.required')]" class="capsTooltip">
               <template v-slot:append>
                 <q-icon v-if="rePassword.type==='password'" name="visibility_off" @click="rePassword.type='text'"
@@ -105,7 +107,7 @@ export default defineComponent({
 
     return {
       form, oldPassword, newPassword, rePassword,
-      checkCapslock ({ shiftKey, key } = {}) {
+      onCheckCapslock ({ shiftKey, key } = {}) {
         // console.log(shiftKey, key)
         let caps = false
         if (key && key.length === 1) {

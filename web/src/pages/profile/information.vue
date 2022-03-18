@@ -112,6 +112,7 @@
 import { defineComponent, ref, computed } from 'vue';
 import { useStore } from 'vuex'
 import { regionConstant } from '@/boot/i18n'
+import { validEmail } from '../../../../global/utils/validate'
 export default defineComponent({
   name: 'Information',
   setup () {
@@ -133,17 +134,13 @@ export default defineComponent({
       }
     }
     return {
-      form, data, regions, region, genders, gender,
+      form, data, regions, region, genders, gender, validEmail,
       onFilterRegion (val, update, abort) {
         update(() => {
           const needle = val.toLowerCase()
           // data.value.region = regions.value.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
           regions.value = regionConstant.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
         })
-      },
-      validEmail (email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        return re.test(email)
       },
       onSubmit () {
         form.value.validate().then((valid) => {

@@ -19,6 +19,7 @@
     "info": "quasar info",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
+    "icongenie": "icongenie g -i public/logo.png",
     "update": "npm update",
     "upgrade": "npm upgrade",
     "upgrade-quasar": "quasar upgrade",

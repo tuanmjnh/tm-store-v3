@@ -1,140 +1,120 @@
-const formidable = require('formidable'),
-  io = require('../../utils/io'),
+// For more information on ways to initialize Storage, please see
+// https://googleapis.dev/nodejs/storage/latest/Storage.html
+// Imports the Google Cloud client library
+const { Storage } = require('@google-cloud/storage')
+const processFile = require('./process-file')
+const { format } = require('util')
+const path = require('path')
+io = require('../../utils/io'),
   Request = require('../../utils/Request')
 
 const name = 'file-manager'
 module.exports.name = name
-module.exports.get = async function (req, res, next) {
+const commonPath = 'common'
+
+// Creates a client from a Google service account key
+// const storage = new Storage({keyFilename: 'key.json'})
+// Creates a client using Application Default Credentials
+const storage = new Storage({
+  keyFilename: path.join(__dirname, '../../config/storage-tm-store-4576e-8b5b9681fe8c.json'),
+  // projectId: 'tm-store-4576e'
+})
+const bucket = storage.bucket('tm-store-4576e.appspot.com')
+
+module.exports.createBucket = async function (req, res, next) {
   try {
-    const result = []
-    io.getAllFolder(result, process.env.UPLOAD_DIR)
-    if (result) res.status(201).json(result).end()
-    else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+    /**
+ * TODO(developer): Uncomment these variables before running the sample.
+ */
+    // The ID of your GCS bucket
+    // const bucketName = 'your-unique-bucket-name'
+
+    // Creates the new bucket
+    const rs = await storage.createBucket(req.body.name)
+    console.log(`Bucket ${req.body.name} created.`)
+    if (rs) return res.status(201).json(rs)
+    else return res.status(500).send('invalid')
   } catch (e) {
     console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
-module.exports.getDirectories = async function (req, res, next) {
+module.exports.get = async (req, res, next) => {
   try {
-    req.query.dir = req.query.dir || process.env.UPLOAD_PATH
-    const result = io.getAllDirectories({ dir: req.query.dir })
-    if (result) {
-      res
-        .status(201)
-        .json([{
-          id: 0,
-          name: 'Root',
-          fullName: '',
-          directory: '',
-          fullPath: '',
-          icon: 'folder',
-          children: result
-        }])
-        .end()
-    } else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+    const [metaData] = await bucket.file(req.params.name).getMetadata()
+    res.redirect(metaData.mediaLink)
+
   } catch (e) {
-    console.log(e)
-    // return res.status(500).send(e)
-    return res.status(500).json({ error: e, dir: process.env.PUBLIC_PATH })
+    return res.status(500).send('invalid')
   }
 }
 
-module.exports.getFiles = async function (req, res, next) {
+module.exports.getAll = async (req, res, next) => {
   try {
-    req.query.dir = req.query.dir || process.env.UPLOAD_PATH
-    const result = io.getFiles({ dir: req.query.dir, host: Request.getHost(req) })
-    if (result) res.status(201).json(result).end()
-    else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+    const [files] = await bucket.getFiles()
+    let fileInfos = []
+
+    files.forEach((file) => {
+      fileInfos.push({
+        name: file.name,
+        url: file.metadata.mediaLink,
+      })
+    })
+
+    res.status(200).send(fileInfos)
   } catch (e) {
-    console.log(e)
-    return res.status(500).send(e)
+    return res.status(500).send('invalid')
   }
 }
 
-module.exports.post = async function (req, res, next) {
+module.exports.post = async (req, res, next) => {
   try {
-    const form = new formidable.IncomingForm()
-    const createDir = await io.createDir({ dir: req.headers['upload-path'] })
-    const rename = req.headers['upload-rename'] === 'true' ? true : false
-    form.uploadDir = createDir.path
-    form.keepExtensions = true
-    // form.multiples = true
-    form.maxFileSize = 5 * 1024 * 1024 // Max 5MB
+    // const image = req.file.buffer
+    await processFile(req, res)
+    if (!req.file) {
+      return res.status(400).send({ message: 'Please upload a file!' })
+    }
+    if (req.headers['upload-path'] === 'users') {
+      req.headers['upload-path'] = `${req.headers['upload-path']}/${req.verify._id}`
+    }
+    const fileUpload = req.headers['upload-path'] ? `${req.headers['upload-path']}/${req.file.originalname}` : `${commonPath}/${req.file.originalname}`
+    const blob = bucket.file(fileUpload)
+    const blobStream = blob.createWriteStream({ resumable: false, })
 
-    // form.on('fileBegin', function(name, file) {
-    // })
-    form.on('file', (field, file) => {
-      // rename the incoming file to the file's name
-      if (rename) {
-        const tmp = file.path.split('/')
-        file.name = tmp[tmp.length - 1].replace('upload_', '')
+    blobStream.on('error', (e) => { res.status(500).send({ message: e.message }) })
+
+    blobStream.on('finish', async (data) => {
+      const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
+      const rs = []
+      rs.push({
+        originalname: req.file.originalname,
+        publicUrl: publicUrl,
+        size: req.file.size,
+        extension: io.getExtention(req.file.originalname),
+        mimetype: req.file.mimetype
+      })
+      try {
+        await bucket.file(fileUpload).makePublic()
+      } catch (e) {
+        console.log(e)
+        // return res.status(500).send({
+        //   message: `Uploaded the file successfully: ${req.file.originalname}, but public access is denied!`,
+        //   url: publicUrl,
+        // })
       }
-      io.rename(file.path, `${form.uploadDir}/${file.name}`)
+      return res.status(200).json(rs)
     })
-
-    form.on('error', (e) => {
-      console.log('an error has occured with form upload')
-      req.resume()
-    })
-
-    form.on('aborted', (e) => {
-      console.log('user aborted upload')
-    })
-
-    form.on('end', (fields, files) => { })
-
-    form.onPart = function (part) {
-      if (part.filename) {
-        // || part.filename.match(/\.(jpg|jpeg|png)$/i)
-        this.handlePart(part)
-      } else {
-        console.log(part.filename + ' is not allowed')
-      }
+    blobStream.end(req.file.buffer)
+  } catch (e) {
+    // console.log(e)
+    if (e.code == 'LIMIT_FILE_SIZE') {
+      return res.status(500).send(e.code) // ({message: 'File size cannot be larger than 2MB!'})
     }
 
-    form.parse(req, (_, fields, files) => {
-      const rs = [] // await dbapi.create(body)
-      let file = Object.keys(files)
-      if (file.length > 0) {
-        file = files[file]
-        rs.push({
-          name: file.name,
-          fullName: `${Request.getHost(req)}/${process.env.UPLOAD_PATH}/${req.headers['upload-path']}/${file.name}`,
-          size: file.size,
-          ext: io.getExtention(file.name),
-          icon: 'file',
-          path: `${process.env.UPLOAD_PATH}/${req.headers['upload-path']}`,
-          type: file.type
-        })
-      }
-      if (rs) res.status(201).json(rs)
-      else res.status(404).json({ msg: 'exist', params: 'data' })
-    })
-    // const tmp_file = {
-    //   path: req.headers['upload-path'],
-    //   size: file.size,
-    //   originalname: file.name,
-    //   filename: rename ? file.path : `${req.headers['upload-path']}/${file.name}`,
-    //   extension: io.getExtention(file.name),
-    //   mimetype: file.type
-    // }
-    // result.push(tmp_file)
-    // for (const e of req.files) {
-    //   result.push({
-    //     path: req.headers.path,
-    //     size: e.size,
-    //     originalname: e.filename,
-    //     filename: `${req.headers.path}/${e.filename}`,
-    //     extension: io.getExtention(e.filename),
-    //     mimetype: e.mimetype
-    //   })
-    // }
-    // console.log(result)
-    // if (result) res.status(201).json(result).end()
-    // else res.status(404).json({ msg: 'exist', params: 'data' }).end()
-  } catch (e) {
+    // res.status(500).send({
+    //   message: `Could not upload the file: ${req.file.originalname}. ${e}}`,
+    // })
     return res.status(500).send('invalid')
   }
 }

@@ -22,7 +22,7 @@ module.exports = configure(function (ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["i18n", "axios"],
+    boot: ["i18n", "axios", 'prototypes', 'middleware', 'axios', 'moment', 'directive'],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ["app.scss"],
@@ -101,18 +101,18 @@ module.exports = configure(function (ctx) {
       // environment
       env: ctx.dev
         ? { // so on dev we'll have
-          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: 'http://localhost:8001/api', // JSON.stringify('http://localhost:8001/api'),
-          API_UPLOAD: 'http://localhost:8001/uploads', // JSON.stringify('http://localhost:8001/uploads'),
-          API_PUBLIC: 'http://localhost:8001/public', // JSON.stringify('http://localhost:8001/public'),
-          API_FILE_UPLOAD: 'http://localhost:8001/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
+          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'http://localhost:8080/api', // JSON.stringify('http://localhost:8001/api'),
+          API_UPLOAD: 'http://localhost:8080/uploads', // JSON.stringify('http://localhost:8001/uploads'),
+          API_PUBLIC: 'http://localhost:8080/public', // JSON.stringify('http://localhost:8001/public'),
+          API_FILE_UPLOAD: 'http://localhost:8080/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
         }
         : { // and on build (production):
-          APP_TITLE: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: 'https://tm-store-express.herokuapp.com/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
-          API_UPLOAD: 'https://tm-store-express.herokuapp.com/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
-          API_PUBLIC: 'https://tm-store-express.herokuapp.com/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
-          API_FILE_UPLOAD: 'https://tm-store-express.herokuapp.com/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
+          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
+          API: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
+          API_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
+          API_PUBLIC: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
+          API_FILE_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
         }
     },
 
@@ -123,12 +123,19 @@ module.exports = configure(function (ctx) {
       },
       port: 8100,
       open: false, // opens browser window automatically
+      // proxy: {
+      //   '/api': {
+      //     // target: 'https://tm-store-api-opkgzsyymq-uc.a.run.app',
+      //     target: 'http://localhost:8080',
+      //     // pathRewrite: { '^/api': '' },
+      //     changeOrigin: true,
+      //     secure: true
+      //   }
+      // }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      config: {},
-
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
 
@@ -140,7 +147,16 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify', 'AppFullscreen', 'Dialog'],
+      config: {
+        notify: {
+          position: 'top',
+          timeout: 5000,
+          color: 'blue-grey',
+          textColor: 'white',
+          actions: [{ icon: 'close', color: 'white' }]
+        }
+      },
     },
 
     // animations: 'all', // --- includes all animations

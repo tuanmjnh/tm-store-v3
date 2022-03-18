@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers'
 import * as directives from '../../../global/directive' // global directive
 
-// We globally register our directive with Vue;
+// We globally register our directive with Vue
 // Remember that all directives in Vue will start with 'v-'
 // but that should not be part of your directive name
 // https://vuejs.org/v2/guide/custom-directive.html

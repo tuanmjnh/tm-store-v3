@@ -18,6 +18,15 @@
         </q-list>
       </q-scroll-area>
       <drawer-search :is-placeholder="!drawerMini" />
+      <!-- <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
+        <q-btn
+               dense
+               round
+               unelevated
+               color="accent"
+               icon="chevron_left"
+               @click="drawerMini = !drawerMini" />
+      </div> -->
     </q-drawer>
     <!-- <drawer ref="drawer" :items="$store.getters.routes" :dense="$store.getters.dense.menu" /> -->
     <q-page-container>
@@ -30,9 +39,10 @@
 </template>
 
 <script>
-import { defineComponent, ref, defineAsyncComponent } from 'vue';
-import { useRoute, useRouter } from 'vue-router'
+import { defineComponent, ref, defineAsyncComponent, watch } from 'vue';
+import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
+// import { useStore } from 'vuex'
 // import drawerItem from '../components/drawer-item'
 // import drawerSearch from '../components/drawer-search'
 // import headerRight from '../components/header-right'
@@ -49,14 +59,14 @@ export default defineComponent({
   },
   setup () {
     const $route = useRoute()
-    const $router = useRouter()
     const $q = useQuasar()
-    const title = ref('TM-Store') // process.env.APP_NAME,
+    // const $store = useStore()
+    const title = process.env.APP_NAME
     const drawer = ref($q.platform.is.desktop)
     const modeMini = ref(false)
     const drawerMini = ref(false)
     const overlay = ref(false)
-
+    // console.log($store.getters.routes)
     // Global data
 
     // console.log($router.options.routes)
@@ -74,9 +84,12 @@ export default defineComponent({
     // const onChangeModeDrawer = () => {
     //   $refs.drawer.onChangeModeDrawer()
     // }
+
+
     return {
-      title, drawer, modeMini, drawerMini, overlay,
+      title, drawer, drawerMini, overlay,
       onChangeModeDrawer: () => {
+        drawer.value = true
         if (modeMini.value) {
           modeMini.value = false
           drawerMini.value = false
