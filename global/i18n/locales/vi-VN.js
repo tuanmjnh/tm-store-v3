@@ -3,7 +3,7 @@ export default {
     index: 'Trang chủ',
     view: 'Xem',
     add: 'Thêm mới',
-    edit: 'Sửa',
+    edit: 'Cập nhật',
     trash: 'Đã xóa',
     delete: 'Xóa',
     dashboard: 'Dashboard',
@@ -295,6 +295,7 @@ export default {
     export: 'Xuất',
     select: 'Chọn sản phẩm trong danh sách',
     add: 'Thêm sản phẩm mới',
+    price: 'Giá',
     unitPrice: 'Đơn giá',
     priceSale: 'Giá bán',
     priceDiscount: 'Giá giảm',
@@ -417,7 +418,8 @@ export default {
     type: 'Kiểu',
     url: 'Địa chỉ tệp',
     inputUrl: 'Nhập đường dẫn',
-    googleSheet: 'Google sheet'
+    googleSheet: 'Google sheet',
+    manager: 'Quản lý tệp'
   },
   gender: {
     male: 'Nam',

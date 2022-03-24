@@ -179,9 +179,9 @@
             </div>
             <q-separator class="q-mt-md" />
             <tm-tags v-model="data.tags" :dense="$store.getters.dense.input" :labelTitle="$t('global.keyword')+':'"
-                     :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" btnColor="blue" tagsColor="primary"
-                     tagsTextColor="white" :labelConfirmTitle="$t('messageBox.confirm')" :labelConfirmContent="$t('messageBox.delete')"
-                     :labelWarningTitle="$t('messageBox.warning')" :labelWarningContent="$t('error.required')" />
+                     :labelBtnAdd="$t('global.add')" :labelInput="$t('global.tags')" btnIcon="add" :labelConfirmTitle="$t('messageBox.confirm')"
+                     :labelConfirmContent="$t('messageBox.delete')" :labelWarningContent="$t('error.required')" :lblOk="$t('global.accept')"
+                     :lblCancel="$t('global.cancel')" />
             <q-separator class="q-mb-md q-mt-md" />
             <tm-attributes v-model="data.attr" :keys="attrKeys" :values="attrValues" :dense="$store.getters.dense.input"
                            :labelTitle="$t('global.attributes')+':'" :labelBtnAdd="$t('global.add')" :labelBtnUpdate="$t('global.update')"

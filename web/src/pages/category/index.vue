@@ -1,28 +1,27 @@
 <template>
-  <div>
-    <div class="col-12 row">
-      <div class="col-xs-12 col-sm-auto q-table__title text-h6">
-        {{$t(`category.title${$route.meta.type}`)}}</div>
+  <div class="col-12 row">
+    <div class="col-xs-12 col-sm-auto q-table__title text-h6">
+      {{$t(`category.title${$route.meta.type}`)}}</div>
+  </div>
+  <div class="col-12 row">
+    <div class="col-1">
+      <q-btn v-if="isRoutes.add" flat round dense icon="add" color="blue" @click="onAdd()">
+        <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.add')}}</q-tooltip>
+      </q-btn>
     </div>
-    <div class="col-12 row">
-      <div class="col-1">
-        <q-btn v-if="isRoutes.add" flat round dense icon="add" color="blue" @click="onAdd()">
-          <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.add')}}</q-tooltip>
-        </q-btn>
-      </div>
-      <q-space />
-      <div class="col-xs-9 col-sm-5 col-md-4">
-        <q-input v-model="pagination.filter" :dense="$store.getters.dense.input" debounce="500"
-                 :placeholder="$t('global.search')">
-          <template v-slot:append>
-            <q-icon v-if="pagination.filter===''" name="search" />
-            <q-icon v-else name="clear" class="cursor-pointer" @click="pagination.filter=''" />
-          </template>
-        </q-input>
-      </div>
+    <q-space />
+    <div class="col-xs-9 col-sm-5 col-md-4">
+      <q-input v-model="pagination.filter" :dense="$store.getters.dense.input" debounce="500"
+               :placeholder="$t('global.search')">
+        <template v-slot:append>
+          <q-icon v-if="pagination.filter===''" name="search" />
+          <q-icon v-else name="clear" class="cursor-pointer" @click="pagination.filter=''" />
+        </template>
+      </q-input>
     </div>
+  </div>
 
-    <!-- <tm-tree :nodes="items" node-key="_id" node-label="label" :no-nodes-label="$t('table.noData')"
+  <!-- <tm-tree :nodes="items" node-key="_id" node-label="label" :no-nodes-label="$t('table.noData')"
              v-model:selected="selected" v-model:ticked="ticked" v-model:expanded="expanded"
              tick-strategy="leaf-child" :draggable="true" :filter-method="onFilter"
              :filter="pagination.filter" @on-drag-changed="onTreeDragChanged">
@@ -50,42 +49,42 @@
       </template>
     </tm-tree> -->
 
-    <q-tree :nodes="rows" v-model:selected="selected" v-model:ticked="ticked" v-model:expanded="expanded" node-key="_id"
-            tick-strategy="leaf" :filter="pagination.filter" :filter-method="onFilter">
-      <template v-slot:default-header="prop">
-        <div class="row items-center" @mouseover="tooltipAction=prop.node._id" @mouseleave="tooltipAction=null">
-          <q-icon :name="prop.node.icon||'share'" color="blue-grey" size="20px" class="q-mr-sm" />
-          <div :class="['node-label q-pr-md']" :style="{color:prop.node.flag?(prop.node.color?prop.node.color:''):'#b0bec5'}">
-            {{prop.node.label}}
-          </div>
-          <template v-if="prop.node._id===tooltipAction">
-            <q-icon v-if="isRoutes.add" name="add" color="blue" size="16px" class="q-pl-xs q-pr-xs"
-                    @click="onAdd(prop.node)" />
-            <q-icon v-if="isRoutes.edit" name="edit" color="light-green" size="16px"
-                    class="q-pl-xs q-pr-xs" @click="onEdit(prop.node)" />
-            <template v-if="isRoutes.trash">
-              <q-icon v-if="prop.node.flag===1" name="clear" color="negative" size="16px"
-                      class="q-pl-xs q-pr-xs" @click="onTrash(prop.node)" />
-              <q-icon v-else name="restore" color="amber" size="16px" class="q-pl-xs q-pr-xs"
-                      @click="onTrash(prop.node)" />
-            </template>
-          </template>
+  <q-tree :nodes="rows" v-model:selected="selected" v-model:ticked="ticked" v-model:expanded="expanded" node-key="_id"
+          tick-strategy="leaf" :filter="pagination.filter" :filter-method="onFilter">
+    <template v-slot:default-header="prop">
+      <div class="row items-center" @mouseover="tooltipAction=prop.node._id" @mouseleave="tooltipAction=null">
+        <q-icon :name="prop.node.icon||'share'" color="blue-grey" size="20px" class="q-mr-sm" />
+        <div :class="['node-label q-pr-md']" :style="{color:prop.node.flag?(prop.node.color?prop.node.color:''):'#b0bec5'}">
+          {{prop.node.label}}
         </div>
-      </template>
+        <template v-if="prop.node._id===tooltipAction">
+          <q-icon v-if="isRoutes.add" name="add" color="blue" size="16px" class="q-pl-xs q-pr-xs"
+                  @click="onAdd(prop.node)" />
+          <q-icon v-if="isRoutes.edit" name="edit" color="light-green" size="16px"
+                  class="q-pl-xs q-pr-xs" @click="onEdit(prop.node)" />
+          <template v-if="isRoutes.trash">
+            <q-icon v-if="prop.node.flag===1" name="clear" color="negative" size="16px"
+                    class="q-pl-xs q-pr-xs" @click="onTrash(prop.node)" />
+            <q-icon v-else name="restore" color="amber" size="16px" class="q-pl-xs q-pr-xs"
+                    @click="onTrash(prop.node)" />
+          </template>
+        </template>
+      </div>
+    </template>
 
-      <!-- <template v-slot:default-body="prop">
+    <!-- <template v-slot:default-body="prop">
         <div v-if="prop.node.story">
           <span class="text-weight-bold">This node has a story</span>: {{ prop.node.story }}
         </div>
         <span v-else class="text-weight-light text-black">This is some default content.</span>
       </template> -->
-    </q-tree>
-    <q-dialog v-model="isDialogAdd" :maximized="isMaximizedView" persistent>
-      <q-card flat :style="{minWidth:'60%'}">
-        <tpl-add v-model:dialog="isDialogAdd" v-model:maximized="isMaximizedView" :expanded="expanded" />
-      </q-card>
-    </q-dialog>
-  </div>
+  </q-tree>
+  <!-- Dialog add-->
+  <q-dialog v-model="isDialogAdd" :maximized="isMaximizedView" persistent>
+    <q-card flat :style="{minWidth:'60%'}">
+      <tpl-add v-model:dialog="isDialogAdd" v-model:maximized="isMaximizedView" :expanded="expanded" />
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -94,7 +93,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import normalize from '../../../../global/utils/search'
+import { normalize } from '../../../../global/utils/search'
 export default defineComponent({
   name: 'CategoryIndex',
   components: { tplAdd: defineAsyncComponent(() => import('./add')) },
@@ -192,7 +191,18 @@ export default defineComponent({
           title: t('messageBox.warning'),
           message: pagination.value.enable ? t('messageBox.lock') : t('messageBox.unlock'),
           cancel: true,
-          persistent: true
+          ok: {
+            label: t('global.accept'),
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: t('global.cancel'),
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
         }).onOk(() => {
           if (val) selected.value = [val]
           $store.dispatch('categories/patch', { _id: selected.value.map(x => x._id) }).then(x => {

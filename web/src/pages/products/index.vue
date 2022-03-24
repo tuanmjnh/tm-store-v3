@@ -268,9 +268,20 @@ export default defineComponent({
       onTrash (val) {
         $q.dialog({
           title: t('messageBox.warning'),
-          message: pagination.value.enable ? t('messageBox.lock') : t('messageBox.unlock'),
+          message: pagination.value.flag ? t('messageBox.lock') : t('messageBox.unlock'),
           cancel: true,
-          persistent: true
+          ok: {
+            label: t('global.accept'),
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: t('global.cancel'),
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
         }).onOk(() => {
           if (val) selected.value = [val]
           $store.dispatch('products/patch', { _id: selected.value.map(x => x._id) }).then(x => { selected.value = [] })

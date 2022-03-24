@@ -215,7 +215,18 @@ export default defineComponent({
           title: t('messageBox.warning'),
           message: pagination.value.flag ? t('messageBox.trash') : t('messageBox.recover'),
           cancel: true,
-          persistent: true
+          ok: {
+            label: t('global.accept'),
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: t('global.cancel'),
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
         }).onOk(() => {
           if (val) selected.value = [val]
           $store.dispatch('types/patch', { _id: selected.value.map(x => x._id) })

@@ -294,6 +294,7 @@ export default {
     export: 'Export product',
     select: 'Select product in collection',
     add: 'Add new product',
+    price: 'Price',
     unitPrice: 'Unit price',
     priceSale: 'Price selling',
     priceDiscount: 'Price of discount',
@@ -416,7 +417,8 @@ export default {
     type: 'Type',
     url: 'Url file',
     inputUrl: 'Input url',
-    googleSheet: 'Google sheet'
+    googleSheet: 'Google sheet',
+    manager: 'File manager'
   },
   gender: {
     male: 'Male',

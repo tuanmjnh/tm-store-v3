@@ -212,7 +212,7 @@
 import { defineComponent, defineAsyncComponent, ref, computed } from 'vue';
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
-import normalize from '../../../../global/utils/search'
+import { normalize } from '../../../../global/utils/search'
 import { regionConstant } from '@/boot/i18n'
 export default defineComponent({
   name: 'UsersAdd',

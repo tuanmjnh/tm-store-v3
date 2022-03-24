@@ -21,6 +21,10 @@ const storage = new Storage({
 })
 const bucket = storage.bucket('tm-store-4576e.appspot.com')
 
+function getPublicUrl (bucket, name) {
+  return `https://storage.googleapis.com/${bucket}/${name}`
+}
+
 module.exports.createBucket = async function (req, res, next) {
   try {
     /**
@@ -42,28 +46,61 @@ module.exports.createBucket = async function (req, res, next) {
 
 module.exports.get = async (req, res, next) => {
   try {
-    const [metaData] = await bucket.file(req.params.name).getMetadata()
-    res.redirect(metaData.mediaLink)
-
+    const [files] = await bucket.getFiles({ prefix: req.query.path ? req.query.path : null }) // , autoPaginate: false
+    const rs = []
+    files.forEach(file => {
+      const name = file.name.split('/')
+      rs.push({
+        name: name[name.length - 1],
+        url: getPublicUrl(file.metadata.bucket, file.metadata.name),
+        type: file.metadata.contentType,
+        size: file.metadata.size,
+        extension: io.getExtention(file.name)
+      })
+    })
+    return res.status(201).json(rs)
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
-module.exports.getAll = async (req, res, next) => {
+// module.exports.getAll = async (req, res, next) => {
+//   try {
+//     const [files] = await bucket.getFiles()
+//     const rs = []
+//     files.forEach((file) => {
+//       const name = file.name.split('/')
+//       rs.push({
+//         name: name[name.length - 1],
+//         url: getPublicUrl(file.metadata.bucket, file.metadata.name),
+//         type: file.metadata.contentType,
+//         size: file.metadata.size,
+//         extension: io.getExtention(file.name)
+//       })
+//     })
+//     res.status(200).send(rs)
+//   } catch (e) {
+//     return res.status(500).send('invalid')
+//   }
+// }
+
+module.exports.find = async (req, res, next) => {
   try {
-    const [files] = await bucket.getFiles()
-    let fileInfos = []
-
-    files.forEach((file) => {
-      fileInfos.push({
-        name: file.name,
-        url: file.metadata.mediaLink,
-      })
-    })
-
-    res.status(200).send(fileInfos)
+    if (!req.query.file) return res.status(500).send('invalid')
+    const [file] = await bucket.file(req.query.file).getMetadata()
+    const name = file.name.split('/')
+    const rs = [{
+      name: name[name.length - 1],
+      url: getPublicUrl(file.bucket, file.name),
+      type: file.contentType,
+      size: file.size,
+      extension: io.getExtention(file.name)
+    }]
+    if (file) return res.status(201).json(rs)
+    // res.redirect(metaData.mediaLink)
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -86,14 +123,13 @@ module.exports.post = async (req, res, next) => {
 
     blobStream.on('finish', async (data) => {
       const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
-      const rs = []
-      rs.push({
-        originalname: req.file.originalname,
-        publicUrl: publicUrl,
+      const rs = {
+        name: req.file.originalname,
+        url: publicUrl,
+        type: req.file.mimetype,
         size: req.file.size,
-        extension: io.getExtention(req.file.originalname),
-        mimetype: req.file.mimetype
-      })
+        extension: io.getExtention(req.file.originalname)
+      }
       try {
         await bucket.file(fileUpload).makePublic()
       } catch (e) {

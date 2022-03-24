@@ -45,10 +45,17 @@
     <q-card-section class="q-pa-none">
       <q-scroll-area style="height:calc(100vh - 99px)">
         <q-list separator>
-          <tm-swipeitem v-for="e in rows" :key="e._id" :translateXValue="111">
-            <!-- <template v-slot:left>
-            <q-btn no-caps flat label="test" color="primary" />
-          </template> -->
+          <q-item clickable v-ripple v-for="e in rows" :key="e._id" v-touch-swipe.mouse.left="()=>{onTrash(e)}"
+                  v-touch-swipe.mouse.right="()=>{onEdit(e)}">
+            <q-item-section>
+              <q-item-label>{{e.name}}</q-item-label>
+              <q-item-label caption lines="1">{{`${$t('global.code')}: ${e.code}`}}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              {{e.orders}}
+            </q-item-section>
+          </q-item>
+          <!-- <tm-swipeitem v-for="e in rows" :key="e._id" :leftValue="111" :rightValue="111">
             <template v-slot:right>
               <q-btn no-caps class="q-btn--square" @click="onEdit(e)">
                 <q-icon name="edit" color="blue" size="18px" />
@@ -56,12 +63,6 @@
               <q-btn no-caps class="q-btn--square" @click="onTrash(e)">
                 <q-icon name="clear" color="negative" size="18px" />
               </q-btn>
-              <!-- <q-btn no-caps :color="$q.dark.isActive?'':'blue'" class="q-btn--square">
-                <q-icon name="edit" :color="$q.dark.isActive?'blue':''" />
-              </q-btn>
-              <q-btn no-caps :color="$q.dark.isActive?'':'negative'" class="q-btn--square">
-                <q-icon name="clear" :color="$q.dark.isActive?'negative':''" />
-              </q-btn> -->
             </template>
             <q-item clickable v-ripple>
               <q-item-section>
@@ -72,7 +73,7 @@
                 {{e.orders}}
               </q-item-section>
             </q-item>
-          </tm-swipeitem>
+          </tm-swipeitem> -->
         </q-list>
       </q-scroll-area>
     </q-card-section>
@@ -94,7 +95,7 @@ export default defineComponent({
   name: "TypesIndex",
   components: {
     addItem: defineAsyncComponent(() => import('./add')),
-    tmSwipeitem: defineAsyncComponent(() => import('components/tm-swipe-item'))
+    // tmSwipeitem: defineAsyncComponent(() => import('components/tm-swipe-item'))
   },
   setup () {
     const $router = useRouter()
@@ -135,7 +136,6 @@ export default defineComponent({
     // computed
     const rows = computed(() => onFetch())
 
-
     return {
       isDialogAdd, isMaximized, rows, selected, isRoutes, isFilter, pagination,
       onAdd: () => {
@@ -148,7 +148,6 @@ export default defineComponent({
       },
       onTrash: (val) => {
         $q.dialog({
-          // dark: dark.value,
           title: t('messageBox.warning'),
           message: pagination.value.flag ? t('messageBox.trash') : t('messageBox.recover'),
           cancel: true,
@@ -167,12 +166,6 @@ export default defineComponent({
         }).onOk(() => {
           if (val) selected.value = [val]
           $store.dispatch('types/patch', { _id: selected.value.map(x => x._id) })
-        }).onOk(() => {
-          // console.log('>>>> second OK catcher')
-        }).onCancel(() => {
-          selected.value = []
-        }).onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
         })
       }
     }

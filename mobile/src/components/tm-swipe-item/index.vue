@@ -17,15 +17,21 @@ import { defineComponent, ref, computed } from "vue";
 export default defineComponent({
   name: "TMSwipeItem",
   props: {
-    translateXValue: { type: Number, default: 150 }
+    leftValue: { type: String, default: 'max' },
+    rightValue: { type: String, default: 'max' }
   },
   setup (props, { emit, slots }) {
     const slotLeft = computed(() => !!slots['left'])
     const slotRight = computed(() => !!slots['right'])
-    // const translateXValue = 150
     const translateXDefault = ref('translate(0px, 0px)')
-    const translateXRight = ref(`translateX(-${props.translateXValue}px)`)
-    const translateXLeft = ref(`translateX(${props.translateXValue}px)`)
+    // const translateXLeft = ref(`translateX(${props.leftValue}px)`)
+    // const translateXRight = ref(`translateX(-${props.rightValue}px)`)
+    const translateXLeft = (val) => {
+      return `translateX(${val}px)`
+    }
+    const translateXRight = (val) => {
+      return `translateX(-${val}px)`
+    }
     // find element
     const findMainElement = (className) => {
       return /^q-swipe-item /.test(className)
@@ -65,7 +71,7 @@ export default defineComponent({
           if (findMainElement(e.className)) {
             const children = findChildElements(e.children)
             if (children.content.style.transform === translateXDefault.value && slotRight.value) {
-              children.content.style.transform = translateXRight.value
+              children.content.style.transform = translateXRight(props.rightValue === 'max' ? e.offsetWidth : props.rightValue)
               if (slotRight.value) children.right.style.visibility = 'visible'
               if (slotLeft.value) children.left.style.visibility = 'hidden'
             } else {
@@ -82,7 +88,7 @@ export default defineComponent({
           if (findMainElement(e.className)) {
             const children = findChildElements(e.children)
             if (children.content.style.transform === translateXDefault.value && slotLeft.value) {
-              children.content.style.transform = translateXLeft.value
+              children.content.style.transform = translateXLeft(props.leftValue === 'max' ? e.offsetWidth : props.leftValue)
               if (slotRight.value) children.right.style.visibility = 'hidden'
               if (slotLeft.value) children.left.style.visibility = 'visible'
             } else {
@@ -107,5 +113,10 @@ export default defineComponent({
 }
 .q-swipe-item .q-btn {
   height: 100% !important;
+}
+.q-swipe-item__content,
+.q-item__left,
+.q-item__right {
+  transition: transform 0.3s;
 }
 </style>

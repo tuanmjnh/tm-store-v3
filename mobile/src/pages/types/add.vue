@@ -4,7 +4,9 @@
       <div class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
       </div>
-      <span class="text-subtitle1">{{$t('route.add')}}</span>
+      <span class="text-subtitle1">
+        {{data._id?`${$t('route.edit')} ${$t("route.types").toLowerCase()}`:`${$t('route.add')} ${$t("route.types").toLowerCase()}`}}
+      </span>
       <q-space />
       <q-btn icon="offline_pin" flat round dense color="blue" class="q-mr-sm" @click="onSubmit(1)" />
       <q-btn icon="draw" flat round dense color="amber" @click="onSubmit(0)" />
@@ -12,7 +14,7 @@
     <q-separator />
     <q-card-section class="q-pa-none">
       <q-form ref="form">
-        <tm-tabs v-model="tabs" narrow-indicator :dense="$store.getters.dense.form" class="text-deep-purple" align="justify">
+        <tm-tabs v-model="tabs" narrow-indicator :dense="$store.getters.dense.form" class="text-blue" align="justify">
           <q-tab name="main" :label="$t('tabs.main')" />
           <q-tab name="attributes" :label="$t('global.attributes')" />
         </tm-tabs>

@@ -135,7 +135,6 @@ const actions = {
   },
   patch ({ commit }, params) {
     return api.patch(collection, params).then((res) => {
-      console.log(params)
       commit('FLAG_UPDATE_ITEMS', res.success)
       return res
     })

@@ -1,6 +1,6 @@
 <template>
   <div class="tm-file-list">
-    <q-toolbar>
+    <q-toolbar v-if="isHeader">
       <q-toolbar-title>{{labelTitle}}</q-toolbar-title>
       <slot v-if="slotToolBar" name="tool-bar"></slot>
       <q-btn v-if="!slotToolBar" round dense flat icon="view_module" :color="viewType!=='list'?'indigo':'blue-grey'"
@@ -15,42 +15,91 @@
     <div class="panel">
       <slot v-if="slotPanelLeft" name="panel-left"></slot>
       <div class="panel-right">
-        <q-spinner v-if="loading" style="top:50%;left:50%;position:absolute" color="primary" size="6em" :thickness="1" />
-        <div class="views view-box" v-if="viewType!=='list'">
-          <div v-show="!loading" v-for="(e,i) in rows" :key="i" @click="onSelectItem(e.name)" :style="`width:${size}px;height:${size}px`"
-               :class="['item',multiple?(selected&&selected.indexOf(e.name)>-1?'selected':''):(selected===e.name?'selected':'')]">
-            <q-img v-if="Extension.isImage(e.name)" :src="e.name" spinner-color="primary" :style="{height:`${size-4}px`}">
-              <template v-slot:error>
-                <i class="content material-icons" style="font-size:60px;position:absolute;top:25%;left:25%;color:#908f8f">photo_size_select_actual</i>
-              </template>
-            </q-img>
-            <i v-else-if="Extension.isAudio(e.name)" class="content material-icons"
-               :style="`height:${size-4}px;font-size:${size-50}px`">audiotrack</i>
-            <i v-else-if="Extension.isVideo(e.name)" class="content material-icons"
-               :style="`height:${size-4}px;font-size:${size-50}px`">video_library</i>
-            <i v-else-if="Extension.isPdf(e.name)" class="content material-icons"
-               :style="`height:${size-4}px;font-size:${size-50}px`">picture_as_pdf</i>
-            <i v-else-if="Extension.isFlash(e.name)" class="content material-icons"
-               :style="`height:${size-4}px;font-size:${size-50}px`">burst_mode</i>
-            <i v-else-if="Extension.isCode(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">code</i>
-            <i v-else-if="Extension.isDoc(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">description</i>
-            <i v-else-if="Extension.isSheet(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">list_alt</i>
-            <i v-else-if="Extension.isText(e.name)" class="content material-icons" :style="`height:${size-4}px;font-size:${size-50}px`">assignment</i>
-            <i v-else class="content material-icons" :key="i" :style="`height:${size-4}px;font-size:${size-50}px`">file_copy</i>
-
-            <i class="material-icons file-delete" @click="onDelete(i)">clear</i>
-            <q-tooltip>{{Extension.getNameFilePath(e.name)}}</q-tooltip>
+        <q-scroll-area style="height:calc(100vh - 99px)">
+          <div v-if="loading" class="fullscreen">
+            <div class="absolute-full flex flex-center">
+              <q-spinner color="primary" size="6em" :thickness="1" />
+            </div>
           </div>
-        </div>
-        <div v-else class="views view-list">
-          <q-table flat dense :rows="rows" :columns="columns" :visible-columns="visibleColumns" row-key="name" selection="multiple"
+          <div class="views view-box" v-if="viewType!=='list'">
+            <div v-show="!loading" v-for="(e,i) in rows" :key="i" :style="`width:${size}px;height:${size}px`"
+                 :class="['item',selected&&selected.indexOf(e)>-1?'selected':'']">
+              <div @click="onSelectItem(e)">
+                <q-img v-if="Extension.isImage(e.name)" :src="e.url" spinner-color="primary" :style="{height:`${size-4}px`}">
+                  <template v-slot:error>
+                    <i class="material-icons"
+                       style="font-size:30px;color:#a5a5a5;position:absolute;top:0;right:0;bottom:0;left:0;align-items:center;justify-content:center;display:flex;flex-wrap:wrap;">photo_size_select_actual</i>
+                  </template>
+                </q-img>
+                <i v-else-if="Extension.isAudio(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">audiotrack</i>
+                <i v-else-if="Extension.isVideo(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">video_library</i>
+                <i v-else-if="Extension.isPdf(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">picture_as_pdf</i>
+                <i v-else-if="Extension.isFlash(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">burst_mode</i>
+                <i v-else-if="Extension.isCode(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">code</i>
+                <i v-else-if="Extension.isDoc(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">description</i>
+                <i v-else-if="Extension.isSheet(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">list_alt</i>
+                <i v-else-if="Extension.isText(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">assignment</i>
+                <i v-else class="material-icons absolute-full flex flex-center" :key="i" :style="`font-size:${fontSize}px`">file_copy</i>
+              </div>
+              <i class="material-icons file-delete" @click="onDelete(i)">clear</i>
+              <q-tooltip>{{Extension.getNameFilePath(e.name)}}</q-tooltip>
+            </div>
+          </div>
+          <div v-else class="views view-list">
+            <q-list separator>
+              <q-item v-for="(e,i) in rows" :key="i">
+                <q-item-section avatar>
+                  <q-img :src="e.url" spinner-color="primary" fit="cover" v-if="Extension.isImage(e.name)">
+                    <template v-slot:error>
+                      <i class="content material-icons"
+                         style="font-size:23px;position:absolute;top:0;left:0;color:#908f8f">photo_size_select_actual</i>
+                    </template>
+                  </q-img>
+                  <i v-else-if="Extension.isAudio(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">audiotrack</i>
+                  <i v-else-if="Extension.isVideo(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">video_library</i>
+                  <i v-else-if="Extension.isPdf(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">picture_as_pdf</i>
+                  <i v-else-if="Extension.isFlash(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">burst_mode</i>
+                  <i v-else-if="Extension.isCode(e.name)" class="content material-icons" :style="`font-size:${fontSize}px`">code</i>
+                  <i v-else-if="Extension.isDoc(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">description</i>
+                  <i v-else-if="Extension.isSheet(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">list_alt</i>
+                  <i v-else-if="Extension.isText(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">assignment</i>
+                  <i v-else class="content material-icons" :key="i" :style="`font-size:${fontSize}px`">file_copy</i>
+                  <!-- <q-icon color="primary" name="e.icon" /> -->
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{e.name}}</q-item-label>
+                  <q-item-label caption lines="2">{{e.type}}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side>
+                  <!-- <q-item-label caption>{{i+1}}</q-item-label> -->
+                  <!-- <q-icon name="star" color="yellow" /> -->
+                  <!-- <q-item-label caption>{{parseInt(e.size).formatFileSize()}}</q-item-label> -->
+                  <q-item-label caption>{{parseInt(e.size).formatFileSize()}}</q-item-label>
+                </q-item-section>
+              </q-item>
+
+            </q-list>
+            <!-- <q-table flat dense :rows="rows" :columns="columns" :visible-columns="visibleColumns" row-key="name" selection="multiple"
                    :no-data-label="$t('table.noData')" :rows-per-page-label="$t('table.rowPerPage')"
                    :selected-rows-label="()=>`${selected.length} ${$t('table.rowSelected')}`" :rows-per-page-options="rowsPerPageOptions">
             <template v-slot:header="props">
               <q-tr :props="props">
-                <!-- <q-th auto-width>
-                  <q-checkbox v-model="props.selected" indeterminate-value="some" :dense="true" />
-                </q-th> -->
                 <q-th v-for="col in props.cols" :key="col.name" :props="props">
                   <span v-if="$q.dark.isActive" class="text-bold">{{col.label}}</span>
                   <span v-else class="text-bold text-blue-grey-10">{{col.label}}</span>
@@ -74,9 +123,6 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <!-- <q-td auto-width key="select">
-                  <q-checkbox v-model="props.selected" color="primary" :dense="true" />
-                </q-td> -->
                 <q-td auto-width key="index" :props="props">{{props.row.index+1}}</q-td>
                 <q-td auto-width key="icon" :props="props">
                   <q-img :src="props.row.name" spinner-color="primary" style="height:23px;max-width:25px" fit="cover"
@@ -106,7 +152,6 @@
                 </q-td>
                 <q-td key="name" :props="props">{{Extension.getNameFilePath(props.row.name)}}</q-td>
                 <q-td auto-width key="type" :props="props">{{props.row.type}}</q-td>
-                <!-- <q-td key="size" :props="props">{{props.row.size}}</q-td> -->
                 <td auto-width>
                   <q-btn flat round dense color="negative" icon="clear" size="sm" @click="onDelete(props.row.index)">
                     <q-tooltip v-if="!$q.platform.is.mobile">{{labelDeleteFile}}</q-tooltip>
@@ -114,25 +159,9 @@
                 </td>
               </q-tr>
             </template>
-          </q-table>
-          <!-- <table :class="[isBorder?'table-border':'']">
-            <thead v-if="isHeader">
-              <tr>
-                <th v-if="isCount" class="cmd">#</th>
-                <th>{{labelFileName}}</th>
-                <th class="cmd">#</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(e,i) in rows" :key="i" @click="onSelectItem(e)"
-                  :class="['item',multiple?(selected&&selected.indexOf(e)>-1?'selected':''):(selected===e?'selected':'')]">
-                <td v-if="isCount" class="cmd">{{i+1}}</td>
-                <td>{{Extension.getNameFilePath(e)}}</td>
-                <td class="cmd"><i class="material-icons file-delete" @click="onDelete(i)">clear</i></td>
-              </tr>
-            </tbody>
-          </table> -->
-        </div>
+          </q-table> -->
+          </div>
+        </q-scroll-area>
       </div>
     </div>
   </div>
@@ -150,12 +179,13 @@ export default defineComponent({
     selected: { default: null },
     multiple: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
-    isHeader: { type: Boolean, default: false },
+    isHeader: { type: Boolean, default: true },
     isCount: { type: Boolean, default: false },
     isBorder: { type: Boolean, default: false },
     size: { type: Number, default: 80 },
+    fontSize: { type: Number, default: 40 },
     rowsPerPageOptions: { type: Array, default: () => [10, 20, 30, 50] },
-    viewType: { type: String, default: 'box' },
+    // viewType: { type: String, default: 'box' },
     labelTitle: { type: String, default: '' },
     labelViewList: { type: String, default: 'View list' },
     labelViewBox: { type: String, default: 'View box' },
@@ -165,8 +195,10 @@ export default defineComponent({
     labelFileName: { type: String, default: 'File name' },
     labelFileSize: { type: String, default: 'Size' },
     labelDeleteFile: { type: String, default: 'Delete' },
-    labelConfirmTitle: { type: String, default: 'Confirm' },
-    labelConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' }
+    lblOk: { type: String, default: 'Ok' },
+    lblCancel: { type: String, default: 'Cancel' },
+    lblConfirmTitle: { type: String, default: 'Confirm' },
+    lblConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' }
   },
   setup (props, { emit, slots }) {
     const $q = useQuasar()
@@ -174,6 +206,7 @@ export default defineComponent({
     const slotToolBar = computed(() => !!slots['tool-bar'])
     const slotPanelLeft = computed(() => !!slots['panel-left'])
     const visibleColumns = ref(['index', 'icon', 'type'])
+    const viewType = ref('box')
     const columns = ref([
       { name: 'index', field: 'index', label: props.labelIndex, align: 'left', sortable: true },
       { name: 'icon', field: 'icon', label: props.labelIcon, align: 'center' },
@@ -182,58 +215,75 @@ export default defineComponent({
       // { name: 'size', field: 'size', label: 'Size', align: 'left', sortable: true }
     ])
     const rows = computed(() => {
-      if (props.modelValue) {
-        if (typeof props.modelValue === 'string') return [{
-          index: 0,
-          icon: '',
-          name: props.modelValue,
-          type: Extension.getExtension(props.modelValue, false),
-          size: 0
-        }]
-        else {
-          const rs = []
-          for (let i = 0; i < props.modelValue.length; i++) {
-            rs.push({
-              index: i,
-              icon: '',
-              name: props.modelValue[i],
-              type: Extension.getExtension(props.modelValue[i], false),
-              size: 0
-            })
-          }
-          return rs
-        }
-      } else return []
+      // console.log(props.modelValue)
+      return props.modelValue || []
+      // if (props.modelValue) {
+      // if (Array.isArray(props.modelValue)) {
+      //   const rs = []
+      //   for (let i = 0; i < props.modelValue.length; i++) {
+      //     rs.push({
+      //       index: i,
+      //       icon: '',
+      //       name: props.modelValue[i].name,
+      //       url: props.modelValue[i].url,
+      //       type: props.modelValue[i].type,
+      //       size: props.modelValue[i].size,
+      //       extension: Extension.getExtension(props.modelValue[i].name, false)
+      //     })
+      //   }
+      //   return rs
+      // } else {
+      //   return {
+      //     index: 0,
+      //     icon: '',
+      //     name: props.modelValue.name,
+      //     url: props.modelValue.url,
+      //     type: props.modelValue.type,
+      //     size: props.modelValue.size,
+      //     extension: Extension.getExtension(props.modelValue.name, false)
+      //   }
+      // }
+      // } else return []
     })
     return {
-      Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns,
+      Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns, viewType,
       onGetStyleImage: (url) => {
         return `background-size:cover;background-position:50% 50%;background-image:url("${url}");`
       },
       onSelectItem: (val) => {
         // console.log(event.target.class.push('selected'))
         // event.target.classList.toggle('selected')
-
-        let selected = props.selected
+        let selected = props.selected ? props.selected.slice() : []//= props.selected
+        const i = selected.indexOf(val)
         if (props.multiple) {
-          if (!selected) selected = []
-          const i = selected.indexOf(val)
           if (i < 0) {
             selected.push(val)
-            emit('update:selected', selected)
+            emit('on-select', val)
           } else {
             selected.splice(i, 1)
-            emit('update:selected', selected)
             emit('on-unselect', val)
           }
         } else {
-          if (selected === val) selected = null
-          else selected = val
-          emit('update:selected', selected)
+          if (i < 0) {
+            selected = [val]
+            emit('on-select', val)
+          } else {
+            selected = []
+            emit('on-unselect', val)
+          }
+          // if (selected === val) {
+          //   selected = []
+          //   emit('on-unselect', val)
+          // } else {
+          //   selected = val
+          //   emit('on-select', val)
+          // }
         }
+        emit('update:selected', selected)
       },
       onChangeView: (val) => {
-        emit('update:viewType', val)
+        // emit('update:viewType', val)
+        viewType.value = val
         emit('on-change-view', val)
       },
       onGetSelected: (val) => {
@@ -248,15 +298,31 @@ export default defineComponent({
         // return i > -1 ? 'selected' : ''
       },
       onDelete: (val) => {
-        if (val > -1) $q.dialog({ title: props.labelConfirmTitle, message: props.labelConfirmContent, cancel: true, persistent: true }).onOk(() => {
+        if (val > -1) $q.dialog({
+          title: props.lblConfirmTitle,
+          message: props.lblConfirmContent,
+          cancel: true,
+          ok: {
+            label: props.lblOk,
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: props.lblCancel,
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
+        }).onOk(() => {
           if (props.multiple) {
             const x = props.modelValue.slice()
             x.splice(val, 1)
             emit('update:modelValue', x)
-            emit('on-delete', x)
+            emit('on-delete', val)
           } else {
             emit('update:modelValue', null)
-            emit('on-delete', null)
+            emit('on-delete', val)
           }
         })
       },
@@ -278,7 +344,7 @@ export default defineComponent({
   }
   .view-box {
     .item {
-      border: 1px solid #ccc;
+      border: 1px solid #eee;
       padding: 1px;
       margin: 0 0 6px 6px;
       vertical-align: middle;
@@ -286,14 +352,17 @@ export default defineComponent({
       position: relative;
       display: inline-block;
       transition: all 0.3s;
+      &.selected {
+        border: 1px solid #2196f3;
+      }
       .file-delete {
-        display: none;
+        // display: none;
         color: #fff;
-        background-color: #b71c1c;
+        background-color: #c55959;
         position: absolute;
-        right: 0;
-        top: 0;
-        opacity: 0;
+        right: 1px;
+        top: 1px;
+        opacity: 1;
         transition: opacity 0.3s;
         cursor: pointer;
       }

@@ -262,7 +262,18 @@ export default defineComponent({
           title: t('messageBox.warning'),
           message: pagination.value.enable ? t('messageBox.lock') : t('messageBox.unlock'),
           cancel: true,
-          persistent: true
+          ok: {
+            label: t('global.accept'),
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: t('global.cancel'),
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
         }).onOk(() => {
           if (val) selected.value = [val]
           $store.dispatch('users/patch', { _id: selected.value.map(x => x._id) }).then(x => { selected.value = [] })
@@ -278,7 +289,18 @@ export default defineComponent({
           title: t('messageBox.warning'),
           message: t('messageBox.resetPassword', { username: val.email }),
           cancel: true,
-          persistent: true
+          ok: {
+            label: t('global.accept'),
+            flat: true,
+            color: 'primary',
+            noCaps: true
+          },
+          cancel: {
+            label: t('global.cancel'),
+            flat: true,
+            color: 'blue-grey',
+            noCaps: true
+          }
         }).onOk(() => {
           if (val) selected.value = [val]
           loadingResetPassword.value = true

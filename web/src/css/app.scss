@@ -19,6 +19,15 @@
   }
 }
 
+//
+.q-dialog-plugin {
+  .q-card__actions {
+    .q-btn {
+      font-weight: initial;
+    }
+  }
+}
+
 // Flat Button
 .q-btn--square {
   border-radius: initial;

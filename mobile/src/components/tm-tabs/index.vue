@@ -18,7 +18,7 @@ export default defineComponent({
     const changeTab = () => {
       const tabsHiden = document.getElementsByClassName('q-tab-panel')
       for (let i = 0; i < tabsHiden.length; i++) {
-        tabsHiden[i].style.transition = 'all 2s'
+        // tabsHiden[i].style.transition = 'all 2s'
         if (tabsHiden[i].getAttribute('id') === `tab-${props.modelValue}`) tabsHiden[i].classList.remove('hidden')
         else tabsHiden[i].classList.add('hidden')
       }

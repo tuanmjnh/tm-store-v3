@@ -35,7 +35,7 @@
     "upgrade-quasar:install-linux": "~/.npm-global/bin/quasar upgrade -i"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.13.3",
     "axios": "^0.21.1",
     "chart.js": "^3.7.1",
     "core-js": "^3.6.5",
@@ -45,7 +45,7 @@
     "jsbarcode": "^3.11.5",
     "moment": "^2.29.1",
     "nprogress": "^0.2.0",
-    "quasar": "^2.0.0",
+    "quasar": "^2.6.1",
     "vue": "^3.0.0",
     "vue-i18n": "^9.0.0",
     "vue-router": "^4.0.0",
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
-    "@quasar/app": "^3.0.0",
+    "@quasar/app-webpack": "^3.4.4",
     "copy-webpack-plugin": "^10.2.4",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^8.1.0",

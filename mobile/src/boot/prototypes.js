@@ -42,7 +42,7 @@ String.prototype.toUpperCaseSpace = function () {
 // }
 
 // Number
-Number.prototype.humanFileSize = function (si = false, dp = 1) {
+Number.prototype.formatFileSize = function (si = true, dp = 1) {
   let bytes = this
   const thresh = si ? 1000 : 1024
 

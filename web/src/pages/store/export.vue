@@ -563,16 +563,17 @@ export default defineComponent({
           title: t('messageBox.confirm'),
           message: t('product.exportConfirmPrice'),
           cancel: true,
-          persistent: true,
           ok: {
             label: t('global.accept'),
             flat: true,
-            color: 'primary'
+            color: 'primary',
+            noCaps: true
           },
           cancel: {
             label: t('global.cancel'),
             flat: true,
-            color: 'blue-grey'
+            color: 'blue-grey',
+            noCaps: true
           }
         }).onOk(() => {
           selected.value.forEach(e => { e.priceExport = e.priceOld })

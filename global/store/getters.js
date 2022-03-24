@@ -4,6 +4,7 @@ export default {
   avatar: state => state.app.avatar,
   iconApp: state => state.app.iconApp,
   loading: state => state.app.loading,
+  componentLoaded: state => state.app.componentLoaded,
   routes: state => state.auth.routesConstant.concat(state.auth.routes),
   languages: state => state.app.languages,
   language: state => state.settings.language,
@@ -30,4 +31,4 @@ export default {
   //   // if (state.auth.user.phoneNumber) state.auth.user.phoneNumber = state.auth.user.phoneNumber.replace(`+${state.auth.user.phoneRegion}`, '')
   //   return state.auth.user
   // }
-};
+}

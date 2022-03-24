@@ -38,3 +38,4 @@ Thumbs.db
 # Ignore built ts files
 /dist
 
+/src/config/storage-tm-store-4576e-8b5b9681fe8c.json

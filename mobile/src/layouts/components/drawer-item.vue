@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref } from "vue";
+import { defineComponent, defineAsyncComponent, ref, watch } from "vue";
+import { useStore } from 'vuex'
 import { RandomColor } from '../../../../global/utils/color'
 export default defineComponent({
   name: "drawer-item",
@@ -35,11 +36,16 @@ export default defineComponent({
     optionLabel: { type: String, default: 'label' },
   },
   setup (props) {
+    const $store = useStore()
     const isDialog = ref(false)
     const isMaximized = ref(true)
     const firstItem = ref(props.options[0])
     const routePath = ref(null)
     const component = ref(null)
+    watch(() => isDialog.value, (state, prevState) => {
+      if (!state) $store.dispatch('app/setComponentLoaded')
+      // console.log($store.getters.componentLoaded)
+    }, { deep: true })
     return {
       isDialog, isMaximized, firstItem, routePath, component, RandomColor,
       onItemClick (val) {
@@ -47,6 +53,7 @@ export default defineComponent({
         // const a = () => import(val.component)
         // const a = defineAsyncComponent(() => val.meta.component)
         component.value = val.meta.component
+        $store.dispatch('app/setComponentLoaded', val)
         // routePath.value = val.redirect
         isDialog.value = !isDialog.value
       }

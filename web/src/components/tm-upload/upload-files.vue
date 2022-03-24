@@ -102,7 +102,8 @@ export default defineComponent({
       })
       // formData.append('basePath', props.basePath)
       if (props.http) {
-        props.http.defaults.headers.path = props.basePath
+        emit('update:files', _files)
+        // props.http.defaults.headers.path = props.basePath
         props.http.post(`${props.http.defaults.baseURL}/${props.http.defaults.upload}`, formData).then((rs) => {
           // emit('handleUpload', Object.assign(rs.data, { basePath: props.basePath }))
           // emit('update:files', Array.from(event.target.files))
@@ -111,7 +112,7 @@ export default defineComponent({
           .catch((error) => { console.log(error) })
           .finally(() => { onClear() })
       } else {
-        props.httpOptions.path = props.basePath
+        // props.httpOptions.path = props.basePath
         axios.post(props.baseUrl, formData, { headers: props.httpOptions }).then((rs) => {
           // emit('handleUpload', Object.assign(rs.data, { basePath: props.basePath }))
           // emit('update:files', Array.from(event.target.files))

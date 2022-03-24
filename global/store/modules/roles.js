@@ -46,8 +46,8 @@ const mutations = {
 const actions = {
   get ({ commit }, params) {
     return api.get(collection, { params }).then((res) => {
-      if (res && res.data) commit('SET_ITEMS', res.data);
-      if (res && res.rowsNumber) commit('SET_ROWS_NUMBER', res.rowsNumber);
+      if (res && res.data) commit('SET_ITEMS', res.data)
+      if (res && res.rowsNumber) commit('SET_ROWS_NUMBER', res.rowsNumber)
     })
   },
   getAll ({ commit }, params) {
