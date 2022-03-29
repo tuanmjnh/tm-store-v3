@@ -1,11 +1,10 @@
 <template>
   <q-card>
-    <q-card-section class="headder-row row">
+    <q-toolbar>
       <div class="col-auto">
-        <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+        <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <span class="text-subtitle1">{{$t('route.types')}}</span>
-      <q-space />
+      <q-toolbar-title class="text-subtitle1">{{$t('route.types')}} </q-toolbar-title>
       <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
@@ -38,15 +37,22 @@
               </q-select>
             </div>
           </div>
+          <div class="row">
+            <div class="col-12">
+              <q-toggle v-model="pagination.flag" left-label :label="pagination.flag?$t('global.working'):$t('global.trash')"
+                        :false-value="0" :true-value="1" @update:model-value="onChangeFlag" />
+            </div>
+          </div>
         </q-menu>
       </q-btn>
-    </q-card-section>
+    </q-toolbar>
+
     <!-- <q-separator /> -->
     <q-card-section class="q-pa-none">
       <q-scroll-area style="height:calc(100vh - 99px)">
         <q-list separator>
           <q-item clickable v-ripple v-for="e in rows" :key="e._id" v-touch-swipe.mouse.left="()=>{onTrash(e)}"
-                  v-touch-swipe.mouse.right="()=>{onEdit(e)}">
+                  v-touch-swipe.mouse.right="()=>{onEdit(e)}" v-touch-hold.mouse="()=>{onTouchHold(e)}">
             <q-item-section>
               <q-item-label>{{e.name}}</q-item-label>
               <q-item-label caption lines="1">{{`${$t('global.code')}: ${e.code}`}}</q-item-label>
@@ -82,6 +88,32 @@
   <q-dialog v-model="isDialogAdd" :maximized="isMaximized">
     <add-item />
   </q-dialog>
+  <!-- Dialog Actions -->
+  <q-dialog v-model="isDialogTouchHold" position="bottom">
+    <q-card class="full-width" style="border-radius:initial">
+      <q-card-section class="q-pa-none">
+        <q-list separator>
+          <q-item clickable v-ripple class="text-center" @click="()=>{isDialogTouchHold=!isDialogTouchHold;onEdit()}">
+            <q-item-section>{{$t('global.edit')}}</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple class="text-center" @click="()=>{isDialogTouchHold=!isDialogTouchHold;onTrash()}">
+            <q-item-section>
+              <q-item-label v-if="pagination.flag" class="text-red">{{$t('global.trash')}}</q-item-label>
+              <q-item-label v-else class="text-warning">{{$t('global.recover')}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-separator size="3px" />
+        <q-list>
+          <q-item clickable v-ripple class="text-center" v-close-popup>
+            <q-item-section>
+              <q-item-label>{{$t('global.cancel')}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -104,6 +136,7 @@ export default defineComponent({
     const { t } = useI18n({ useScope: 'global' })
     const isDialogAdd = ref(false)
     const isMaximized = ref(true)
+    const isDialogTouchHold = ref(false)
     const isFilter = ref(false)
     const selected = ref([])
     const isRoutes = ref({
@@ -137,13 +170,14 @@ export default defineComponent({
     const rows = computed(() => onFetch())
 
     return {
-      isDialogAdd, isMaximized, rows, selected, isRoutes, isFilter, pagination,
+      isDialogAdd, isMaximized, isDialogTouchHold, rows, selected, isRoutes, isFilter, pagination,
       onAdd: () => {
         $store.dispatch('types/set')
         isDialogAdd.value = true
       },
       onEdit: (val) => {
-        $store.dispatch('types/set', val)
+        if (val) selected.value = [val]
+        $store.dispatch('types/set', selected.value[0]).then(x => selected.value = [])
         isDialogAdd.value = true
       },
       onTrash: (val) => {
@@ -165,8 +199,12 @@ export default defineComponent({
           }
         }).onOk(() => {
           if (val) selected.value = [val]
-          $store.dispatch('types/patch', { _id: selected.value.map(x => x._id) })
+          $store.dispatch('types/patch', { _id: selected.value.map(x => x._id) }).then(x => { selected.value = [] })
         })
+      },
+      onTouchHold (val) {
+        if (val) selected.value = [val]
+        isDialogTouchHold.value = !isDialogTouchHold.value
       }
     }
   }

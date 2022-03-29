@@ -47,6 +47,7 @@ module.exports.rename = async (oldPath, newPath) => {
 
 module.exports.getExtention = function (path, dot = true) {
   if (!path) return ''
+  path = path.toLowerCase()
   const regx = /(?:\.([^.]+))?$/
   path = regx.exec(path)
   return path ? (dot ? path[0] : path[1]) : ''

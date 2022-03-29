@@ -192,7 +192,7 @@ export default defineComponent({
           })
         }
         onReset()
-        emit('on-finish', rs)
+        emit('on-finish', props.multiple ? rs : (rs && rs.length ? rs[0] : null))
       }
     }
   }

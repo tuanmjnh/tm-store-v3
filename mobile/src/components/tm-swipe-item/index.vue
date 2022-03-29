@@ -1,5 +1,6 @@
 <template>
-  <div v-touch-swipe.mouse.left="onSlideLeft" v-touch-swipe.mouse.right="onSlideRight" class="q-swipe-item q-item-type overflow-hidden">
+  <div v-touch-swipe.mouse.left="onSlideLeft" v-touch-swipe.mouse.right="onSlideRight" class="q-swipe-item q-item-type overflow-hidden"
+       @click="onClick">
     <div v-if="slotRight" class="q-item__right absolute-full row no-wrap items-center justify-end" style="visibility:hidden">
       <slot name="right" />
     </div>
@@ -18,14 +19,14 @@ export default defineComponent({
   name: "TMSwipeItem",
   props: {
     leftValue: { type: String, default: 'max' },
-    rightValue: { type: String, default: 'max' }
+    rightValue: { type: String, default: 'max' },
+    reset: { type: Boolean, default: false }
   },
   setup (props, { emit, slots }) {
     const slotLeft = computed(() => !!slots['left'])
     const slotRight = computed(() => !!slots['right'])
+    const swipeItem = { content: null, left: null, right: null }
     const translateXDefault = ref('translate(0px, 0px)')
-    // const translateXLeft = ref(`translateX(${props.leftValue}px)`)
-    // const translateXRight = ref(`translateX(-${props.rightValue}px)`)
     const translateXLeft = (val) => {
       return `translateX(${val}px)`
     }
@@ -47,22 +48,27 @@ export default defineComponent({
     }
     // find children
     const findChildElements = (children) => {
-      const rs = { content: null, left: null, right: null }
+      // const rs = { content: null, left: null, right: null }
       if (children) {
         for (let i = 0; i < children.length; i++) {
           if (findContentElement(children[i].className)) {
-            rs.content = children[i]
+            swipeItem.content = children[i]
             continue
           } else if (findLeftElement(children[i].className)) {
-            rs.left = children[i]
+            swipeItem.left = children[i]
             continue
           } else if (findRightElement(children[i].className)) {
-            rs.right = children[i]
+            swipeItem.right = children[i]
             continue
           }
         }
       }
-      return rs
+      return swipeItem
+    }
+    const onReset = (children) => {
+      children.content.style.transform = translateXDefault.value
+      if (slotRight.value) children.right.style.visibility = 'hidden'
+      if (slotLeft.value) children.left.style.visibility = 'hidden'
     }
     return {
       slotLeft, slotRight,
@@ -70,33 +76,52 @@ export default defineComponent({
         val.evt.path.forEach(e => {
           if (findMainElement(e.className)) {
             const children = findChildElements(e.children)
-            if (children.content.style.transform === translateXDefault.value && slotRight.value) {
-              children.content.style.transform = translateXRight(props.rightValue === 'max' ? e.offsetWidth : props.rightValue)
-              if (slotRight.value) children.right.style.visibility = 'visible'
-              if (slotLeft.value) children.left.style.visibility = 'hidden'
+            if (children.content.style.transform === translateXDefault.value) {
+              if (slotRight.value) {
+                children.content.style.transform = translateXRight(props.rightValue === 'max' ? e.offsetWidth : props.rightValue)
+                if (slotRight.value) children.right.style.visibility = 'visible'
+                if (slotLeft.value) children.left.style.visibility = 'hidden'
+              }
+              emit('swipe-left', swipeItem)
             } else {
               children.content.style.transform = translateXDefault.value
               if (slotRight.value) children.right.style.visibility = 'hidden'
               if (slotLeft.value) children.left.style.visibility = 'hidden'
+              emit('swipe-reset', swipeItem)
             }
           }
         })
+
       },
 
       onSlideRight (val) {
         val.evt.path.forEach(e => {
           if (findMainElement(e.className)) {
             const children = findChildElements(e.children)
-            if (children.content.style.transform === translateXDefault.value && slotLeft.value) {
-              children.content.style.transform = translateXLeft(props.leftValue === 'max' ? e.offsetWidth : props.leftValue)
-              if (slotRight.value) children.right.style.visibility = 'hidden'
-              if (slotLeft.value) children.left.style.visibility = 'visible'
+            if (children.content.style.transform === translateXDefault.value) {
+              if (slotLeft.value) {
+                children.content.style.transform = translateXLeft(props.leftValue === 'max' ? e.offsetWidth : props.leftValue)
+                if (slotRight.value) children.right.style.visibility = 'hidden'
+                if (slotLeft.value) children.left.style.visibility = 'visible'
+              }
+              emit('swipe-right', swipeItem)
             } else {
               const children = findChildElements(e.children)
               children.content.style.transform = translateXDefault.value
               if (slotRight.value) children.right.style.visibility = 'hidden'
               if (slotLeft.value) children.left.style.visibility = 'hidden'
+              emit('swipe-reset', swipeItem)
             }
+          }
+        })
+
+      },
+      onClick (val) {
+        val.path.forEach(e => {
+          if (findMainElement(e.className)) {
+            const children = findChildElements(e.children)
+            emit('handleClick', { evt: children, reset: onReset })
+            // onReset(children.content)
           }
         })
       }

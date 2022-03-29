@@ -34,9 +34,9 @@ export default defineComponent({
         meta: { title: 'dashboard', icon: 'dashboard' }
       },
       {
-        path: '/store',
-        name: 'store',
-        meta: { title: 'store', icon: 'store' }
+        path: '/warehouse',
+        name: 'warehouse',
+        meta: { title: 'warehouse', icon: 'store' }
       },
       {
         path: '/qrcode',

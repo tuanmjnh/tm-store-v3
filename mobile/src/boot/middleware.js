@@ -19,7 +19,7 @@ export function onSetGlobalData () {
   return new Promise(async (resolve, reject) => {
     if (store.state.auth.user) {
       if (!store.state.types.items) await store.dispatch('types/getAll')// .then(() => { console.log(store.state.types.items) })
-      if (!store.state.roles.items) await store.dispatch('roles/getAll')// .then(() => { console.log(store.state.roles.items) })
+      // if (!store.state.roles.items) await store.dispatch('roles/getAll')// .then(() => { console.log(store.state.roles.items) })
     }
     return resolve(true)
   })

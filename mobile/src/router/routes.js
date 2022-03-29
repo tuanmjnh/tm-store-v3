@@ -91,49 +91,115 @@ export const constant = [
 ]
 
 export const dynamic = [
+  // {
+  //   path: '/store',
+  //   name: 'store',
+  //   // redirect: '/store/warehouse',
+  //   meta: { title: 'store', icon: 'store' },
+  //   // component: fakeLayout,
+  //   component: () => import('pages/store'),
+  //   children: [
+  //     {
+  //       path: 'warehouse',
+  //       name: 'store-warehouse',
+  //       meta: { title: 'data', icon: 'home_work', parent: 'store', component: 'pages/store/index' },
+  //       component: () => import('pages/store/index')
+  //     },
+  //     {
+  //       path: 'report',
+  //       name: 'store-report',
+  //       meta: { title: 'report', icon: 'pie_chart', parent: 'store', component: 'pages/store/report' },
+  //       component: () => import('pages/store/report')
+  //     },
+  //     {
+  //       path: 'import-list',
+  //       name: 'store-import-list',
+  //       meta: { title: 'importList', icon: 'playlist_add_check', parent: 'store', component: 'pages/store/import-list' },
+  //       component: () => import('pages/store/import-list')
+  //     },
+  //     {
+  //       path: 'import',
+  //       name: 'store-import',
+  //       meta: { title: 'import', icon: 'addchart', parent: 'store', component: 'pages/store/import' },
+  //       component: () => import('pages/store/import')
+  //     },
+  //     {
+  //       path: 'export-list',
+  //       name: 'store-export-list',
+  //       meta: { title: 'exportList', icon: 'playlist_play', parent: 'store', component: 'pages/store/export-list' },
+  //       component: () => import('pages/store/export-list')
+  //     },
+  //     {
+  //       path: 'export',
+  //       name: 'store-export',
+  //       meta: { title: 'export', icon: 'double_arrow', parent: 'store', component: 'pages/store/export' },
+  //       component: () => import('pages/store/export')
+  //     }
+  //   ]
+  // },
   {
-    path: '/store',
-    name: 'store',
+    path: '/warehouse',
+    name: 'warehouse',
     // redirect: '/store/warehouse',
-    meta: { title: 'store', icon: 'store' },
+    meta: { title: 'warehouse', icon: 'store' },
     // component: fakeLayout,
-    component: () => import('pages/store'),
+    component: () => import('pages/warehouse/index'),
     children: [
       {
-        path: 'warehouse',
-        name: 'store-warehouse',
-        meta: { title: 'data', icon: 'home_work', parent: 'store', component: 'pages/store/index' },
-        component: () => import('pages/store/index')
+        path: 'data',
+        name: 'warehouse-data',
+        meta: { title: 'data', icon: 'home_work', parent: 'warehouse', component: 'pages/warehouse/index' },
+        component: () => import('pages/warehouse/index')
       },
       {
         path: 'report',
-        name: 'store-report',
-        meta: { title: 'report', icon: 'pie_chart', parent: 'store', component: 'pages/store/report' },
-        component: () => import('pages/store/report')
+        name: 'warehouse-report',
+        meta: { title: 'report', icon: 'pie_chart', parent: 'warehouse', component: 'pages/report/index' },
+        component: () => import('pages/report/index')
       },
       {
-        path: 'import-list',
-        name: 'store-import-list',
-        meta: { title: 'importList', icon: 'playlist_add_check', parent: 'store', component: 'pages/store/import-list' },
-        component: () => import('pages/store/import-list')
+        path: '/import',
+        name: 'import',
+        meta: { title: 'import', icon: 'playlist_add_check', parent: 'warehouse', component: 'pages/import/index' },
+        // component: () => import('pages/import/index'),
+        component: fakeLayout,
+        redirect: '/import/list',
+        children: [
+          {
+            path: 'list',
+            name: 'import-list',
+            meta: { title: 'list', icon: 'playlist_add_check', hidden: true, noCache: true, flag: 1, parent: 'import' },
+            component: () => import('pages/import/index')
+          },
+          {
+            path: 'add',
+            name: 'import-add',
+            meta: { title: 'add', icon: 'addchart', hidden: true, parent: 'import' },
+            component: () => import('pages/import/add')
+          }
+        ]
       },
       {
-        path: 'import',
-        name: 'store-import',
-        meta: { title: 'import', icon: 'addchart', parent: 'store', component: 'pages/store/import' },
-        component: () => import('pages/store/import')
-      },
-      {
-        path: 'export-list',
-        name: 'store-export-list',
-        meta: { title: 'exportList', icon: 'playlist_play', parent: 'store', component: 'pages/store/export-list' },
-        component: () => import('pages/store/export-list')
-      },
-      {
-        path: 'export',
-        name: 'store-export',
-        meta: { title: 'export', icon: 'double_arrow', parent: 'store', component: 'pages/store/export' },
-        component: () => import('pages/store/export')
+        path: '/export',
+        name: 'export',
+        meta: { title: 'export', icon: 'playlist_play', parent: 'warehouse', component: 'pages/export/index' },
+        // component: () => import('pages/store/export-list')
+        component: fakeLayout,
+        redirect: '/export/list',
+        children: [
+          {
+            path: 'list',
+            name: 'export-list',
+            meta: { title: 'list', icon: 'playlist_play', hidden: true, noCache: true, flag: 1, parent: 'export' },
+            component: () => import('pages/export/index')
+          },
+          {
+            path: 'add',
+            name: 'export-add',
+            meta: { title: 'add', icon: 'double_arrow', hidden: true, parent: 'export' },
+            component: () => import('pages/export/add')
+          }
+        ]
       }
     ]
   },

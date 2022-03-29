@@ -80,8 +80,11 @@ const actions = {
   },
   getAll ({ commit }, params) {
     return api.get(`${collection}/get-all`, { params }).then((res) => {
-      if (res) commit('SET_ITEMS', res)
-      // if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber)
+      if (res) {
+        // Sort by orders
+        res = res.sort(function (a, b) { return a.orders - b.orders })
+        commit('SET_ITEMS', res)
+      }
       return res
     })
   },

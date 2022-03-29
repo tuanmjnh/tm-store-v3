@@ -1,6 +1,6 @@
 <template>
   <q-form ref="form" class="settings">
-    <q-list>
+    <q-list class="scroll" style="height:calc(100vh - 99px)">
       <q-item-label header>{{$t('setting.userControl')}}</q-item-label>
       <q-item clickable v-ripple>
         <q-item-section>{{$t('setting.darkMode')}}</q-item-section>

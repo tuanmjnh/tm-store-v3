@@ -1,11 +1,10 @@
 <template>
   <q-card>
-    <q-card-section class="headder-row row">
+    <q-toolbar>
       <div class="col-auto">
-        <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+        <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <span class="text-subtitle1">{{$t(`category.title${$store.getters.componentLoaded.meta.type}`)}}</span>
-      <q-space />
+      <q-toolbar-title class="text-subtitle1">{{$t(`category.title${$store.getters.componentLoaded.meta.type}`)}}</q-toolbar-title>
       <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
@@ -22,7 +21,7 @@
           </div>
         </q-menu>
       </q-btn>
-    </q-card-section>
+    </q-toolbar>
     <q-separator />
     <q-card-section class="q-pt-sm q-pl-md p-pr-md">
       <q-scroll-area style="height:calc(100vh - 99px)">

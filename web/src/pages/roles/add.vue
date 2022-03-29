@@ -123,7 +123,6 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { dynamic } from '@/router/routes'
 import { RandomColor } from '../../../../global/utils/color'
@@ -134,7 +133,6 @@ export default defineComponent({
     maximized: { type: Boolean, default: false }
   },
   setup () {
-    const $route = useRoute()
     const $store = useStore()
     const isDialogColorPick = ref(false)
     const tabs = ref('main')

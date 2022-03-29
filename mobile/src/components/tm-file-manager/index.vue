@@ -27,7 +27,7 @@ export default defineComponent({
     url: { type: String, required: true },
     headers: { type: Array, default: () => [] },
     multiple: { type: Boolean, default: false },
-    path: { type: String, default: null },
+    // path: { type: String, default: null },
     title: { type: String, default: 'File Manager' },
     size: { type: Number, default: 100 },
     lblAccept: { type: String, default: 'Accept' },
@@ -48,10 +48,13 @@ export default defineComponent({
     const selected = ref(null)
     const onLoadFile = () => {
       isLoading.value = true
-      const params = { path: props.path } // { path: 'products' } // { file: 'products/IMG_20220221_093228.jpg' }
-      const headers = { 'Content-Type': 'multipart/form-data' }
+      // const params = { path: props.path } // { path: 'products' } // { file: 'products/IMG_20220221_093228.jpg' }
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        'Accept-Type': props.accept
+      }
       props.headers.forEach(e => { headers[e.name] = e.value })
-      axios.get(props.url, { params, headers }).then(x => {
+      axios.get(props.url, { headers }).then(x => {
         files.value = x.data
         // console.log(files.value)
       }).catch(e => {
@@ -67,7 +70,7 @@ export default defineComponent({
       isLoading, files, slotHeaderLeft, slotHeaderRight, selected,
       onAccept () {
         // console.log(selected.value)
-        emit('onAccept', selected.value)
+        emit('onAccept', props.multiple ? selected.value : (selected.value && selected.value.length ? selected.value[0] : null))
       }
     }
   }

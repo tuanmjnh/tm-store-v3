@@ -115,6 +115,15 @@ export default defineComponent({
     const passwordType = ref('password')
     const isCapsTooltip = ref(false)
     // Return data for html
+    const onSetGlobalData = () => {
+      return new Promise(async (resolve, reject) => {
+        if ($store.state.auth.user) {
+          if (!$store.state.types.items) await $store.dispatch('types/getAll')// .then(() => { console.log(store.state.types.items) })
+          // if (!$store.state.roles.items) await $store.dispatch('roles/getAll')// .then(() => { console.log(store.state.roles.items) })
+        }
+        return resolve(true)
+      })
+    }
     return {
       title, form, data, passwordType, isCapsTooltip, languages, darkMode, isSpinner,
       onSetLanguage (item) {
@@ -135,12 +144,13 @@ export default defineComponent({
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         return re.test(email)
       },
-      onSubmit: () => {
+      onSubmit: async () => {
         form.value.validate().then(valid => {
           if (valid) {
             isSpinner.value = true
             setTimeout(() => {
-              $store.dispatch('auth/verify', data.value).then((rs) => {
+              $store.dispatch('auth/verify', data.value).then(async rs => {
+                await onSetGlobalData()
                 isSpinner.value = false
                 if (rs) {
                   const redirect = $route.query && $route.query.redirect ? $route.query.redirect : '/'

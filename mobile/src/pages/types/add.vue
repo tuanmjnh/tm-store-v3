@@ -1,16 +1,15 @@
 <template>
   <q-card>
-    <q-card-section class="headder-row row">
+    <q-toolbar>
       <div class="col-auto">
-        <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+        <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <span class="text-subtitle1">
+      <q-toolbar-title class="text-subtitle1">
         {{data._id?`${$t('route.edit')} ${$t("route.types").toLowerCase()}`:`${$t('route.add')} ${$t("route.types").toLowerCase()}`}}
-      </span>
-      <q-space />
+      </q-toolbar-title>
       <q-btn icon="offline_pin" flat round dense color="blue" class="q-mr-sm" @click="onSubmit(1)" />
       <q-btn icon="draw" flat round dense color="amber" @click="onSubmit(0)" />
-    </q-card-section>
+    </q-toolbar>
     <q-separator />
     <q-card-section class="q-pa-none">
       <q-form ref="form">

@@ -21,7 +21,7 @@ module.exports.get = async function (req, res, next) {
     // req.query.categories = '612c8dc594b6cc2da8c47d06'
     if (req.query.categories) conditions.$and.push({ categories: { $in: [req.query.categories] } })
     if (!req.query.sortBy) req.query.sortBy = 'orders'
-    req.query.rowsNumber = await MProducts.where(conditions).countDocuments()
+    req.query.rowsNumber = (await AProducts.get({ conditions: conditions })).length
     // const options = {
     //   skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
     //   limit: parseInt(req.query.rowsPerPage),
@@ -67,7 +67,7 @@ module.exports.get = async function (req, res, next) {
 
     return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -241,7 +241,7 @@ module.exports.patch = async function (req, res, next) {
       const x = await MProducts.findById(_id)
       if (x) {
         var _x = await MProducts.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x.nModified) {
+        if (_x) {
           rs.success.push(_id)
           // Push logs
           Logger.set(req, MProducts.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')

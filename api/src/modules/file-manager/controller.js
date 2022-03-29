@@ -46,21 +46,35 @@ module.exports.createBucket = async function (req, res, next) {
 
 module.exports.get = async (req, res, next) => {
   try {
-    const [files] = await bucket.getFiles({ prefix: req.query.path ? req.query.path : null }) // , autoPaginate: false
+    const acceptType = req.headers['accept-type'] ? req.headers['accept-type'].split(',').map(x => x.toLowerCase()) : '*'
+    const [files] = await bucket.getFiles({ prefix: req.headers['upload-path'] ? req.headers['upload-path'] : null }) // , autoPaginate: false
     const rs = []
     files.forEach(file => {
       const name = file.name.split('/')
-      rs.push({
-        name: name[name.length - 1],
-        url: getPublicUrl(file.metadata.bucket, file.metadata.name),
-        type: file.metadata.contentType,
-        size: file.metadata.size,
-        extension: io.getExtention(file.name)
-      })
+      const extension = io.getExtention(file.name)
+      if (acceptType === '*') {
+        rs.push({
+          name: name[name.length - 1],
+          url: getPublicUrl(file.metadata.bucket, file.metadata.name),
+          type: file.metadata.contentType,
+          size: file.metadata.size,
+          extension: extension
+        })
+      } else {
+        if (acceptType.includes(extension)) {
+          rs.push({
+            name: name[name.length - 1],
+            url: getPublicUrl(file.metadata.bucket, file.metadata.name),
+            type: file.metadata.contentType,
+            size: file.metadata.size,
+            extension: extension
+          })
+        }
+      }
     })
     return res.status(201).json(rs)
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -106,6 +120,53 @@ module.exports.find = async (req, res, next) => {
 }
 
 module.exports.post = async (req, res, next) => {
+  try {
+    // const image = req.file.buffer
+    await processFile(req, res)
+    if (!req.file) {
+      return res.status(400).send({ message: 'Please upload a file!' })
+    }
+    const fileUpload = req.headers['upload-path'] ? `${req.headers['upload-path']}/${req.file.originalname}` : `${commonPath}/${req.file.originalname}`
+    const blob = bucket.file(fileUpload)
+    const blobStream = blob.createWriteStream({ resumable: false, })
+
+    blobStream.on('error', (e) => { res.status(500).send({ message: e.message }) })
+
+    blobStream.on('finish', async (data) => {
+      const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
+      const rs = {
+        name: req.file.originalname,
+        url: publicUrl,
+        type: req.file.mimetype,
+        size: req.file.size,
+        extension: io.getExtention(req.file.originalname)
+      }
+      try {
+        await bucket.file(fileUpload).makePublic()
+      } catch (e) {
+        console.log(e)
+        // return res.status(500).send({
+        //   message: `Uploaded the file successfully: ${req.file.originalname}, but public access is denied!`,
+        //   url: publicUrl,
+        // })
+      }
+      return res.status(200).json(rs)
+    })
+    blobStream.end(req.file.buffer)
+  } catch (e) {
+    // console.log(e)
+    if (e.code == 'LIMIT_FILE_SIZE') {
+      return res.status(500).send(e.code) // ({message: 'File size cannot be larger than 2MB!'})
+    }
+
+    // res.status(500).send({
+    //   message: `Could not upload the file: ${req.file.originalname}. ${e}}`,
+    // })
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.put = async (req, res, next) => {
   try {
     // const image = req.file.buffer
     await processFile(req, res)

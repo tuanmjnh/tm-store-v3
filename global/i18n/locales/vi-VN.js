@@ -31,9 +31,9 @@ export default {
     warehouse: 'Kho hàng',
     data: 'Dữ liệu',
     import: 'Nhập kho',
-    importList: 'Danh sách nhập',
+    importAdd: 'Nhập kho mới',
     export: 'Xuất kho',
-    exportList: 'Danh sách xuất',
+    exportAdd: 'Xuất kho mới',
     report: 'Báo cáo'
   },
   global: {
@@ -216,7 +216,7 @@ export default {
     lastName: 'Họ',
     fullName: 'Họ tên',
     phone: 'Số điện thoại',
-    personNumber: 'Số CMND',
+    personNumber: 'Số CMND/CCCD',
     dateBirth: 'Ngày sinh',
     gender: 'Giới tính',
     address: 'Địa chỉ',
@@ -227,7 +227,8 @@ export default {
     verified: 'Đã xác thực',
     unverified: 'Chưa xác thực',
     aboutMe: 'Thông tin',
-    region: 'Quốc gia',
+    client: 'Khách hàng',
+    manager: 'Quản trị',
     selectRegion: 'Lựa chọn quốc gia',
     changePassword: 'Thay đổi mật khẩu',
     resetPassword: 'Đặt lại mật khẩu',
@@ -237,6 +238,8 @@ export default {
     securityCheck: 'Kiểm tra bảo mật',
     securityStatus: 'Tình trạng bảo mật',
     loginHistory: 'Lịch sử đăng nhập',
+    lastLogin: 'Đăng nhập gần nhất',
+    lastChangePass: 'Đổi mật khẩu gần nhất'
   },
   profile: {
     title: 'Hồ sơ của tôi',
@@ -283,9 +286,6 @@ export default {
   product: {
     title: 'Sản phẩm',
     titleList: 'Danh sách sản phẩm',
-    warehouse: 'Kho hàng',
-    warehouseImport: 'Nhập kho',
-    warehouseExport: 'Xuất kho',
     name: 'Tên sản phẩm',
     code: 'Mã sản phẩm',
     origin: 'Nguồn gốc',
@@ -293,7 +293,7 @@ export default {
     attributes: 'Thuộc tính sản phẩm',
     import: 'Nhập',
     export: 'Xuất',
-    select: 'Chọn sản phẩm trong danh sách',
+    select: 'Chọn sản phẩm',
     add: 'Thêm sản phẩm mới',
     price: 'Giá',
     unitPrice: 'Đơn giá',
@@ -347,7 +347,10 @@ export default {
     date: 'Ngày xuất bản',
     attributes: 'Thuộc tính tin tức'
   },
-  store: {
+  warehouse: {
+    title: 'Kho hàng',
+    import: 'Nhập kho',
+    export: 'Xuất kho',
     code: 'Mã phiếu',
     products: 'Tổng sản phẩm',
     quantities: 'Tổng số lượng',

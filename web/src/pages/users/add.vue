@@ -48,9 +48,8 @@
           <q-tab-panel name="main">
             <div class="row q-gutter-xs">
               <div class="col-12">
-                <q-select v-model="group" input-debounce="200" :dense="$store.getters.dense.input"
-                          :options="groups" :label="$t('users.group')" option-value="code"
-                          :option-label="opt=>opt.name" :rules="[v=>!!v||$t('error.required')]" />
+                <q-select v-model="group" input-debounce="200" :dense="$store.getters.dense.input" :options="groups" :label="$t('users.group')"
+                          option-value="code" :option-label="opt=>opt.name" :rules="[v=>!!v||$t('error.required')]" />
               </div>
             </div>
             <div v-if="!$store.state.users.item._id" class="row q-gutter-xs">
@@ -77,8 +76,8 @@
               </div>
               <q-space />
               <div class="col-12 col-md-6">
-                <q-input v-model.trim="data.fullName" :dense="$store.getters.dense.input"
-                         :label="$t('users.fullName')" :rules="[v=>!!v||$t('error.required')]" />
+                <q-input v-model.trim="data.fullName" :dense="$store.getters.dense.input" :label="$t('users.fullName')"
+                         :rules="[v=>!!v||$t('error.required')]" />
               </div>
             </div>
             <div class="row q-gutter-xs">

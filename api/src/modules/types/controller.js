@@ -36,7 +36,8 @@ module.exports.get = async function (req, res, next) {
 
 module.exports.getAll = async function (req, res, next) {
   try {
-    MTypes.find((e, rs) => {
+    let conditions = { $and: [{ flag: req.query.flag ? parseInt(req.query.flag) : 1 }] }
+    MTypes.find(conditions, (e, rs) => {
       if (e) return res.status(500).send(e)
       // if (!rs) return res.status(404).send('No data exist!')
       return res.status(200).json(rs)
@@ -226,7 +227,7 @@ module.exports.patch = async function (req, res, next) {
       const x = await MTypes.findById(_id)
       if (x) {
         var _x = await MTypes.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x.nModified) {
+        if (_x) {
           rs.success.push(_id)
           // Push logs
           Logger.set(req, MTypes.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')

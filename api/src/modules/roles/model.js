@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
-  key: String,
-  name: String,
+  key: { type: String, required: true },
+  name: { type: String, required: true },
   desc: { type: String, default: null },
   level: { type: Number, default: 1 },
   color: { type: String, default: '#027be3' },

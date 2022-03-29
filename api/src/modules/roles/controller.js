@@ -133,7 +133,7 @@ module.exports.patch = async function (req, res, next) {
       const x = await MRoles.findById(_id)
       if (x) {
         var _x = await MRoles.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x.nModified) {
+        if (_x) {
           rs.success.push(_id)
           // Push logs
           Logger.set(req, MRoles.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')

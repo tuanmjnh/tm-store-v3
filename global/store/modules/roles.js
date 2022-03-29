@@ -12,11 +12,15 @@ const constant = {
 }
 
 const state = {
+  all: null,
   items: null,
   item: { ...constant }
   // rowsNumber: 0
 }
 const mutations = {
+  SET_ALL (state, value) {
+    state.all = value ? value : []
+  },
   SET_ITEMS (state, value) {
     state.items = value ? value : []
   },
@@ -46,14 +50,21 @@ const mutations = {
 const actions = {
   get ({ commit }, params) {
     return api.get(collection, { params }).then((res) => {
-      if (res && res.data) commit('SET_ITEMS', res.data)
-      if (res && res.rowsNumber) commit('SET_ROWS_NUMBER', res.rowsNumber)
+      if (res && res.data) {
+        if (params.all) commit('SET_ALL', res.data)
+        commit('SET_ITEMS', res.data)
+      }
+      // if (res && res.rowsNumber) commit('SET_ROWS_NUMBER', res.rowsNumber)
+      return res
     })
   },
   getAll ({ commit }, params) {
     return api.get(`${collection}/get-all`, { params }).then((res) => {
-      if (res) commit('SET_ITEMS', res)
-      // if (rs && rs.rowsNumber) commit('SET_ROWS_NUMBER', rs.rowsNumber)
+      if (res) {
+        // Sort by level
+        res = res.sort(function (a, b) { return a.level - b.level })
+        commit('SET_ITEMS', res)
+      }
       return res
     })
   },

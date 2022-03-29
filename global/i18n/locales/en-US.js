@@ -29,10 +29,10 @@ export default {
     store: 'Store',
     warehouse: 'Warehouse',
     data: 'Data',
-    import: 'Import store',
-    importList: 'Import list',
-    export: 'Export store',
-    exportList: 'Export list',
+    import: 'Import',
+    importAdd: 'New import',
+    export: 'Export',
+    exportAdd: 'New export',
     report: 'Report'
   },
   global: {
@@ -226,7 +226,8 @@ export default {
     verified: 'Verified',
     unverified: 'Unverified',
     aboutMe: 'About me',
-    region: 'Region',
+    client: 'Client',
+    manager: 'Manager',
     selectRegion: 'Select the region',
     changePassword: 'Change password',
     resetPassword: 'Reset password',
@@ -236,6 +237,8 @@ export default {
     securityCheck: 'Security check',
     securityStatus: 'Security status',
     loginHistory: 'Login history',
+    lastLogin: 'Last login',
+    lastChangePass: 'Last change password'
   },
   profile: {
     title: 'My profile',
@@ -346,7 +349,7 @@ export default {
     date: 'Publication date',
     attributes: 'News attributes'
   },
-  store: {
+  warehouse: {
     code: 'Receipt code',
     products: 'Total product',
     quantities: 'Total quantity',

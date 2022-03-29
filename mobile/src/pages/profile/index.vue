@@ -38,15 +38,15 @@
   <!-- Dialog information -->
   <q-dialog v-model="isDialogInformation" :maximized="isMaximized">
     <q-card>
-      <q-card-section class="row">
-        <div class="col-2">
-          <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+      <q-toolbar>
+        <div class="col-auto">
+          <q-btn flat dense icon="arrow_back" v-close-popup />
         </div>
-        <q-space />
-        <div class="col">
-          <span class="text-h6">{{$t('users.information')}}</span>
-        </div>
-      </q-card-section>
+        <q-toolbar-title class="text-subtitle1">{{$t('users.information')}}</q-toolbar-title>
+        <q-btn icon="offline_pin" flat round dense color="blue" class="q-mr-sm" @click="onSubmit(1)" />
+        <q-btn icon="draw" flat round dense color="amber" @click="onSubmit(0)" />
+      </q-toolbar>
+
       <q-card-section class="q-pt-none">
         <information />
       </q-card-section>
@@ -56,15 +56,15 @@
   <!-- Dialog security -->
   <q-dialog v-model="isDialogSecurity" :maximized="isMaximized">
     <q-card>
-      <q-card-section class="row">
-        <div class="col-2">
-          <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+      <q-toolbar>
+        <div class="col-auto">
+          <q-btn flat dense icon="arrow_back" v-close-popup />
         </div>
-        <q-space />
-        <div class="col">
-          <span class="text-h6">{{$t('route.security')}}</span>
-        </div>
-      </q-card-section>
+        <q-toolbar-title class="text-subtitle1">{{$t('route.security')}}</q-toolbar-title>
+        <q-btn icon="offline_pin" flat round dense color="blue" class="q-mr-sm" @click="onSubmit(1)" />
+        <q-btn icon="draw" flat round dense color="amber" @click="onSubmit(0)" />
+      </q-toolbar>
+
       <q-card-section class="q-pt-none">
         <security />
       </q-card-section>
@@ -74,15 +74,15 @@
   <!-- Dialog setting -->
   <q-dialog v-model="isDialogSetting" :maximized="isMaximized">
     <q-card>
-      <q-card-section class="row">
-        <div class="col-2">
-          <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+      <q-toolbar>
+        <div class="col-auto">
+          <q-btn flat dense icon="arrow_back" v-close-popup />
         </div>
-        <q-space />
-        <div class="col">
-          <span class="text-h6">{{$t('route.setting')}}</span>
-        </div>
-      </q-card-section>
+        <q-toolbar-title class="text-subtitle1">{{$t('route.setting')}}</q-toolbar-title>
+        <q-btn icon="offline_pin" flat round dense color="blue" class="q-mr-sm" @click="onSubmit(1)" />
+        <q-btn icon="draw" flat round dense color="amber" @click="onSubmit(0)" />
+      </q-toolbar>
+
       <q-card-section class="q-pt-none">
         <setting />
       </q-card-section>

@@ -66,3 +66,20 @@
     padding-right: 9px;
   }
 }
+
+// q-swipe-item
+.q-swipe-item {
+  .q-avatar {
+    .q-img {
+      height: 100%;
+      .image-error {
+        background-color: #ccc;
+      }
+      .absolute-full {
+        .q-icon {
+          top: -3px;
+        }
+      }
+    }
+  }
+}

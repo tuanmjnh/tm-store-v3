@@ -3,6 +3,7 @@ export default {
   apiUpload: state => state.app.apiUpload,
   avatar: state => state.app.avatar,
   iconApp: state => state.app.iconApp,
+  // imageEmpty: state => state.app.imageEmpty,
   loading: state => state.app.loading,
   componentLoaded: state => state.app.componentLoaded,
   routes: state => state.auth.routesConstant.concat(state.auth.routes),

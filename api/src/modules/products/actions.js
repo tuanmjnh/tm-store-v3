@@ -10,10 +10,23 @@ module.exports.get = ({ conditions }) => {
       $lookup: {
         from: 'types',
         let: { unit: { $toString: '$unit' } },
-        as: 'units',
+        as: 'unitType',
         pipeline: [
-          { $match: { $expr: { $and: [{ $eq: ['$code', '$$unit'] }] } } },
-          { $project: { _id: 0, unitName: '$name' } }
+          { $match: { $expr: { $eq: ['$code', '$$unit'] } } },
+          { $project: { _id: 1, key: 1, code: 1, name: 1, meta: 1, orders: 1 } }
+        ]
+      }
+    },
+    { $unwind: "$unitType" },
+    {
+      $lookup: {
+        from: 'categories',
+        let: { categories: '$categories' },
+        as: 'categoryList',
+        pipeline: [
+          { $addFields: { 'cateId': { $toString: '$_id' } } },
+          { $match: { $expr: { $and: [{ $in: ['$cateId', '$$categories'] }] } } },
+          { $project: { _id: 1, code: 1, title: 1, level: 1, position: 1, icon: 1, color: 1, meta: 1, orders: 1 } }
         ]
       }
     },
@@ -30,19 +43,13 @@ module.exports.get = ({ conditions }) => {
     // },
     // { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$priceUnits', 0] }, { $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
     // { $project: { units: 0, priceUnits: 0 } }
-    { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
-    { $project: { units: 0 } }
+    // { $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$units', 0] }, '$$ROOT'] } } },
+    // { $replaceRoot: { newRoot: { $mergeObjects: [{ '$units': 0 }, '$$ROOT'] } } },
+    // { $project: { units: 0 } }
   ])
   return rs
 }
 
-module.exports.select = ({ conditions, fields }) => {
-  if (fields) {
-    return MProducts.where(conditions, fields)
-  } else {
-    return MProducts.where(conditions)
-  }
-}
 
 module.exports.insert = async ({ request, item, createdBy, isLog, type, session }) => {
   const rs = { data: null, success: [], error: [] }

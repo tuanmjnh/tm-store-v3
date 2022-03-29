@@ -20,7 +20,7 @@ module.exports.get = async function (req, res, next) {
       .limit(parseInt(req.query.rowsPerPage))
       .sort({ [(req.query.sortBy) || 'createdAt']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
       .exec()
-    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
+    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
   } catch (e) {
     console.log(e)
     return res.status(500).send('invalid')
@@ -50,7 +50,7 @@ module.exports.getSub = async function (req, res, next) {
       .limit(parseInt(req.query.rowsPerPage) || 1)
       .sort({ [(req.query.sortBy) || 'createdAt']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
       .exec()
-    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
+    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
   } catch (e) {
     console.log(e)
     return res.status(500).send('invalid')

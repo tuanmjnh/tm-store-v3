@@ -1,11 +1,10 @@
 <template>
   <q-card>
-    <q-card-section class="headder-row row">
+    <q-toolbar>
       <div class="col-auto">
-        <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
+        <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <span class="text-subtitle1">{{$t('route.product')}}</span>
-      <q-space />
+      <q-toolbar-title class="text-subtitle1">{{$t('route.product')}}</q-toolbar-title>
       <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
@@ -17,7 +16,7 @@
                        @update:model-value="onFilter">
                 <template v-slot:append>
                   <q-icon v-if="pagination.filter===''" name="search" />
-                  <q-icon v-else name="clear" class="cursor-pointer" @click="pagination.filter=''" />
+                  <q-icon v-else name="clear" class="cursor-pointer" @click="onFilter('')" />
                 </template>
               </q-input>
             </div>
@@ -30,15 +29,21 @@
                                @onCancel="isFilter=false" />
             </div>
           </div>
+          <div class="row">
+            <div class="col-12">
+              <q-toggle v-model="pagination.flag" left-label :label="pagination.flag?$t('global.working'):$t('global.trash')"
+                        :false-value="0" :true-value="1" @update:model-value="onChangeFlag" />
+            </div>
+          </div>
         </q-menu>
       </q-btn>
-    </q-card-section>
+    </q-toolbar>
     <!-- <q-separator /> -->
     <q-card-section class="q-pa-none">
       <!-- <q-scroll-area style="height:calc(100vh - 99px)"> -->
       <q-list separator ref="refListTarget" id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
         <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250" :scroll-target="refListTarget">
-          <tm-swipeitem v-for="e in rows" :key="e._id" leftValue="max" rightValue="111">
+          <tm-swipeitem v-for="(e,i) in rows" :key="i" leftValue="max" rightValue="111" v-touch-hold.mouse="()=>{onTouchHold(e)}">
             <template v-slot:right>
               <q-btn no-caps class="q-btn--square" @click="onEdit(e)">
                 <q-icon name="edit" color="blue" size="18px" />
@@ -72,18 +77,29 @@
                 </q-item-label>
               </q-item-section>
             </template>
+            <q-separator v-if="i>0" />
             <q-item>
               <q-item-section avatar>
                 <q-avatar rounded size="42px">
-                  <!-- <img src="https://cdn.quasar.dev/img/avatar2.jpg"> -->
-                  <q-icon color="primary" name="insert_photo" />
+                  <q-img v-if="e.images&&e.images.length" :src="e.images[0]">
+                    <template v-slot:error>
+                      <div class="image-error absolute-full flex flex-center">
+                        <q-icon name="insert_photo" />
+                      </div>
+                    </template>
+                  </q-img>
+                  <q-img v-else>
+                    <div class="image-error absolute-full flex flex-center">
+                      <q-icon name="insert_photo" />
+                    </div>
+                  </q-img>
                 </q-avatar>
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{e.title}}</q-item-label>
                 <q-item-label caption lines="1">
-                  <!-- <span>{{$t('category.title')}}: </span> -->
-                  <span class="text-orange">{{e.categories}}</span>
+                  <span>{{$t('category.title')}}: </span>
+                  <span v-for="cate in e.categoryList" :key="cate._id" :style="{color:cate.color}" class="q-pr-xs">{{cate.title}}</span>
                 </q-item-label>
                 <q-item-label caption lines="1">
                   <span>{{$t('global.code')}}: </span>
@@ -101,11 +117,13 @@
                   </span>
                 </q-item-label>
               </q-item-section>
+              <!-- <q-item-section side>
+                {{e.order}}
+              </q-item-section> -->
               <q-item-section side>
-                {{e.orders}}
+                {{e.unitType.name}}
               </q-item-section>
             </q-item>
-            <q-separator />
           </tm-swipeitem>
           <!-- <tm-swipeitem v-for="e in rows" :key="e._id" :translateXValue="111">
             <template v-slot:right>
@@ -140,15 +158,40 @@
   <q-dialog v-model="isDialogAdd" :maximized="isMaximized">
     <add-item />
   </q-dialog>
+  <!-- Dialog Actions -->
+  <q-dialog v-model="isDialogTouchHold" position="bottom">
+    <q-card class="full-width" style="border-radius:initial">
+      <q-card-section class="q-pa-none">
+        <q-list separator>
+          <q-item clickable v-ripple class="text-center" @click="()=>{isDialogTouchHold=!isDialogTouchHold;onEdit()}">
+            <q-item-section>{{$t('global.edit')}}</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple class="text-center" @click="()=>{isDialogTouchHold=!isDialogTouchHold;onTrash()}">
+            <q-item-section>
+              <q-item-label v-if="pagination.flag" class="text-red">{{$t('global.trash')}}</q-item-label>
+              <q-item-label v-else class="text-warning">{{$t('global.recover')}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-separator size="3px" />
+        <q-list>
+          <q-item clickable v-ripple class="text-center" v-close-popup>
+            <q-item-section>
+              <q-item-label>{{$t('global.cancel')}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed, onBeforeMount } from "vue";
+import { defineComponent, defineAsyncComponent, ref, computed } from "vue";
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import { normalize } from '../../../../global/utils/search'
 export default defineComponent({
   name: "ProductIndex",
   components: {
@@ -163,11 +206,12 @@ export default defineComponent({
     const { t } = useI18n({ useScope: 'global' })
     const isDialogAdd = ref(false)
     const isMaximized = ref(true)
+    const isDialogTouchHold = ref(false)
     const refScrollTarget = ref(null)
     const refListTarget = ref(null)
     const isFilter = ref(false)
     const selected = ref([])
-    const categories = ref([])
+    const categories = computed(() => $store.state.categories.all.product || [])
     // const pins = computed(() => $store.state.types.items.filter(x => x.key === 'pin_product'))
     // const units = computed(() => $store.state.types.items.filter(x => x.key === 'unit'))
     // const unitsPrice = computed(() => $store.state.types.items.filter(x => x.key === 'unit_price'))
@@ -188,17 +232,6 @@ export default defineComponent({
       categories: null,
       flag: 1
     })
-    const visibleColumns = ref(['price', 'priceDiscount'])
-    const columns = ref([
-      { name: 'title', field: 'title', label: 'product.name', align: 'left', sortable: true, required: true }, // row => $t(`roles.${row.name}`)
-      { name: 'code', field: 'code', label: 'product.code', align: 'left', sortable: true, required: true },
-      { name: 'quantity', field: 'quantity', label: 'global.quantity', align: 'right', sortable: true, required: true },
-      { name: 'price', field: 'price', label: 'product.priceSale', align: 'right', sortable: true },
-      { name: 'priceDiscount', field: 'priceDiscount', label: 'product.priceDiscount', align: 'right', sortable: true },
-      { name: 'priceImport', field: 'priceImport', label: 'product.priceImport', align: 'right', sortable: true },
-      { name: 'priceExport', field: 'priceExport', label: 'product.priceExport', align: 'right', sortable: true },
-      { name: 'order', field: 'order', label: 'global.order', align: 'right', sortable: true }
-    ])
     const data = ref([])
     const rows = computed(() => data.value)
     const onFetch = (opt) => {
@@ -224,10 +257,11 @@ export default defineComponent({
     }
     if ($store.state.auth.token) {
       onFetch({ pagination: pagination.value }).then(x => data.value = x)
-      $store.dispatch('categories/get', { type: 'product', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })
+      if (!$store.state.categories.all.product || $store.state.categories.all.product.length < 1)
+        $store.dispatch('categories/get', { type: 'product', flag: 1, all: true })//.then((x) => { categories.value = x })
     }
     return {
-      isDialogAdd, isMaximized, refListTarget, refScrollTarget, isFilter, rows, selected, categories, pagination, visibleColumns, columns, isRoutes, onFetch,
+      isDialogAdd, isMaximized, isDialogTouchHold, refListTarget, refScrollTarget, isFilter, rows, selected, categories, pagination, isRoutes, onFetch,
       onSelectCategory: (val) => {
         if (val) onFetch({ pagination: pagination.value }).then(x => {
           data.value = x
@@ -235,13 +269,11 @@ export default defineComponent({
         })
       },
       onFilter: (val) => {
-        if (val) onFetch({ pagination: pagination.value }).then(x => {
-          data.value = x
-          // isFilter.value = false
-        })
+        pagination.value.filter = val
+        onFetch({ pagination: pagination.value }).then(x => { data.value = x })
       },
       onChangeFlag: (val) => {
-        if (val === pagination.value.flag) return
+        isFilter.value = false
         selected.value = []
         pagination.value.flag = val
         onFetch({ pagination: pagination.value }).then(x => data.value = x)
@@ -256,7 +288,8 @@ export default defineComponent({
         isDialogAdd.value = true
       },
       onEdit: (val) => {
-        $store.dispatch('products/set', val)
+        if (val) selected.value = [val]
+        $store.dispatch('products/set', selected.value[0]).then(x => selected.value = [])
         isDialogAdd.value = true
       },
       onTrash (val) {
@@ -291,6 +324,10 @@ export default defineComponent({
         else {
           done()
         }
+      },
+      onTouchHold (val) {
+        if (val) selected.value = [val]
+        isDialogTouchHold.value = !isDialogTouchHold.value
       }
     }
   }

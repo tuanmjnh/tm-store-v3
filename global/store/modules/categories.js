@@ -25,12 +25,18 @@ const constant = {
 }
 
 const state = {
+  all: {},
+  // type: 'product',
   rootItems: null,
   items: null,
   item: { ...constant },
   dependent: null
 };
 const mutations = {
+  SET_ALL (state, value) {
+    state.all[value.type] = value.data ? value.data : []
+    // state.type = value.type
+  },
   SET_ITEMS (state, value) {
     state.rootItems = value ? value : []
     state.items = value ? generateCategory(value).sort((a, b) => a.orders - b.orders) : []
@@ -101,11 +107,14 @@ const mutations = {
 const actions = {
   get ({ commit }, params) {
     return api.get(collection, { params }).then((res) => {
-      if (params.x) return params.generate ? generateCategory(res.data) : res.data
-      else {
-        if (res && res.data) commit('SET_ITEMS', res.data)
-        return res
+      // if (params.x) return params.generate ? generateCategory(res.data) : res.data
+      // else {
+      if (res && res.data) {
+        if (params.all) commit('SET_ALL', { data: generateCategory(res.data), type: params.type })
+        commit('SET_ITEMS', res.data)
       }
+      return res
+      // }
     })
   },
   set ({ commit }, params) {

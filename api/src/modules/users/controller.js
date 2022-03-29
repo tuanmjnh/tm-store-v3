@@ -1,15 +1,15 @@
 const mongoose = require('mongoose'),
+  AUsers = require('./actions'),
   MUsers = require('./model'),
-  validate = require('../../utils/validate'),
   crypto = require('../../utils/crypto'),
-  Moment = require('moment'),
+  // Moment = require('moment'),
   Request = require('../../utils/Request'),
   Logger = require('../../services/logger')
 
 module.exports.name = MUsers.collection.collectionName
 module.exports.get = async function (req, res, next) {
   try {
-    let conditions = { $and: [{ enable: req.query.enable ? req.query.enable : true }] }
+    let conditions = { $and: [{ enable: req.query.enable && req.query.enable === 'true' ? true : false }] }
     if (req.query.filter) {
       conditions.$and.push({
         $or: [
@@ -21,18 +21,14 @@ module.exports.get = async function (req, res, next) {
       })
     }
     if (req.query.group) conditions.$and.push({ group: req.query.group })
-    if (!req.query.sortBy) req.query.sortBy = 'email'
-    req.query.rowsNumber = await MUsers.where(conditions).countDocuments()
-    const options = {
-      skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
-      limit: parseInt(req.query.rowsPerPage),
-      sort: { [req.query.sortBy || 'email']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
-    }
-    MUsers.find(conditions, null, options, function (e, rs) {
-      if (e) return res.status(500).send(e)
-      // if (!rs) return res.status(404).send('No data exist!')
-      return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
-    })
+    if (!req.query.sortBy) req.query.sortBy = 'username'
+    req.query.rowsNumber = (await AUsers.get({ conditions: conditions })).length
+    const rs = await AUsers.get({ conditions: conditions })
+      .skip((parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage))
+      .limit(parseInt(req.query.rowsPerPage))
+      .sort({ [(req.query.sortBy) || 'username']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
+      .exec()
+    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -40,52 +36,47 @@ module.exports.get = async function (req, res, next) {
 
 module.exports.find = async function (req, res, next) {
   try {
-    if (req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        MUsers.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
+    if (req.query.id) {
+      if (mongoose.Types.ObjectId.isValid(req.query.id)) {
+        if (Array.isArray(req.query.id)) {
+          const conditions = { $and: [{ _id: { $in: req.query.id } }] }
+          const rs = await AUsers.get({ conditions: conditions }).exec()
           if (!rs) return res.status(404).send('no_exist')
           return res.status(200).json(rs)
-        })
+        } else {
+          const conditions = { $and: [{ _id: mongoose.Types.ObjectId(req.query.id) }] }
+          const rs = await AUsers.get({ conditions: conditions }).exec()
+          if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+          return res.status(200).json(rs[0])
+        }
       } else {
         return res.status(500).send('invalid')
       }
     } else if (req.query.email) {
-      MUsers.findOne({ email: req.query.email }, (e, rs) => {
-        if (e) return res.status(500).send(e)
+      if (Array.isArray(req.query.email)) {
+        const conditions = { $and: [{ email: { $in: req.query.email } }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
         if (!rs) return res.status(404).send('no_exist')
         return res.status(200).json(rs)
-      })
+      } else {
+        const conditions = { $and: [{ email: req.query.email }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
+      }
     } else if (req.query.username) {
-      MUsers.findOne({ username: req.query.username }, (e, rs) => {
-        if (e) return res.status(500).send(e)
+      if (Array.isArray(req.query.username)) {
+        const conditions = { $and: [{ username: { $in: req.query.username } }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
         if (!rs) return res.status(404).send('no_exist')
         return res.status(200).json(rs)
-      })
-    } else return res.status(200).json(null)
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.finds = async function (req, res, next) {
-  try {
-    if (req.query._ids) {
-      MUsers.where({ $in: { _id: req.query._ids } }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        return res.status(200).json(rs)
-      })
-    } else if (req.query.emails) {
-      MUsers.where({ $in: { email: req.query.emails } }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        return res.status(200).json(rs)
-      })
-    } else if (req.query.usernames) {
-      MUsers.where({ $in: { username: req.query.usernames } }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        return res.status(200).json(rs)
-      })
-    } else return res.status(200).json([])
+      } else {
+        const conditions = { $and: [{ username: req.query.username }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
+      }
+    }
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -181,7 +172,7 @@ module.exports.insertOne = async function (req, res, next) {
       if (e) return res.status(500).send(e)
       // Push logs
       Logger.set(req, MUsers.collection.collectionName, rs._id, 'insert')
-      return res.status(200).json(rs)
+      return res.status(201).json(rs)
     })
   } catch (e) {
     return res.status(500).send('invalid')
@@ -209,7 +200,7 @@ module.exports.put = async function (req, res, next) {
       const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
       if (rs) {
         Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
-        return res.status(200).json(rs)
+        return res.status(202).json(rs)
       }
       else return res.status(200).json(null)
     } else {
@@ -239,7 +230,7 @@ module.exports.update = async function (req, res, next) {
       const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
       if (rs) {
         Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
-        return res.status(200).json(rs)
+        return res.status(202).json(rs)
       }
       else return res.status(200).json(null)
     } else {
@@ -314,7 +305,7 @@ module.exports.patch = async function (req, res, next) {
           { _id: _id },
           { $set: { enable: x.enable === true ? false : true } }
         )
-        if (_x.nModified) {
+        if (_x) {
           rs.success.push(_id)
           // Push logs
           Logger.set(req, MUsers.collection.collectionName, _id, x.enable === true ? 'lock' : 'unlock')
@@ -339,11 +330,11 @@ module.exports.patch = async function (req, res, next) {
 
 module.exports.verified = async function (req, res, next) {
   try {
-    if (!validate.isBoolean(req.body.verified)) return res.status(500).send('invalid')
+    if (!req.body.verified) return res.status(500).send('invalid')
     if (mongoose.Types.ObjectId.isValid(req.body._id)) {
       MUsers.updateOne(
         { _id: req.body._id },
-        { $set: { verified: req.body.verified } },
+        { $set: { verified: req.body.verified === 'true' ? true : false } },
         (e, rs) => {
           if (e) return res.status(500).send(e)
           // Push logs

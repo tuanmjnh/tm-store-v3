@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'),
   MNews = require('./model'),
+  ANews = require('./actions'),
   pagination = require('../../utils/pagination'),
   Request = require('../../utils/Request'),
   Logger = require('../../services/logger')
@@ -8,52 +9,53 @@ module.exports.name = MNews.collection.collectionName
 module.exports.get = async function (req, res, next) {
   try {
     let conditions = { $and: [{ flag: req.query.flag ? parseInt(req.query.flag) : 1 }] }
-    if (req.query.filter) {
-      // conditions.$and.push({
-      //   $or: [
-      //     { title: new RegExp(search.normalize(req.query.filter), 'i') },
-      //     { code: new RegExp(search.normalize(req.query.filter), 'i') },
-      //     { author: new RegExp(search.normalize(req.query.filter), 'i') }
-      //   ]
-      // })
-      conditions.$and.push({ $text: { $search: req.query.filter } })
-    }
+    if (req.query.filter) conditions.$and.push({ $text: { $search: req.query.filter } })
     if (req.query.categories) conditions.$and.push({ categories: req.query.categories })
     if (!req.query.sortBy) req.query.sortBy = 'orders'
-    req.query.rowsNumber = await MNews.where(conditions).countDocuments()
-    const options = {
-      skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
-      limit: parseInt(req.query.rowsPerPage),
-      sort: { [req.query.sortBy || 'level']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
-    }
-    MNews.find(conditions, null, options, function (e, rs) {
-      if (e) return res.status(500).send(e)
-      // if (!rs) return res.status(404).send('No data exist!')
-      return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
-    })
+    req.query.rowsNumber = (await ANews.get({ conditions: conditions })).length
+    const rs = await ANews.get({ conditions: conditions })
+      .skip((parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage))
+      .limit(parseInt(req.query.rowsPerPage))
+      .sort({ [(req.query.sortBy) || 'orders']: req.query.descending === 'true' ? -1 : 1 }) // 1 ASC, -1 DESC
+      .exec()
+
+    return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.find = async function (req, res, next) {
   try {
-    if (req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        MNews.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
+    if (req.query.id) {
+      if (mongoose.Types.ObjectId.isValid(req.query.id)) {
+        if (Array.isArray(req.query.id)) {
+          const conditions = { $and: [{ _id: { $in: req.query.id } }] }
+          const rs = await ANews.get({ conditions: conditions }).exec()
           if (!rs) return res.status(404).send('no_exist')
           return res.status(200).json(rs)
-        })
+        } else {
+          const conditions = { $and: [{ _id: mongoose.Types.ObjectId(req.query.id) }] }
+          const rs = await ANews.get({ conditions: conditions }).exec()
+          if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+          return res.status(200).json(rs[0])
+        }
       } else {
         return res.status(500).send('invalid')
       }
-    } else if (req.query.key) {
-      MNews.findOne({ key: req.query.key }, (e, rs) => {
-        if (e) return res.status(500).send(e)
+    } else if (req.query.code) {
+      if (Array.isArray(req.query.code)) {
+        const conditions = { $and: [{ code: { $in: req.query.code } }] }
+        const rs = await ANews.get({ conditions: conditions }).exec()
         if (!rs) return res.status(404).send('no_exist')
         return res.status(200).json(rs)
-      })
+      } else {
+        const conditions = { $and: [{ code: req.query.code }] }
+        const rs = await ANews.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
+      }
     }
   } catch (e) {
     return res.status(500).send('invalid')
@@ -154,7 +156,7 @@ module.exports.patch = async function (req, res, next) {
       const x = await MNews.findById(_id)
       if (x) {
         var _x = await MNews.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x.nModified) {
+        if (_x) {
           rs.success.push(_id)
           // Push logs
           Logger.set(req, MNews.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
