@@ -2,7 +2,7 @@ const mongoose = require('mongoose'),
   MProducts = require('./model'),
   AProducts = require('./actions'),
   pagination = require('../../utils/pagination'),
-  Logger = require('../../services/logger')
+  Logger = require('../../services/logger/index')
 
 module.exports.name = MProducts.collection.collectionName
 module.exports.get = async function (req, res, next) {
@@ -21,6 +21,8 @@ module.exports.get = async function (req, res, next) {
     // req.query.categories = '612c8dc594b6cc2da8c47d06'
     if (req.query.categories) conditions.$and.push({ categories: { $in: [req.query.categories] } })
     if (!req.query.sortBy) req.query.sortBy = 'orders'
+    if (req.query.quantity !== undefined)
+      conditions.$and.push({ quantity: { $gt: parseInt(req.query.quantity) } })
     req.query.rowsNumber = (await AProducts.get({ conditions: conditions })).length
     // const options = {
     //   skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
@@ -101,6 +103,18 @@ module.exports.find = async function (req, res, next) {
         if (!rs || rs.length < 1) return res.status(404).send('no_exist')
         return res.status(200).json(rs[0])
       }
+    } else if (req.query.qrcode) {
+      if (Array.isArray(req.query.code)) {
+        const conditions = { $or: [{ qrcode: { $in: req.query.qrcode } }, { barcode: { $in: req.query.qrcode } }] }
+        const rs = await AProducts.get({ conditions: conditions }).exec()
+        if (!rs) return res.status(404).send('no_exist')
+        return res.status(200).json(rs)
+      } else {
+        const conditions = { $or: [{ qrcode: req.query.qrcode }, { barcode: req.query.qrcode }] }
+        const rs = await AProducts.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
+      }
     }
   } catch (e) {
     return res.status(500).send('invalid')
@@ -110,11 +124,9 @@ module.exports.find = async function (req, res, next) {
 module.exports.exist = async function (req, res, next) {
   try {
     if (req.query.code) {
-      MProducts.findOne({ code: req.query.code.toLowerCase() }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        if (rs) return res.status(200).json(true)
-        else return res.status(200).json(false)
-      })
+      const rs = await AProducts.exist(req.query.code)
+      if (rs) return res.status(200).json(true)
+      else return res.status(200).json(false)
     }
   } catch (e) {
     return res.status(200).json('invalid')
@@ -146,37 +158,28 @@ module.exports.getAttr = async function (req, res, next) {
 
 module.exports.post = async function (req, res, next) {
   try {
-    // if (
-    //   !req.body ||
-    //   Object.keys(req.body).length < 1 ||
-    //   !req.body.title ||
-    //   !req.body.code ||
-    //   req.body.categories.length < 1
-    // ) { return res.status(500).send('invalid') }
+    // check object input
+    if (
+      !item ||
+      Object.keys(item).length < 1 ||
+      !item.title ||
+      !item.code ||
+      item.categories.length < 1
+    ) {
+      rs.error.push('invalid')
+      return rs
+    }
+    // check exist code
+    const exist = await AProducts.exist(req.query.code)
+    if (exist) return res.status(501).send('exist')
+    // insert
     const rs = await AProducts.insert({ request: req, item: req.body })
-    if (rs.error && rs.error.length) return res.status(501).send(rs.error)
-
-    // get again for type unit and unitPrice
-    const conditions = { $and: [{ _id: mongoose.Types.ObjectId(rs.success[0]) }] }
-    const reGet = await AProducts.get({ conditions: conditions }).exec()
-    if (!reGet || reGet.length < 1) return res.status(201).json(rs.data)
-    else return res.status(201).json(reGet[0])
-    // else {
-    //   // Push logs
-    //   Logger.set(req, name, rs._id, 'insert')
-    //   return res.status(201).json(rs.success)
-    // }
-    // const x = await MProducts.findOne({ code: req.body.code })
-    // if (x) return res.status(501).send('exist')
-    // req.body.created = { at: new Date(), by: req.verify._id, ip: request.getIp(req) }
-    // const data = new MProducts(req.body)
-    // // data.validate()
-    // data.save((e, rs) => {
-    //   if (e) return res.status(500).send(e)
-    //   // Push logs
-    //   Logger.set(req, name, rs._id, 'insert')
-    //   return res.status(201).json(rs)
-    // })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    // reGet
+    const reGet = await AProducts.get({ conditions: { _id: mongoose.Types.ObjectId(rs._id) } })
+    return res.status(201).json(reGet[0])
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -187,85 +190,49 @@ module.exports.put = async function (req, res, next) {
     // if (!req.params.id) return res.status(500).send('Incorrect Id!')
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
     if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      MProducts.updateOne(
-        { _id: req.body._id },
-        {
-          $set: {
-            categories: req.body.categories,
-            title: req.body.title,
-            code: req.body.code,
-            desc: req.body.desc,
-            content: req.body.content,
-            images: req.body.images,
-            quantity: req.body.quantity,
-            price: req.body.price,
-            priceDiscount: req.body.priceDiscount,
-            priceImport: req.body.priceImport,
-            priceUnit: req.body.priceUnit,
-            unit: req.body.unit,
-            origin: req.body.origin,
-            date: req.body.date,
-            pin: req.body.pin,
-            tags: req.body.tags,
-            attr: req.body.attr,
-            meta: req.body.meta,
-            qrcode: req.body.qrcode,
-            barcode: req.body.barcode,
-            // start_at: req.body.start_at,
-            // end_at: req.body.end_at,
-            order: req.body.order,
-            flag: req.body.flag
-          }
-        },
-        (e, rs) => {
-          // { multi: true, new: true },
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MProducts.collection.collectionName, req.body._id, 'update')
-          return res.status(202).json(rs)
-        }
-      )
-    } else {
-      return res.status(500).send('invalid')
-    }
+      const rs = AProducts.update({ data: req.body })
+      if (!rs) return res.status(500).send('invalid')
+      //Set Logger
+      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+      return res.status(202).json(rs)
+    } else return res.status(500).send('invalid')
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.patch = async function (req, res, next) {
-  try {
-    let rs = { success: [], error: [] }
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
     for await (let _id of req.body._id) {
-      const x = await MProducts.findById(_id)
-      if (x) {
-        var _x = await MProducts.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x) {
-          rs.success.push(_id)
-          // Push logs
-          Logger.set(req, MProducts.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
-        } else rs.error.push(_id)
-      }
+      try {
+        const exist = await MProducts.findById(_id)
+        if (exist) {
+          var update = await MProducts.updateOne({ _id: _id }, { $set: { flag: exist.flag === 1 ? 0 : 1 } })
+          if (update) {
+            rs.success.push(id)
+            //Set Logger
+            Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+          } else rs.error.push(id)
+        }
+      } catch (e) { continue }
     }
-    return res.status(203).json(rs)
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  })
+  session.endSession()
+  return res.status(203).json(rs)
 }
 
 module.exports.delete = async function (req, res, next) {
   try {
     if (mongoose.Types.ObjectId.isValid(req.params._id)) {
-      MProducts.deleteOne({ _id: req.params._id }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        Logger.set(req, MProducts.collection.collectionName, req.params._id, 'delete')
-        return res.status(204).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
-    }
+      const rs = await MProducts.deleteOne({ _id: req.params._id })
+      if (!rs) return res.status(500).send('invalid')
+      //Set Logger
+      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.params._id, method: 'delete' })
+      return res.status(204).json(rs)
+    } else return res.status(500).send('invalid')
   } catch (e) {
     return res.status(500).send('invalid')
   }

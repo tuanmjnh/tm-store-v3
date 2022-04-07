@@ -29,6 +29,7 @@ const mapRouter = (controller) => {
 }
 
 // Import routers
+mapRouter(require('../modules/configs/controller'))
 mapRouter(require('../modules/routes/controller'))
 mapRouter(require('../modules/users/controller'))
 mapRouter(require('../modules/settings/controller'))

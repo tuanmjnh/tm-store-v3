@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   AProducts = require('../products/actions'),
   // crypto = require('../../utils/crypto'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Logger = require('../../services/logger/index')
 
 module.exports.get = ({ conditions }) => {
   return MPExports.aggregate([
@@ -56,10 +56,10 @@ module.exports.getSub = ({ conditions }) => {
   return rs
 }
 
-module.exports.insert = async ({ request, item, createdBy, isLog, type }) => {
+module.exports.insert = async ({ request, item, createdBy }) => {
+  const session = await mongoose.startSession()
   const rs = { data: null, success: [], error: [] }
-  isLog = isLog || true
-  try {
+  await session.withTransaction(async () => {
     // Export total
     const total = new MPExports({
       // code: crypto.NewGuid('N'),
@@ -73,38 +73,19 @@ module.exports.insert = async ({ request, item, createdBy, isLog, type }) => {
       flag: 1
     })
     total.validateSync()
-    const totalSave = await total.save()
-
-    // Push logs product export
-    if (isLog) Logger.set({
-      request: request,
-      collectionName: MPExports.collection.collectionName,
-      collectionId: totalSave._id,
-      action: type || 'insert'
-    })
+    const totalSave = await total.save({ session: session })
     // Loop item
     for await (const e of item) {
-      // Insert new item
-      if (!e._id) {
-        const productSave = await AProducts.insert({ request: request, item: e, type: 'insert-export' })
-        if (productSave.error && productSave.error.length) {
-          rs.error.push(e.code)
-          continue
-        } else rs.success.push(e.code)
-        e._id = productSave.data._id // productSave.success._id
-      }
-
       // Export item
       const exportItems = new MPExportItems({
-        key: totalSave._id,
+        key: _id,//totalSave._id,
         product: e._id,
         price: parseInt(e.priceExport),
         quantity: parseInt(e.quantity),
         // amount: parseInt(e.priceExport) * parseInt(e.quantity)
       })
-      // items.validate()
-      await exportItems.save()
-      // if (!itemsSave) throw new Error('export item')
+      exportItems.validateSync()
+      await exportItems.save({ session: session })
 
       // Update price export and quantity
       await MProducts.updateOne(
@@ -112,11 +93,12 @@ module.exports.insert = async ({ request, item, createdBy, isLog, type }) => {
         {
           $set: { priceExport: parseInt(e.priceExport) },
           $inc: { quantity: -parseInt(e.quantity) }
-        }
-      ).exec()
+        }, { session: session })
       // fix value Export total
       totalSave.quantities = totalSave.quantities + exportItems.quantity
       totalSave.prices = totalSave.prices + (exportItems.quantity * exportItems.price)
+      //Set Logger
+      Logger.set({ request: request, collectionName: MProducts.collection.collectionName, CollectionID: e._id, method: 'update-export' })
     }
     // fix value Export total
     await MPExports.updateOne(
@@ -126,12 +108,66 @@ module.exports.insert = async ({ request, item, createdBy, isLog, type }) => {
           quantities: totalSave.quantities,
           prices: totalSave.prices,
         }
-      }
-    )
+      }, { session: session })
     rs.data = totalSave
-    return rs
-  } catch (e) {
-    rs.error.push(e)
-    return rs
-  }
+    //Set Logger
+    Logger.set({ request: request, collectionName: MPExports.collection.collectionName, CollectionID: totalSave._id, method: 'insert' })
+  })
+  session.endSession()
+  return rs
+}
+
+// module.exports.put = async ({ request }) => {
+//   const rs = { success: [], error: [] }
+//   for await (let id of request.body.id) {
+//     // Set status cancel
+//     const exp = await MPExports.updateOne({ _id: id }, { $set: { flag: 0 } })
+//     // Find export items
+//     const exp_item = await MPExportItems.where({ key: id })
+//     for await (const e of exp_item) {
+//       // Update price export and quantity
+//       await MProducts.updateOne({ _id: e.product }, { $inc: { quantity: +parseInt(e.quantity) } })
+//     }
+//     if (exp) {
+//       rs.success.push(id)
+//     } else rs.error.push(id)
+//   }
+//   return rs
+// }
+
+module.exports.cancel = async ({ request }) => {
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
+    for await (let id of request.body.id) {
+      // Set status cancel
+      const exp = await MPExports.updateOne({ _id: id }, { $set: { flag: 0 } }, { session: session })
+      // Find export items
+      const exp_item = await MPExportItems.where({ key: id }).session(session)
+      for await (const e of exp_item) {
+        // Update price export and quantity
+        await MProducts.updateOne({ _id: e.product }, { $inc: { quantity: parseInt(e.quantity) } }, { session: session })
+      }
+      if (exp) {
+        rs.success.push(id)
+      } else rs.error.push(id)
+    }
+  })
+  session.endSession()
+  return rs
+}
+
+module.exports.confirm = async ({ request }) => {
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
+    for await (let id of request.body.id) {
+      const update = await MPExports.updateOne({ _id: id }, { $set: { flag: 2 } }, { session: session })
+      if (update) {
+        rs.success.push(id)
+      } else rs.error.push(id)
+    }
+  })
+  session.endSession()
+  return rs
 }

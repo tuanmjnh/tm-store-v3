@@ -25,7 +25,7 @@ export default defineComponent({
   setup (props, { emit, slots }) {
     const slotLeft = computed(() => !!slots['left'])
     const slotRight = computed(() => !!slots['right'])
-    const swipeItem = { content: null, left: null, right: null }
+    const swipeItem = ref({ content: null, left: null, right: null })
     const translateXDefault = ref('translate(0px, 0px)')
     const translateXLeft = (val) => {
       return `translateX(${val}px)`
@@ -52,23 +52,31 @@ export default defineComponent({
       if (children) {
         for (let i = 0; i < children.length; i++) {
           if (findContentElement(children[i].className)) {
-            swipeItem.content = children[i]
+            swipeItem.value.content = children[i]
             continue
           } else if (findLeftElement(children[i].className)) {
-            swipeItem.left = children[i]
+            swipeItem.value.left = children[i]
             continue
           } else if (findRightElement(children[i].className)) {
-            swipeItem.right = children[i]
+            swipeItem.value.right = children[i]
             continue
           }
         }
       }
-      return swipeItem
+      return swipeItem.value
     }
-    const onReset = (children) => {
-      children.content.style.transform = translateXDefault.value
-      if (slotRight.value) children.right.style.visibility = 'hidden'
-      if (slotLeft.value) children.left.style.visibility = 'hidden'
+    // const Reset = () => {
+    //   swipeItem.content.style.transform = translateXDefault.value
+    //   if (slotRight.value) swipeItem.right.style.visibility = 'hidden'
+    //   if (slotLeft.value) swipeItem.left.style.visibility = 'hidden'
+    // }
+    const onReset = () => {
+      // children.content.style.transform = translateXDefault.value
+      // if (slotRight.value) children.right.style.visibility = 'hidden'
+      // if (slotLeft.value) children.left.style.visibility = 'hidden'
+      swipeItem.value.content.style.transform = translateXDefault.value
+      if (slotRight.value) swipeItem.value.right.style.visibility = 'hidden'
+      if (slotLeft.value) swipeItem.value.left.style.visibility = 'hidden'
     }
     return {
       slotLeft, slotRight,
@@ -76,24 +84,25 @@ export default defineComponent({
         val.evt.path.forEach(e => {
           if (findMainElement(e.className)) {
             const children = findChildElements(e.children)
+            // console.log(children.content.style.transform === translateXDefault.value)
+            // console.log(children.content.style.transform, translateXDefault.value)
             if (children.content.style.transform === translateXDefault.value) {
               if (slotRight.value) {
                 children.content.style.transform = translateXRight(props.rightValue === 'max' ? e.offsetWidth : props.rightValue)
                 if (slotRight.value) children.right.style.visibility = 'visible'
                 if (slotLeft.value) children.left.style.visibility = 'hidden'
               }
-              emit('swipe-left', swipeItem)
+              emit('swipe-left', { el: swipeItem.value, reset: onReset })
             } else {
               children.content.style.transform = translateXDefault.value
               if (slotRight.value) children.right.style.visibility = 'hidden'
               if (slotLeft.value) children.left.style.visibility = 'hidden'
-              emit('swipe-reset', swipeItem)
+              emit('swipe-reset', { el: swipeItem.value, reset: onReset })
             }
           }
         })
 
       },
-
       onSlideRight (val) {
         val.evt.path.forEach(e => {
           if (findMainElement(e.className)) {
@@ -104,13 +113,13 @@ export default defineComponent({
                 if (slotRight.value) children.right.style.visibility = 'hidden'
                 if (slotLeft.value) children.left.style.visibility = 'visible'
               }
-              emit('swipe-right', swipeItem)
+              emit('swipe-right', { el: swipeItem.value, reset: onReset })
             } else {
               const children = findChildElements(e.children)
               children.content.style.transform = translateXDefault.value
               if (slotRight.value) children.right.style.visibility = 'hidden'
               if (slotLeft.value) children.left.style.visibility = 'hidden'
-              emit('swipe-reset', swipeItem)
+              emit('swipe-reset', { el: swipeItem.value, reset: onReset })
             }
           }
         })
@@ -124,6 +133,9 @@ export default defineComponent({
             // onReset(children.content)
           }
         })
+      },
+      Reset () {
+        onReset()
       }
     }
   }

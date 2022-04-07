@@ -14,7 +14,10 @@ const express = require('express'),
   router = require('./router'),
   mongoose = require('./services/mongoose'),
   middleware = require('./services/middleware'),
+  // logger = require('./services/logger'),
   packageData = require('../package.json')
+
+// 
 
 // console.log(process.env.ROOT_PATH)
 // if (process.env.NODE_ENV.toString() === 'development') dotenv.config({ path: '.env.development' })
@@ -53,7 +56,8 @@ app.use(
   session({
     resave: true,
     saveUninitialized: true,
-    secret: process.env.SECRET
+    secret: process.env.SECRET,
+    test: 'tuanmjnh'
     // store: new MongoStore({
     //   url: mongoUrl,
     //   autoReconnect: true
@@ -77,6 +81,10 @@ app.use(flash())
 
 // middleware JWT
 app.use(middleware.verify)
+
+// middleware Logger
+// app.use(logger.handle)
+
 /**
  * Primary app routes.
  */
@@ -89,6 +97,15 @@ app.get(process.env.BASE_URL, function (req, res, next) {
 })
 // Mount the router at /api so all its routes start with /api
 app.use(`${process.env.BASE_URL}api`, router)
+
+// locals configs
+const AConfigs = require('./modules/configs/actions')
+app.locals.configs = {}
+AConfigs.get().then(x => {
+  x.forEach(e => {
+    app.locals.configs[e.key] = e.value
+  })
+})
 
 // listen
 app

@@ -238,7 +238,7 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, watch, computed } from 'vue';
+import { defineComponent, defineAsyncComponent, ref, watch, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
@@ -385,7 +385,7 @@ export default defineComponent({
           return null
         }
         loadedRows.value = loadedRows.value.splice(1)
-        $store.dispatch('store/exportFinds', { codes: loadedRows.value.map(x => x[3]) }).then((x) => {
+        $store.dispatch('exports/select', { codes: loadedRows.value.map(x => x[3]) }).then((x) => {
           // if (x && x.length) {
           loadedRows.value.forEach(e => {
             const item = x.find(x => x.code === e[3])
@@ -451,7 +451,7 @@ export default defineComponent({
           isLoading.value = false
           isDialogProductLoad.value = false
         })
-        // $store.dispatch('store/exportFinds', data.map(x => x.code)).then((x) => {
+        // $store.dispatch('exports/select', data.map(x => x.code)).then((x) => {
         //   if (x && x.length) {
         //     x.forEach(item => {
         //       const _item = data.find(x => x.code === item.code)
@@ -507,7 +507,7 @@ export default defineComponent({
                 color: 'blue-grey'
               }
             }).onOk(() => {
-              $store.dispatch('store/exportInsert', rows.value).then((x) => {
+              $store.dispatch('exports/post', rows.value).then((x) => {
                 if (x) {
                   if (x.data) result.value = x
                   // result.value.total = result.value.data.sum('priceImport')
@@ -581,7 +581,7 @@ export default defineComponent({
         })
       },
       onDecodeQR (val) {
-        $store.dispatch('store/exportFinds', { qrcode: val }).then((x) => {
+        $store.dispatch('exports/select', { qrcode: val }).then((x) => {
           if (x && x.length) {
             isDialogQRCode.value = false
             const unitName = unitsSource.value.find(val => val.code === x[0].unit)

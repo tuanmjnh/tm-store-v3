@@ -25,6 +25,13 @@ export default defineComponent({
     })
     $store.commit('settings/INIT')
     $q.dark.set($store.getters.darkMode)
+
+    // $store.dispatch('configs/post', { key: 'logger', value: 1 }).then(x => {
+    //   console.log(x)
+    // })
+    // $store.dispatch('configs/get').then(x => {
+    //   console.log(x)
+    // })
     return { layout }
   }
 });

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose'),
   MUsers = require('./model'),
-  Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Request = require('../../utils/Request')
 
 module.exports.get = ({ conditions }) => {
   const rs = MUsers.aggregate([
@@ -32,73 +31,17 @@ module.exports.select = ({ conditions, fields }) => {
   }
 }
 
-module.exports.insert = async ({ request, item, createdBy, isLog, type, session }) => {
-  const rs = { data: null, success: [], error: [] }
-  isLog = isLog || true
-  try {
-    // check object input
-    if (
-      !item ||
-      Object.keys(item).length < 1 ||
-      !item.title ||
-      !item.code ||
-      item.categories.length < 1
-    ) {
-      rs.error.push('invalid')
-      return rs
-    }
-    // check exist code
-    const findOne = await MUsers.findOne({ code: item.code })
-    if (findOne) {
-      rs.error.push('exist')
-      return rs
-    }
-    // defined created
-    item.created = { at: new Date(), by: createdBy || request.verify._id, ip: Request.getIp(request) }
-    // defined ObjectId for array category
-    // if (item.categories && Array.isArray(item.categories) && item.categories.length > 0)
-    //   for (let i = 0; i < item.categories.length; i++) {
-    //     item.categories[i] = mongoose.Types.ObjectId(item.categories[i])
-    //   }
-    // defined new Products
-    const data = new MProducts(item)
-    // validate data
-    data.validateSync()
-    // Save data
-    if (session) {
-      const save = await data.save({ session })
-      // check error
-      if (!save) rs.error.push('invalid')
-      else {
-        rs.data = save
-        rs.success.push(save._id)
-        // Push logs
-        if (isLog) Logger.set({
-          request: request,
-          collectionName: MUsers.collection.collectionName,
-          collectionId: save._id,
-          action: type || 'insert'
-        })
-      }
-    } else {
-      const save = await data.save()
-      // check error
-      if (!save) rs.error.push('invalid')
-      else {
-        rs.data = save
-        rs.success.push(save._id)
-        // Push logs
-        if (isLog) Logger.set({
-          request: request,
-          collectionName: MUsers.collection.collectionName,
-          collectionId: save._id,
-          action: type || 'insert'
-        })
-      }
-    }
-  } catch (e) {
-    console.log(e)
-    rs.error.push(e)
-  }
+module.exports.insert = async ({ request, data, createdBy, session }) => {
+  const password = data.password ? data.password : crypto.NewGuid().split('-')[0]
+  data.salt = crypto.NewGuid('n')
+  data.password = crypto.SHA256(password + req.body.salt)
+  data.created = { at: new Date(), by: createdBy || request.verify._id, ip: Request.getIp(req) }
+  // req.body.dateBirth = Moment(req.body.dateBirth, 'DD/MM/YYYY')
+  const data = new MUsers(data)
+  data.validateSync()
+  let rs = null
+  if (session) rs = data.save({ session: session })
+  else rs = data.save()
+  if (rs) rs.password = password
   return rs
 }

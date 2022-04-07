@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref } from 'vue';
+import { defineComponent, defineAsyncComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
@@ -130,16 +130,17 @@ export default defineComponent({
       },
       onGetData (query) {
         if (typeTime.value === 'weekly') {
-          $store.dispatch('store/reportGetWeekly', query).then((x) => {
+          $store.dispatch('reports/getWeekly', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             // groups.value = x ? Object.keys(x.imports[0].data) : null
-            labels.value = importData.value.map(x => t(`dayWeek.${x.labels}`))
+            // labels.value = importData.value.map(x => t(`dayWeek.${x.labels}`))
+            console.log(x)
           }).then(() => {
             onChartBarRef(groups.value ? groups.value[0] : null)
           })
         } else if (typeTime.value === 'month') {
-          $store.dispatch('store/reportGetMonth', query).then((x) => {
+          $store.dispatch('reports/getMonth', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             labels.value = importData.value.map(x => `${t('global.day')} ${x.labels}`)
@@ -147,7 +148,7 @@ export default defineComponent({
             onChartBarRef(groups.value ? groups.value[0] : null)
           })
         } else if (typeTime.value === 'quarter') {
-          $store.dispatch('store/reportGetQuarter', query).then((x) => {
+          $store.dispatch('reports/getQuarter', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             labels.value = importData.value.map(x => t(`quarter.${x.labels}`))
@@ -155,7 +156,7 @@ export default defineComponent({
             onChartBarRef(groups.value ? groups.value[0] : null)
           })
         } else if (typeTime.value === 'year') {
-          $store.dispatch('store/reportGetYear', query).then((x) => {
+          $store.dispatch('reports/getYear', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             labels.value = importData.value.map(x => `${t('global.month')} ${x.labels}`)
@@ -163,7 +164,7 @@ export default defineComponent({
             onChartBarRef(groups.value ? groups.value[0] : null)
           })
         } else if (typeTime.value === 'fiveYear') {
-          $store.dispatch('store/reportGetFiveYear', query).then((x) => {
+          $store.dispatch('reports/getFiveYear', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             labels.value = importData.value.map(x => `${t('global.year')} ${x.labels}`)
@@ -171,7 +172,7 @@ export default defineComponent({
             onChartBarRef(groups.value ? groups.value[0] : null)
           })
         } else {
-          $store.dispatch('store/reportGetDate', query).then((x) => {
+          $store.dispatch('reports/getDate', query).then((x) => {
             importData.value = x.imports
             exportData.value = x.exports
             labels.value = importData.value.map(x => `D${x.labels}`)

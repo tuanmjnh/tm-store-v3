@@ -2,7 +2,7 @@ const mongoose = require('mongoose'),
   MTypes = require('./model'),
   pagination = require('../../utils/pagination'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Logger = require('../../services/logger/index')
 
 module.exports.name = MTypes.collection.collectionName
 module.exports.get = async function (req, res, next) {
@@ -36,6 +36,15 @@ module.exports.get = async function (req, res, next) {
 
 module.exports.getAll = async function (req, res, next) {
   try {
+    // localLog.set({
+    //   request: req,
+    //   CollectionName: MTypes.collection.collectionName,
+    //   CollectionID: 'CID',
+    //   method: 'insert'
+    // })
+    // const log = localLog.get('')
+    // console.log(log)
+    // console.log(req.app.locals.configs)
     let conditions = { $and: [{ flag: req.query.flag ? parseInt(req.query.flag) : 1 }] }
     MTypes.find(conditions, (e, rs) => {
       if (e) return res.status(500).send(e)
@@ -50,15 +59,12 @@ module.exports.getAll = async function (req, res, next) {
 module.exports.find = async function (req, res, next) {
   try {
     if (req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        MTypes.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
-          if (!rs) return res.status(404).send('no_exist')
-          return res.status(200).json(rs)
-        })
-      } else {
-        return res.status(500).send('invalid')
-      }
+      if (!mongoose.Types.ObjectId.isValid(req.query._id)) return res.status(500).send('invalid')
+      MTypes.findById(req.query._id, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        if (!rs) return res.status(404).send('no_exist')
+        return res.status(200).json(rs)
+      })
     } else if (req.query.key) {
       MTypes.findOne({ key: req.query.key }, (e, rs) => {
         if (e) return res.status(500).send(e)
@@ -153,7 +159,7 @@ module.exports.getMeta = async function (req, res, next) {
     // ])
     // return res.status(200).json({ data: rs })
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -163,19 +169,18 @@ module.exports.post = async function (req, res, next) {
     // if (!req.body || Object.keys(req.body).length < 1 || req.body.key.length < 1 || req.body.name.length < 1) {
     //   return res.status(500).send('invalid')
     // }
-    const x = await MTypes.findOne({ key: req.body.key, code: req.body.code })
-    if (x) return res.status(501).send('exist')
+    const exist = await MTypes.findOne({ key: req.body.key, code: req.body.code })
+    if (exist) return res.status(501).send('exist')
     req.body.created = { at: new Date(), by: req.verify._id, ip: Request.getIp(req) }
     const data = new MTypes(req.body)
-    // data.validate()
-    data.save((e, rs) => {
-      if (e) return res.status(500).send(e)
-      // Push logs
-      Logger.set(req, MTypes.collection.collectionName, rs._id, 'insert')
-      return res.status(201).json(rs)
-    })
+    data.validateSync()
+    const rs = await data.save()
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MTypes.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    return res.status(201).json(rs)
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -184,74 +189,61 @@ module.exports.put = async function (req, res, next) {
   try {
     // if (!req.params.id) return res.status(500).send('Incorrect Id!')
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
-    const x = await MTypes.findOne({
-      _id: { $nin: [req.body._id] },
-      key: req.body.key,
-      code: req.body.code
-    })
-    if (x) return res.status(501).send('exist')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      MTypes.updateOne(
-        { _id: req.body._id },
-        {
-          $set: {
-            key: req.body.key,
-            code: req.body.code,
-            name: req.body.name,
-            desc: req.body.desc,
-            meta: req.body.meta,
-            orders: req.body.orders,
-            flag: req.body.flag
-          }
-        },
-        (e, rs) => {
-          // { multi: true, new: true },
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MTypes.collection.collectionName, req.body._id, 'update')
-          return res.status(202).json(rs)
+    const exist = await MTypes.findOne({ _id: { $nin: [req.body._id] }, key: req.body.key, code: req.body.code })
+    if (exist) return res.status(501).send('exist')
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    const rs = await MTypes.updateOne(
+      { _id: req.body._id },
+      {
+        $set: {
+          key: req.body.key,
+          code: req.body.code,
+          name: req.body.name,
+          desc: req.body.desc,
+          meta: req.body.meta,
+          orders: req.body.orders,
+          flag: req.body.flag
         }
-      )
-    } else {
-      return res.status(500).send('invalid')
-    }
+      })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MTypes.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+    return res.status(202).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.patch = async function (req, res, next) {
-  try {
-    let rs = { success: [], error: [] }
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
     for await (let _id of req.body._id) {
-      const x = await MTypes.findById(_id)
-      if (x) {
-        var _x = await MTypes.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x) {
-          rs.success.push(_id)
-          // Push logs
-          Logger.set(req, MTypes.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
-        } else rs.error.push(_id)
-      }
+      try {
+        const exist = await MTypes.findById(_id)
+        if (exist) {
+          const update = await MTypes.updateOne({ _id: _id }, { $set: { flag: exist.flag === 1 ? 0 : 1 } })
+          if (update) {
+            rs.success.push(_id)
+            //Set Logger
+            Logger.set({ request: req, collectionName: MTypes.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+          } else rs.error.push(_id)
+        }
+      } catch (e) { continue }
     }
-    return res.status(203).json(rs)
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  })
+  session.endSession()
+  return res.status(203).json(rs)
 }
 
 module.exports.delete = async function (req, res, next) {
   try {
-    if (mongoose.Types.ObjectId.isValid(req.params._id)) {
-      MTypes.deleteOne({ _id: req.params._id }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        Logger.set(req, MTypes.collection.collectionName, req.params._id, 'delete')
-        return res.status(204).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.params._id)) return res.status(500).send('invalid')
+    const rs = await MTypes.deleteOne({ _id: req.params._id })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MTypes.collection.collectionName, CollectionID: req.params._id, method: 'delete' })
+    return res.status(204).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }

@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
   tmp_routes = require('../../utils/tmp_routes'),
   pagination = require('../../utils/pagination'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Logger = require('../../services/logger/index')
 
 module.exports.name = MRoutes.collection.collectionName
 const generateRoutes = (routes, dependent = null) => {
@@ -52,15 +52,12 @@ module.exports.get = async function (req, res, next) {
 module.exports.find = async function (req, res, next) {
   try {
     if (req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        MRoutes.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
-          if (!rs) return res.status(404).send('no_exist')
-          return res.status(200).json(rs)
-        })
-      } else {
-        return res.status(500).send('invalid')
-      }
+      if (!mongoose.Types.ObjectId.isValid(req.query._id)) return res.status(500).send('invalid')
+      MRoutes.findById(req.query._id, (e, rs) => {
+        if (e) return res.status(500).send(e)
+        if (!rs) return res.status(404).send('no_exist')
+        return res.status(200).json(rs)
+      })
     } else if (req.query.key) {
       MRoutes.findOne({ key: req.query.key }, (e, rs) => {
         if (e) return res.status(500).send(e)
@@ -105,15 +102,14 @@ module.exports.post = async function (req, res, next) {
     const x = await MRoutes.findOne({ name: req.body.name })
     if (x) return res.status(501).send('exist')
     req.body.created = { at: new Date(), by: req.verify._id, ip: Request.getIp(req) }
+    if (!req.body.dependent) req.body.dependent = null
     const data = new MRoutes(req.body)
-    if (!req.body.dependent) data.dependent = null
-    // data.validate()
-    data.save((e, rs) => {
-      if (e) return res.status(500).send(e)
-      // Push logs
-      Logger.set(req, MRoutes.collection.collectionName, rs._id, 'insert')
-      return res.status(201).json(rs)
-    })
+    data.validateSync()
+    const rs = await data.save()
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MRoutes.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    return res.status(201).json(rs)
   } catch (e) {
     console.log(e)
     return res.status(500).send('invalid')
@@ -150,40 +146,34 @@ module.exports.insertTemplate = async function (req, res, next) {
 module.exports.put = async function (req, res, next) {
   try {
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      const x = await MRoutes.findOne({ _id: { $nin: [req.body._id] }, name: req.body.name })
-      if (x) return res.status(501).send('exist')
-      if (req.body.meta) {
-        req.body.meta.forEach((e) => {
-          if (e.key === 'hidden') e.value = e.value === 'true' ? true : false
-        })
-      }
-      MRoutes.updateOne(
-        { _id: req.body._id },
-        {
-          $set: {
-            path: req.body.path,
-            name: req.body.name,
-            component: req.body.component,
-            redirect: req.body.redirect,
-            // title: req.body.title,
-            // icon: req.body.icon,
-            orders: req.body.orders,
-            // hidden: req.body.hidden,
-            meta: req.body.meta,
-            flag: req.body.flag
-          }
-        },
-        (e, rs) => {
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MRoutes.collection.collectionName, req.body._id, 'update')
-          return res.status(202).json(rs)
-        }
-      )
-    } else {
-      return res.status(500).send('invalid')
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    const exist = await MRoutes.findOne({ _id: { $nin: [req.body._id] }, name: req.body.name })
+    if (exist) return res.status(501).send('exist')
+    if (req.body.meta) {
+      req.body.meta.forEach((e) => {
+        if (e.key === 'hidden') e.value = e.value === 'true' ? true : false
+      })
     }
+    const rs = MRoutes.updateOne(
+      { _id: req.body._id },
+      {
+        $set: {
+          path: req.body.path,
+          name: req.body.name,
+          component: req.body.component,
+          redirect: req.body.redirect,
+          // title: req.body.title,
+          // icon: req.body.icon,
+          orders: req.body.orders,
+          // hidden: req.body.hidden,
+          meta: req.body.meta,
+          flag: req.body.flag
+        }
+      })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MRoutes.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+    return res.status(202).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -196,64 +186,59 @@ module.exports.updateOrder = async function (req, res, next) {
       return res.status(500).send('invalid')
     }
     if (!req.body.dependent) req.body.dependent = null
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      MRoutes.updateOne(
-        { _id: req.body._id },
-        {
-          $set: {
-            dependent: req.body.dependent,
-            level: req.body.level,
-            orders: req.body.orders
-          }
-        },
-        (e, rs) => {
-          // { multi: true, new: true },
-          if (e) return res.status(500).send(e)
-          // Push logs
-          // logs.push(req, { user_id: req.verify._id, collection: 'roles', collection_id: req.body._id, method: 'update' })
-          return res.status(202).json(rs)
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    MRoutes.updateOne(
+      { _id: req.body._id },
+      {
+        $set: {
+          dependent: req.body.dependent,
+          level: req.body.level,
+          orders: req.body.orders
         }
-      )
-    } else {
-      return res.status(500).send('invalid')
-    }
+      },
+      (e, rs) => {
+        // { multi: true, new: true },
+        if (e) return res.status(500).send(e)
+        // Push logs
+        // logs.push(req, { user_id: req.verify._id, collection: 'roles', collection_id: req.body._id, method: 'update' })
+        return res.status(202).json(rs)
+      }
+    )
   } catch (e) {
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.patch = async function (req, res, next) {
-  try {
-    let rs = { success: [], error: [] }
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
     for await (let _id of req.body._id) {
-      const x = await MRoutes.findById(_id)
-      if (x) {
-        var _x = await MRoutes.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x) {
-          rs.success.push(_id)
-          // Push logs
-          Logger.set(req, MRoutes.collection.collectionName, _id, x.flag === 1 ? 'lock' : 'unlock')
-        } else rs.error.push(_id)
-      }
+      try {
+        const exist = await MRoutes.findById(_id)
+        if (exist) {
+          const update = await MRoutes.updateOne({ _id: _id }, { $set: { flag: exist.flag === 1 ? 0 : 1 } })
+          if (update) {
+            rs.success.push(_id)
+            //Set Logger
+            Logger.set({ request: req, collectionName: MRoutes.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+          } else rs.error.push(_id)
+        }
+      } catch (e) { continue }
     }
-    return res.status(203).json(rs)
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  })
+  session.endSession()
+  return res.status(203).json(rs)
 }
 
 module.exports.delete = async function (req, res, next) {
   try {
-    if (mongoose.Types.ObjectId.isValid(req.params._id)) {
-      MRoutes.deleteOne({ _id: req.params._id }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        Logger.set(req, MRoutes.collection.collectionName, req.params._id, 'delete')
-        return res.status(204).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.params._id)) return res.status(500).send('invalid')
+    const rs = await MRoutes.deleteOne({ _id: req.params._id })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MRoutes.collection.collectionName, CollectionID: req.params._id, method: 'delete' })
+    return res.status(204).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }

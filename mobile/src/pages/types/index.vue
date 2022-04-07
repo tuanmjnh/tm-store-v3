@@ -46,29 +46,14 @@
         </q-menu>
       </q-btn>
     </q-toolbar>
-
-    <!-- <q-separator /> -->
+    <q-separator />
     <q-card-section class="q-pa-none">
       <q-scroll-area style="height:calc(100vh - 99px)">
-        <q-list separator>
-          <q-item clickable v-ripple v-for="e in rows" :key="e._id" v-touch-swipe.mouse.left="()=>{onTrash(e)}"
-                  v-touch-swipe.mouse.right="()=>{onEdit(e)}" v-touch-hold.mouse="()=>{onTouchHold(e)}">
-            <q-item-section>
-              <q-item-label>{{e.name}}</q-item-label>
-              <q-item-label caption lines="1">{{`${$t('global.code')}: ${e.code}`}}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              {{e.orders}}
-            </q-item-section>
-          </q-item>
-          <!-- <tm-swipeitem v-for="e in rows" :key="e._id" :leftValue="111" :rightValue="111">
+        <!-- <q-list separator>
+          <q-slide-item v-for="(e,i) in rows" :key="i" @left="onSlideLeft" @right="onSlideRight" left-color="red" right-color="blue"
+                        v-touch-hold.mouse="()=>{onTouchHold(e)}">
             <template v-slot:right>
-              <q-btn no-caps class="q-btn--square" @click="onEdit(e)">
-                <q-icon name="edit" color="blue" size="18px" />
-              </q-btn>
-              <q-btn no-caps class="q-btn--square" @click="onTrash(e)">
-                <q-icon name="clear" color="negative" size="18px" />
-              </q-btn>
+              <q-icon name="alarm" />
             </template>
             <q-item clickable v-ripple>
               <q-item-section>
@@ -79,7 +64,19 @@
                 {{e.orders}}
               </q-item-section>
             </q-item>
-          </tm-swipeitem> -->
+          </q-slide-item>
+        </q-list> -->
+        <q-list separator>
+          <q-item v-for="(e,i) in rows" :key="i" clickable v-ripple v-touch-swipe.mouse.left="()=>{onTrash(e)}"
+                  v-touch-swipe.mouse.right="()=>{onEdit(e)}" v-touch-hold.mouse="()=>{onTouchHold(e)}">
+            <q-item-section>
+              <q-item-label>{{e.name}}</q-item-label>
+              <q-item-label caption lines="1">{{`${$t('global.code')}: ${e.code}`}}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              {{e.orders}}
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-card-section>
@@ -117,7 +114,7 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from "vue";
+import { defineComponent, defineAsyncComponent, ref, computed, onBeforeUnmount } from "vue";
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
@@ -168,9 +165,33 @@ export default defineComponent({
 
     // computed
     const rows = computed(() => onFetch())
-
+    let Reset = null
+    let timer
+    function finalize (reset) {
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        reset()
+      }, 3000)
+    }
+    onBeforeUnmount(() => {
+      clearTimeout(timer)
+    })
     return {
       isDialogAdd, isMaximized, isDialogTouchHold, rows, selected, isRoutes, isFilter, pagination,
+      onSlideLeft ({ reset }) {
+        // $q.notify('Left action triggered. Resetting in 1 second.')
+        // finalize(reset)
+        if (Reset) Reset()
+        Reset = reset
+        finalize(reset)
+      },
+      onSlideRight ({ reset }) {
+        // $q.notify('Right action triggered. Resetting in 1 second.')
+        // finalize(reset)
+        if (Reset) Reset()
+        Reset = reset
+        finalize(reset)
+      },
       onAdd: () => {
         $store.dispatch('types/set')
         isDialogAdd.value = true

@@ -10,12 +10,12 @@
   <div class="row">
     <div class="col-6 text-left" style="padding-left:20px">
       <span>{{$t('product.ballotCode')}}: </span>
-      <span class="text-bold">{{total._id}}</span>
+      <span class="text-bold">{{total?total._id:''}}</span>
     </div>
     <q-space />
     <div class="col-6 text-right" style="padding-right:20px">
       <span>{{labelDate}}: </span>
-      <span class="text-bold">{{$moment(total.createdAt).format($store.getters.format.date)}}</span>
+      <span class="text-bold">{{total?$moment(total.createdAt).format($store.getters.format.date):''}}</span>
     </div>
   </div>
   <br />
@@ -64,16 +64,16 @@
           </tr>
           <tr>
             <td colspan="6" class="text-left text-bold">{{$t('product.total')}}</td>
-            <td class="text-right text-bold">{{parseInt(total.quantities).NumberFormat($store.getters.language)}}</td>
-            <td class="text-right text-bold"> {{parseInt(total.prices).NumberFormat($store.getters.language)}}</td>
+            <td class="text-right text-bold">{{total?parseInt(total.quantities).NumberFormat($store.getters.language):''}}</td>
+            <td class="text-right text-bold"> {{total?parseInt(total.prices).NumberFormat($store.getters.language):''}}</td>
           </tr>
           <tr>
             <td colspan="7" class="text-left text-bold">{{$t('product.tax')}}</td>
-            <td class="text-right text-bold">{{parseInt(total.prices*0.1).NumberFormat($store.getters.language)}}</td>
+            <td class="text-right text-bold">{{total?parseInt(total.prices*0.1).NumberFormat($store.getters.language):''}}</td>
           </tr>
           <tr>
             <td colspan="7" class="text-left text-bold">{{$t('product.totalAmount')}}</td>
-            <td class="text-right text-bold">{{parseInt(total.prices*1.1).NumberFormat($store.getters.language)}}</td>
+            <td class="text-right text-bold">{{total?parseInt(total.prices*1.1).NumberFormat($store.getters.language):''}}</td>
           </tr>
         </tbody>
       </table>

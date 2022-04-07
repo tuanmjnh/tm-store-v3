@@ -5,37 +5,32 @@
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('product.select')}}</q-toolbar-title>
-      <q-btn v-if="selected&&selected.length" icon="done" flat round dense color="blue" @click="onSubmit" />
-      <q-btn icon="filter_list" flat round dense color="teal">
-        <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
-        <q-menu v-model="isFilter" class="q-pa-md">
-          <!-- <div class="q-pa-md"> -->
-          <div class="row">
-            <div class="col-12">
-              <q-input v-model="pagination.filter" :dense="$store.getters.dense.input" debounce="500" :placeholder="$t('global.search')"
-                       @update:model-value="onFilter">
-                <template v-slot:append>
-                  <q-icon v-if="pagination.filter===''" name="search" />
-                  <q-icon v-else name="clear" class="cursor-pointer" @click="onFilter('')" />
-                </template>
-              </q-input>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <select-category v-model="pagination.categories" :categories="categories" option-value="_id" option-label="label" data-all maximized
-                               :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
-                               :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')" @on-selected="onSelectCategory"
-                               @onCancel="isFilter=false" />
-            </div>
-          </div>
-        </q-menu>
-      </q-btn>
+      <q-btn icon="done" flat round dense color="blue" :disable="!selected||selected.length<1" @click="onSubmit" />
     </q-toolbar>
-    <!-- <q-separator /> -->
+    <q-card-section class="q-pt-none">
+      <div class="row">
+        <div class="col-5">
+          <q-input v-model="pagination.filter" :dense="$store.getters.dense.input" debounce="500" :placeholder="$t('product.select')"
+                   @update:model-value="onFilter">
+            <template v-slot:append>
+              <q-icon v-if="pagination.filter===''" name="search" />
+              <q-icon v-else name="clear" class="cursor-pointer" @click="onFilter('')" />
+            </template>
+          </q-input>
+        </div>
+        <q-space />
+        <div class="col-5">
+          <select-category v-model="pagination.categories" :categories="categories" option-value="_id" option-label="label" data-all maximized
+                           :dense="$store.getters.dense.input" :labelTitle="$t('category.titleproduct')" :labelSelect="$t('category.select')"
+                           :labelAll="$t('category.selectAll')" :labelClose="$t('global.cancel')" @on-selected="onSelectCategory"
+                           @onCancel="isFilter=false" />
+        </div>
+      </div>
+    </q-card-section>
+    <q-separator />
     <q-card-section class="q-pa-none">
       <!-- <q-scroll-area style="height:calc(100vh - 99px)"> -->
-      <q-list separator id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
+      <q-list separator id="scroll-items" class="scroll" style="height:calc(100vh - 150px)">
         <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250">
           <tm-swipeitem v-for="(e,i) in rows" :key="i" leftValue="max" rightValue="111" v-touch-hold.mouse="()=>{onTouchHold(e)}"
                         @swipe-left="onChecked(e)">
@@ -163,7 +158,8 @@ export default defineComponent({
       sortBy: 'order',
       descending: false,
       categories: null,
-      flag: 1
+      flag: 1,
+      quantity: 0
     })
     const data = ref([])
     const rows = computed(() => data.value)

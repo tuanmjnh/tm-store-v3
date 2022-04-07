@@ -504,7 +504,7 @@ export default defineComponent({
         loadedRows.value = loadedRows.value.splice(1)
         // console.log(loadedRows.value.map(x => x['3']))
         // console.log(loadedRows.value.map(x => x[3]))
-        $store.dispatch('store/importsFinds', { codes: loadedRows.value.map(x => x[3]) }).then((x) => {
+        $store.dispatch('imports/select', { codes: loadedRows.value.map(x => x[3]) }).then((x) => {
           // if (x && x.length) {
           loadedRows.value.forEach(e => {
             const item = x.find(x => x.code === e[3])
@@ -605,7 +605,7 @@ export default defineComponent({
                 color: 'blue-grey'
               }
             }).onOk(() => {
-              $store.dispatch('store/importsInsert', rows.value).then((x) => {
+              $store.dispatch('imports/post', rows.value).then((x) => {
                 if (x) {
                   if (x.data) result.value = x
                   // result.value.total = result.value.data.sum('priceImport')
@@ -679,7 +679,7 @@ export default defineComponent({
         })
       },
       onDecodeQR (val) {
-        $store.dispatch('store/importsFinds', { qrcode: val }).then((x) => {
+        $store.dispatch('imports/select', { qrcode: val }).then((x) => {
           if (x && x.length) {
             isDialogQRCode.value = false
             const unitName = unitsSource.value.find(val => val.code === x[0].unit)

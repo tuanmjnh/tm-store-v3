@@ -140,10 +140,10 @@ export const dynamic = [
   {
     path: '/warehouse',
     name: 'warehouse',
-    // redirect: '/store/warehouse',
     meta: { title: 'warehouse', icon: 'store' },
-    // component: fakeLayout,
-    component: () => import('pages/warehouse/index'),
+    component: fakeLayout,
+    redirect: '/warehouse/data',
+    // component: () => import('pages/warehouse/index'),
     children: [
       {
         path: 'data',
@@ -154,13 +154,13 @@ export const dynamic = [
       {
         path: 'report',
         name: 'warehouse-report',
-        meta: { title: 'report', icon: 'pie_chart', parent: 'warehouse', component: 'pages/report/index' },
-        component: () => import('pages/report/index')
+        meta: { title: 'report', icon: 'pie_chart', parent: 'warehouse', component: 'pages/reports/index' },
+        component: () => import('pages/reports/index')
       },
       {
         path: '/import',
         name: 'import',
-        meta: { title: 'import', icon: 'playlist_add_check', parent: 'warehouse', component: 'pages/import/index' },
+        meta: { title: 'import', icon: 'playlist_add_check', parent: 'warehouse', component: 'pages/imports/index' },
         // component: () => import('pages/import/index'),
         component: fakeLayout,
         redirect: '/import/list',
@@ -169,20 +169,20 @@ export const dynamic = [
             path: 'list',
             name: 'import-list',
             meta: { title: 'list', icon: 'playlist_add_check', hidden: true, noCache: true, flag: 1, parent: 'import' },
-            component: () => import('pages/import/index')
+            component: () => import('pages/imports/index')
           },
           {
             path: 'add',
             name: 'import-add',
             meta: { title: 'add', icon: 'addchart', hidden: true, parent: 'import' },
-            component: () => import('pages/import/add')
+            component: () => import('pages/imports/add')
           }
         ]
       },
       {
         path: '/export',
         name: 'export',
-        meta: { title: 'export', icon: 'playlist_play', parent: 'warehouse', component: 'pages/export/index' },
+        meta: { title: 'export', icon: 'playlist_play', parent: 'warehouse', component: 'pages/exports/index' },
         // component: () => import('pages/store/export-list')
         component: fakeLayout,
         redirect: '/export/list',
@@ -191,13 +191,13 @@ export const dynamic = [
             path: 'list',
             name: 'export-list',
             meta: { title: 'list', icon: 'playlist_play', hidden: true, noCache: true, flag: 1, parent: 'export' },
-            component: () => import('pages/export/index')
+            component: () => import('pages/exports/index')
           },
           {
             path: 'add',
             name: 'export-add',
             meta: { title: 'add', icon: 'double_arrow', hidden: true, parent: 'export' },
-            component: () => import('pages/export/add')
+            component: () => import('pages/exports/add')
           }
         ]
       }
@@ -339,9 +339,9 @@ export const dynamic = [
     path: '/orders',
     name: 'orders',
     meta: { title: 'orders', icon: 'class', hidden: true, component: 'pages/orders/index' },
-    // redirect: '/orders/view',
-    // component: fakeLayout,
-    component: () => import('pages/orders/index'),
+    redirect: '/orders/view',
+    component: fakeLayout,
+    // component: () => import('pages/orders/index'),
     children: [
       {
         path: 'view',

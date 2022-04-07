@@ -41,8 +41,8 @@
     <!-- <q-separator /> -->
     <q-card-section class="q-pa-none">
       <!-- <q-scroll-area style="height:calc(100vh - 99px)"> -->
-      <q-list separator ref="refListTarget" id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
-        <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250" :scroll-target="refListTarget">
+      <q-list separator id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
+        <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250">
           <tm-swipeitem v-for="(e,i) in rows" :key="i" leftValue="max" rightValue="111" v-touch-hold.mouse="()=>{onTouchHold(e)}">
             <template v-slot:right>
               <q-btn no-caps class="q-btn--square" @click="onEdit(e)">

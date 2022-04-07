@@ -1,7 +1,6 @@
 const mongoose = require('mongoose'),
   MNews = require('./model'),
-  Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Request = require('../../utils/Request')
 
 module.exports.get = ({ conditions }) => {
   const rs = MNews.aggregate([

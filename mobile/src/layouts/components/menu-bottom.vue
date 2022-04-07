@@ -44,7 +44,7 @@ export default defineComponent({
         meta: { title: 'qrCodeScanner', icon: 'qr_code_scanner' }
       },
       {
-        path: '/store/report',
+        path: '/warehouse/report',
         name: 'store-report',
         meta: { title: 'report', icon: 'pie_chart' },
       },

@@ -6,7 +6,6 @@ module.exports.initialize = function () {
     err => { console.log(`Error when connecting to the database ${err}`) }
   )
 }
-
 // const MongoClient = require('mongodb').MongoClient;
 // const client = new MongoClient(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })
 // client.connect(() => {

@@ -118,14 +118,20 @@ module.exports.select = async function (req, res, next) {
       } else return res.status(200).json([])
     }
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.post = async (req, res, next) => {
-  if (!req.body) return res.status(404).send('no_exist')
-  if (!req.body.length) return res.status(202).json([])
-  const rs = await APImports.insert({ request: req, item: req.body })
-  if (rs.error && rs.error.length) return res.status(500).send(rs.error)
-  else return res.status(200).send(rs)
+  try {
+    if (!req.body) return res.status(404).send('no_exist')
+    if (!req.body.length) return res.status(202).json([])
+    const rs = await APImports.insert({ request: req, item: req.body })
+    if (rs.error && rs.error.length) return res.status(500).send(rs.error)
+    else return res.status(201).send(rs)
+  } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
 }

@@ -112,12 +112,6 @@ const actions = {
     })
   },
   update ({ commit }, params) {
-    // return api.put(`${collection}/update`, params.update).then((res) => {
-    //   // commit('UPDATE_ONE', params)
-    //   commit('UPDATE_ITEMS', params.data)
-    //   console.log(res)
-    //   return res
-    // })
     return api.put(`${collection}/update`, params.update).then((res) => {
       commit('UPDATE_ITEMS', params.data)
       return res

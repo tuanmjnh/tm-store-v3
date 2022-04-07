@@ -9,4 +9,9 @@ const schema = new mongoose.Schema({
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
 })
+
+// schema.post('save', () => console.log('Hello from pre save'))
+schema.post('updateOne', (doc) => console.log(doc))
+// schema.post('find', () => console.log('Hello from pre find'))
+
 module.exports = mongoose.model('types', schema)

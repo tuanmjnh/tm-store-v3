@@ -7,7 +7,15 @@ const mongoose = require('mongoose'),
 module.exports.name = MPExports.collection.collectionName
 module.exports.get = async function (req, res, next) {
   try {
-    let conditions = { $and: [{ flag: req.query.flag ? parseInt(req.query.flag) : 1 }] }
+    let conditions = { $and: [] }
+    if (req.query.flag) {
+      const flag = []
+      if (Array.isArray(req.query.flag)) req.query.flag.forEach(e => { flag.push(parseInt(e)) })
+      else flag.push(parseInt(req.query.flag))
+      conditions.$and.push({ $and: [{ flag: { $in: flag } }] })
+    } else {
+      conditions.$and.push({ $and: [{ flag: { $in: [1] } }] })
+    }
     if (req.query.filter) {
       conditions.$and.push({ code: new RegExp(req.query.filter, 'i') })
     }
@@ -28,6 +36,7 @@ module.exports.get = async function (req, res, next) {
 
     return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
   } catch (e) {
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -128,9 +137,37 @@ module.exports.select = async function (req, res, next) {
 }
 
 module.exports.post = async function (req, res, next) {
-  if (!req.body) return res.status(404).send('no_exist')
-  if (!req.body.length) return res.status(202).json([])
-  const rs = await APExports.insert({ request: req, item: req.body })
-  if (rs.error && rs.error.length) return res.status(500).send(rs.error)
-  else return res.status(200).send(rs)
+  try {
+    if (!req.body) return res.status(404).send('no_exist')
+    if (!req.body.length) return res.status(202).json([])
+    const rs = await APExports.insert({ request: req, item: req.body })
+    if (rs.error && rs.error.length) return res.status(500).send(rs.error)
+    else return res.status(201).send(rs)
+  } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.put = async function (req, res, next) {
+  try {
+    // Cancel bill
+    const rs = await APExports.cancel({ request: req })
+    if (rs.error && rs.error.length) return res.status(500).send(rs.error)
+    else return res.status(203).send(rs)
+  } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.patch = async function (req, res, next) {
+  try {
+    // Comfirm bill
+    const rs = await APExports.confirm({ request: req })
+    if (rs.error && rs.error.length) return res.status(500).send(rs.error)
+    else return res.status(203).send(rs)
+  } catch (e) {
+    return res.status(500).send('invalid')
+  }
 }

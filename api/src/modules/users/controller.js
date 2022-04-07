@@ -3,8 +3,7 @@ const mongoose = require('mongoose'),
   MUsers = require('./model'),
   crypto = require('../../utils/crypto'),
   // Moment = require('moment'),
-  Request = require('../../utils/Request'),
-  Logger = require('../../services/logger')
+  Logger = require('../../services/logger/index')
 
 module.exports.name = MUsers.collection.collectionName
 module.exports.get = async function (req, res, next) {
@@ -37,20 +36,17 @@ module.exports.get = async function (req, res, next) {
 module.exports.find = async function (req, res, next) {
   try {
     if (req.query.id) {
-      if (mongoose.Types.ObjectId.isValid(req.query.id)) {
-        if (Array.isArray(req.query.id)) {
-          const conditions = { $and: [{ _id: { $in: req.query.id } }] }
-          const rs = await AUsers.get({ conditions: conditions }).exec()
-          if (!rs) return res.status(404).send('no_exist')
-          return res.status(200).json(rs)
-        } else {
-          const conditions = { $and: [{ _id: mongoose.Types.ObjectId(req.query.id) }] }
-          const rs = await AUsers.get({ conditions: conditions }).exec()
-          if (!rs || rs.length < 1) return res.status(404).send('no_exist')
-          return res.status(200).json(rs[0])
-        }
+      if (!mongoose.Types.ObjectId.isValid(req.query.id)) return res.status(500).send('invalid')
+      if (Array.isArray(req.query.id)) {
+        const conditions = { $and: [{ _id: { $in: req.query.id } }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
+        if (!rs) return res.status(404).send('no_exist')
+        return res.status(200).json(rs)
       } else {
-        return res.status(500).send('invalid')
+        const conditions = { $and: [{ _id: mongoose.Types.ObjectId(req.query.id) }] }
+        const rs = await AUsers.get({ conditions: conditions }).exec()
+        if (!rs || rs.length < 1) return res.status(404).send('no_exist')
+        return res.status(200).json(rs[0])
       }
     } else if (req.query.email) {
       if (Array.isArray(req.query.email)) {
@@ -84,27 +80,16 @@ module.exports.find = async function (req, res, next) {
 
 module.exports.post = async function (req, res, next) {
   try {
-    if (!req.body || Object.keys(req.body).length < 1 || !req.body.email) {
-      return res.status(500).send('invalid')
-    }
-    const x = await MUsers.findOne({ email: req.body.email })
-    if (x) return res.status(501).send('exist')
-    const password = req.body.password ? req.body.password : crypto.NewGuid().split('-')[0]
-    req.body.salt = crypto.NewGuid('n')
-    req.body.password = crypto.SHA256(password + req.body.salt)
-    req.body.created = { at: new Date(), by: req.verify._id, ip: Request.getIp(req) }
-    // req.body.dateBirth = Moment(req.body.dateBirth, 'DD/MM/YYYY')
-    const data = new MUsers(req.body)
-    // data.validate()
-    data.save((e, rs) => {
-      if (e) return res.status(500).send(e)
-      rs.password = password
-      // Push logs
-      Logger.set(req, MUsers.collection.collectionName, rs._id, 'insert')
-      return res.status(201).json(rs)
-    })
+    if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
+    const exist = await MUsers.findOne({ username: req.body.username })
+    if (exist) return res.status(501).send('exist')
+    const rs = AUsers.insert({ request: req, data: req.body })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    return res.status(201).json(rs)
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
@@ -112,100 +97,53 @@ module.exports.post = async function (req, res, next) {
 module.exports.import = async function (req, res, next) {
   if (!req.body || !req.body.length) return res.status(500).send('invalid')
   const session = await mongoose.startSession()
-  session.startTransaction()
-  try {
-    const rs = { success: [], error: [] }
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
     let i = 0
     for await (const e of req.body) {
-      i++
-      const x = await MUsers.findOne({ username: e.username })
-      if (x) {
-        rs.error.push(i)
-        continue
-      }
-      e.salt = crypto.NewGuid('n')
-      e.password = crypto.SHA256(e.password + e.salt)
-      e.created = { at: new Date(), by: req.verify._id, ip: Request.getIp(req) }
-      const item = new MUsers(e)
-      const itemSave = await item.save()
-      if (itemSave) rs.success.push(i)
-      else rs.error.push(i)
+      try {
+        i++
+        const exist = await MUsers.findOne({ username: e.username })
+        if (exist) {
+          rs.error.push(i)
+          continue
+        }
+        const user = AUsers.insert({ request: req, data: e, session: session })
+        if (user) {
+          rs.success.push(i)
+          //Set Logger
+          Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: rs._id, method: 'insert-import' })
+        }
+        else rs.error.push(i)
+      } catch (e) { continue }
     }
-    // commit
-    await session.commitTransaction()
-    session.endSession()
-    return res.status(201).json(rs)
-  } catch (e) {
-    console.log(e)
-    await session.abortTransaction()
-    session.endSession()
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.create = async function (req, res, next) {
-  try {
-    if (!req.body && !Array.isArray(req.body)) return res.status(500).send('invalid')
-    if (req.body.length < 1) return res.status(500).send('Empty data!')
-    const data = []
-    req.body.forEach((e) => {
-      data.push(new MUsers(e))
-    })
-    MUsers.create(data)
-      .then((rs) => {
-        return res.status(201).json(rs)
-      })
-      .catch((e) => {
-        return res.status(500).send(e)
-      })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.insertOne = async function (req, res, next) {
-  try {
-    if (!req.body) return res.status(500).send('invalid')
-    const data = new MUsers(req.body)
-    data.validate()
-    MUsers.collection.insertOne(data, (e, rs) => {
-      if (e) return res.status(500).send(e)
-      // Push logs
-      Logger.set(req, MUsers.collection.collectionName, rs._id, 'insert')
-      return res.status(201).json(rs)
-    })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  })
+  session.endSession()
+  return res.status(201).json(rs)
 }
 
 module.exports.put = async function (req, res, next) {
   try {
-    // if (!req.body._id) return res.status(500).send('invalid')
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      const set = {}
-      if (req.body.group) set.group = req.body.group
-      if (req.body.email) set.email = req.body.email
-      if (req.body.fullName) set.fullName = req.body.fullName
-      if (req.body.phone) set.phone = req.body.phone
-      if (req.body.personNumber) set.personNumber = req.body.personNumber
-      if (req.body.region) set.region = req.body.region
-      if (req.body.avatar) set.avatar = req.body.avatar
-      if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
-      if (req.body.gender) set.gender = req.body.gender
-      if (req.body.address) set.address = req.body.address
-      if (req.body.roles) set.roles = req.body.roles
-      if (req.body.note !== undefined) set.note = req.body.note
-      const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
-      if (rs) {
-        Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
-        return res.status(202).json(rs)
-      }
-      else return res.status(200).json(null)
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    const set = {}
+    if (req.body.group) set.group = req.body.group
+    if (req.body.email) set.email = req.body.email
+    if (req.body.fullName) set.fullName = req.body.fullName
+    if (req.body.phone) set.phone = req.body.phone
+    if (req.body.personNumber) set.personNumber = req.body.personNumber
+    if (req.body.region) set.region = req.body.region
+    if (req.body.avatar) set.avatar = req.body.avatar
+    if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
+    if (req.body.gender) set.gender = req.body.gender
+    if (req.body.address) set.address = req.body.address
+    if (req.body.roles) set.roles = req.body.roles
+    if (req.body.note !== undefined) set.note = req.body.note
+    const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+    return res.status(202).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -214,55 +152,42 @@ module.exports.put = async function (req, res, next) {
 module.exports.update = async function (req, res, next) {
   try {
     if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      const set = {}
-      if (req.body.group) set.group = req.body.group
-      if (req.body.email) set.email = req.body.email
-      if (req.body.fullName) set.fullName = req.body.fullName
-      if (req.body.phone) set.phone = req.body.phone
-      if (req.body.personNumber) set.personNumber = req.body.personNumber
-      if (req.body.region) set.region = req.body.region
-      if (req.body.avatar) set.avatar = req.body.avatar
-      if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
-      if (req.body.gender) set.gender = req.body.gender
-      if (req.body.address) set.address = req.body.address
-      if (req.body.note !== undefined) set.note = req.body.note
-      const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
-      if (rs) {
-        Logger.set(req, MUsers.collection.collectionName, req.body._id, 'update')
-        return res.status(202).json(rs)
-      }
-      else return res.status(200).json(null)
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    const set = {}
+    if (req.body.group) set.group = req.body.group
+    if (req.body.email) set.email = req.body.email
+    if (req.body.fullName) set.fullName = req.body.fullName
+    if (req.body.phone) set.phone = req.body.phone
+    if (req.body.personNumber) set.personNumber = req.body.personNumber
+    if (req.body.region) set.region = req.body.region
+    if (req.body.avatar) set.avatar = req.body.avatar
+    if (req.body.dateBirth) set.dateBirth = req.body.dateBirth
+    if (req.body.gender) set.gender = req.body.gender
+    if (req.body.address) set.address = req.body.address
+    if (req.body.note !== undefined) set.note = req.body.note
+    const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: set })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+    return res.status(202).json(rs)
   } catch (e) {
-    console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.resetPassword = async function (req, res, next) {
   try {
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      // Find user by id
-      const x = await MUsers.findById(req.body._id)
-      if (!x) return res.status(404).send('no_exist')
-      // Generate password
-      const password = req.body.password ? req.body.password : crypto.NewGuid().split('-')[0]
-      MUsers.updateOne(
-        { _id: req.body._id },
-        { $set: { password: crypto.SHA256(password + x.salt) } },
-        (e, rs) => {
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MUsers.collection.collectionName, req.body._id, 'reset-password')
-          res.status(206).json({ password: password })
-        }
-      )
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    // Find user by id
+    const x = await MUsers.findById(req.body._id)
+    if (!x) return res.status(404).send('no_exist')
+    // Generate password
+    const password = req.body.password ? req.body.password : crypto.NewGuid().split('-')[0]
+    const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: { password: crypto.SHA256(password + x.salt) } })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'reset-password' })
+    return res.status(206).json({ password: password })
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -271,80 +196,53 @@ module.exports.resetPassword = async function (req, res, next) {
 module.exports.changePassword = async function (req, res, next) {
   try {
     // Find user by id
-    const user = await MUsers.findOne({ _id: req.verify._id })
-    if (!user) return res.status(404).send('no_exist')
+    const exist = await MUsers.findOne({ _id: req.verify._id })
+    if (!exist) return res.status(404).send('no_exist')
     // check password
-    if (user.password !== crypto.SHA256(req.body.oldPassword + user.salt)) { return res.status(505).json({ msg: 'wrong_password' }) }
+    if (exist.password !== crypto.SHA256(req.body.oldPassword + exist.salt)) { return res.status(505).json({ msg: 'wrong_password' }) }
     // set new password
-    MUsers.updateOne(
-      { _id: req.verify._id },
-      { $set: { password: crypto.SHA256(req.body.newPassword + user.salt) } },
-      (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        Logger.set(req, MUsers.collection.collectionName, user._id, 'change-password')
-        res.status(202).json(true)
-      }
-    )
+    const rs = await MUsers.updateOne({ _id: req.verify._id }, { $set: { password: crypto.SHA256(req.body.newPassword + user.salt) } })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'change-password' })
+    return res.status(202).json(true)
   } catch (e) {
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.patch = async function (req, res, next) {
-  try {
-    let rs = { success: [], error: [] }
+  const session = await mongoose.startSession()
+  const rs = { success: [], error: [] }
+  await session.withTransaction(async () => {
     for await (let _id of req.body._id) {
-      // if (!validate.isBoolean(req.body.disabled)) {
-      //   rs.error.push(id)
-      //   continue
-      // }
-      const x = await MUsers.findById(_id)
-      if (x) {
-        var _x = await MUsers.updateOne(
-          { _id: _id },
-          { $set: { enable: x.enable === true ? false : true } }
-        )
-        if (_x) {
-          rs.success.push(_id)
-          // Push logs
-          Logger.set(req, MUsers.collection.collectionName, _id, x.enable === true ? 'lock' : 'unlock')
-        } else rs.error.push(_id)
-      }
+      try {
+        const exist = await MUsers.findById(_id)
+        if (exist) {
+          const update = await MUsers.updateOne({ _id: _id }, { $set: { enable: exist.enable === true ? false : true } })
+          if (update) {
+            rs.success.push(_id)
+            //Set Logger
+            Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+          }
+          else rs.error.push(_id)
+        }
+      } catch (e) { continue }
     }
-    return res.status(203).json(rs)
-    // if (!validate.isBoolean(req.body.disabled)) return res.status(500).send('invalid')
-    // if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-    //   MUsers.updateOne({ _id: req.params.id }, { $set: { disabled: req.body.disabled } }, (e, rs) => {
-    //     if (e) return res.status(500).send(e)
-    //     if (!rs) return res.status(404).send('no_exist')
-    //     return res.status(203).json(rs)
-    //   })
-    // } else {
-    //   return res.status(500).send('invalid')
-    // }
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  })
+  session.endSession()
+  return res.status(203).json(rs)
 }
 
 module.exports.verified = async function (req, res, next) {
   try {
     if (!req.body.verified) return res.status(500).send('invalid')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      MUsers.updateOne(
-        { _id: req.body._id },
-        { $set: { verified: req.body.verified === 'true' ? true : false } },
-        (e, rs) => {
-          if (e) return res.status(500).send(e)
-          // Push logs
-          Logger.set(req, MUsers.collection.collectionName, req.body._id, 'verified')
-          return res.status(205).json(rs)
-        }
-      )
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.body._id)) return res.status(500).send('invalid')
+    const rs = await MUsers.updateOne({ _id: req.body._id }, { $set: { verified: req.body.verified === 'true' ? true : false } })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'verify' })
+    return res.status(205).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }
@@ -352,16 +250,12 @@ module.exports.verified = async function (req, res, next) {
 
 module.exports.delete = async function (req, res, next) {
   try {
-    if (mongoose.Types.ObjectId.isValid(req.params._id)) {
-      MUsers.deleteOne({ _id: req.params._id }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        Logger.set(req, MUsers.collection.collectionName, req.params._id, 'delete')
-        return res.status(204).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
-    }
+    if (!mongoose.Types.ObjectId.isValid(req.params._id)) return res.status(500).send('invalid')
+    const rs = await MUsers.deleteOne({ _id: req.params._id })
+    if (!rs) return res.status(500).send('invalid')
+    //Set Logger
+    Logger.set({ request: req, collectionName: MUsers.collection.collectionName, CollectionID: req.body._id, method: 'delete' })
+    return res.status(204).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
   }

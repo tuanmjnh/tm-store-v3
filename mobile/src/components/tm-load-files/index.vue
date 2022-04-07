@@ -65,7 +65,7 @@
       </div>
     </div>
     <q-table class="q-mt-lg sticky-virtscroll-table" :title="lblTblTitle" v-if="rows&&rows.length" :rows="rows" :columns="columns"
-             :style="`height:${tblHeight}px`" virtual-scroll flat :loading="isLoading" :dense="dense" :no-data-label="lblTblNoData"
+             :style="`height:${height}`" virtual-scroll flat :loading="isLoading" :dense="dense" :no-data-label="lblTblNoData"
              :no-results-label="lblTblNoResults" :rows-per-page-label="lblTblRowsPerPage" :rows-per-page-options="rowsPerPageOptions" />
   </div>
 </template>
@@ -96,13 +96,14 @@ export default defineComponent({
     lblTblNoResults: { type: String, default: 'No matched records' },
     lblTblRowsPerPage: { type: String, default: 'Records per page' },
     rowsPerPageOptions: { type: Array, default: () => [10, 20, 50, 100] },
-    tblHeight: { type: Number, default: 400 }
+    googleSheet: { type: Boolean, default: false },
+    height: { type: String, default: '400px' }
     // sheet: { type: String, default: null },
     // range: { type: String, default: null }
   },
   emits: ['onStart', 'onFinish', 'update:model-value'],
   setup (props, { emit }) {
-    const isGoogleSheet = ref(false)
+    const isGoogleSheet = ref(props.googleSheet)
     const urlData = ref(null) // 'https://docs.google.com/spreadsheets/d/15F3mYued4CDTzHrcpCvrWQrr_ULGxqhLTu5-CYRjOBk'
     const isLoading = ref(false)
     // const files = ref(null)
@@ -127,6 +128,7 @@ export default defineComponent({
         workbook.value = null
         rows.value = []
         columns.value = []
+        urlData.value = null
         emit('update:model-value', [])
         // for (var i = 65; i <= 90; i++) {
         //   console.log(String.fromCharCode(i))

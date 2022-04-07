@@ -212,7 +212,7 @@ export default defineComponent({
     const rows = computed(() => $store.state.store.exportItems || [])
     const onFetch = (props) => {
       const { page, rowsPerPage, sortBy, descending, categories } = props.pagination
-      $store.dispatch('store/exportGet', props.pagination).then(x => {
+      $store.dispatch('exports/get', props.pagination).then(x => {
         pagination.value.categories = categories
         pagination.value.rowsNumber = x.rowsNumber
         pagination.value.page = page
@@ -226,7 +226,7 @@ export default defineComponent({
       $store.dispatch('categories/get', { type: 'product', flag: 1, x: true, generate: true }).then((x) => { categories.value = x })
     }
     const LoadDetails = (id) => {
-      $store.dispatch('store/exportGetDetail', { key: id }).then((x) => {
+      $store.dispatch('exports/getSub', { key: id }).then((x) => {
         detailsPrint.value = x.data
       })
     }

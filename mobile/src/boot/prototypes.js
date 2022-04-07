@@ -114,8 +114,16 @@ Array.prototype.pushIfNotExistUpdate = function (element, key) {
 }
 Array.prototype.sum = function (prop) {
   var total = 0
-  for (var i = 0, _len = this.length; i < _len; i++) {
-    total += this[i][prop]
+  if (prop) {
+    for (var i = 0, length = this.length; i < length; i++) {
+      const number = parseInt(this[i][prop])
+      if (number) total = total + number
+    }
+  } else {
+    for (var i = 0, length = this.length; i < length; i++) {
+      const number = parseInt(this[i])
+      if (number) total = total + number
+    }
   }
   return total
 }

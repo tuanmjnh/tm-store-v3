@@ -1,7 +1,13 @@
 <template>
   <div class="dialog-categories">
-    <q-input :modelValue="selectedLocal?selectedLocal.label:''" :dense="dense" :readonly="true" :label="labelTitle" :rules="rules">
-      <template v-slot:after>
+    <q-input :modelValue="selectedLocal?selectedLocal.label:''" :dense="dense" :readonly="true" :label="labelTitle" :rules="rules"
+             @click="isDialog=!isDialog">
+      <!-- <template v-slot:after>
+        <q-btn round dense flat icon="pageview" @click="isDialog=!isDialog">
+          <q-tooltip>{{labelSelect}}</q-tooltip>
+        </q-btn>
+      </template> -->
+      <template v-slot:append>
         <q-btn round dense flat icon="pageview" @click="isDialog=!isDialog">
           <q-tooltip>{{labelSelect}}</q-tooltip>
         </q-btn>
