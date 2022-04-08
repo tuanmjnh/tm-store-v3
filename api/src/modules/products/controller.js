@@ -2,7 +2,7 @@ const mongoose = require('mongoose'),
   MProducts = require('./model'),
   AProducts = require('./actions'),
   pagination = require('../../utils/pagination'),
-  Logger = require('../../services/logger/index')
+  Logger = require('../../services/logger')
 
 module.exports.name = MProducts.collection.collectionName
 module.exports.get = async function (req, res, next) {
@@ -176,7 +176,7 @@ module.exports.post = async function (req, res, next) {
     const rs = await AProducts.insert({ request: req, item: req.body })
     if (!rs) return res.status(500).send('invalid')
     //Set Logger
-    Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    Logger.set({ request: req, collectionName: MProducts.collection.collectionName, collectionID: rs._id, method: 'insert' })
     // reGet
     const reGet = await AProducts.get({ conditions: { _id: mongoose.Types.ObjectId(rs._id) } })
     return res.status(201).json(reGet[0])
@@ -193,7 +193,7 @@ module.exports.put = async function (req, res, next) {
       const rs = AProducts.update({ data: req.body })
       if (!rs) return res.status(500).send('invalid')
       //Set Logger
-      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, collectionID: req.body._id, method: 'update' })
       return res.status(202).json(rs)
     } else return res.status(500).send('invalid')
   } catch (e) {
@@ -214,7 +214,7 @@ module.exports.patch = async function (req, res, next) {
           if (update) {
             rs.success.push(id)
             //Set Logger
-            Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+            Logger.set({ request: req, collectionName: MProducts.collection.collectionName, collectionID: req.body._id, method: 'flag' })
           } else rs.error.push(id)
         }
       } catch (e) { continue }
@@ -230,7 +230,7 @@ module.exports.delete = async function (req, res, next) {
       const rs = await MProducts.deleteOne({ _id: req.params._id })
       if (!rs) return res.status(500).send('invalid')
       //Set Logger
-      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, CollectionID: req.params._id, method: 'delete' })
+      Logger.set({ request: req, collectionName: MProducts.collection.collectionName, collectionID: req.params._id, method: 'delete' })
       return res.status(204).json(rs)
     } else return res.status(500).send('invalid')
   } catch (e) {

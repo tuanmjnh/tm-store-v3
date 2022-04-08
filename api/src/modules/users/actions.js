@@ -37,11 +37,11 @@ module.exports.insert = async ({ request, data, createdBy, session }) => {
   data.password = crypto.SHA256(password + req.body.salt)
   data.created = { at: new Date(), by: createdBy || request.verify._id, ip: Request.getIp(req) }
   // req.body.dateBirth = Moment(req.body.dateBirth, 'DD/MM/YYYY')
-  const data = new MUsers(data)
-  data.validateSync()
+  const user = new MUsers(data)
+  user.validateSync()
   let rs = null
-  if (session) rs = data.save({ session: session })
-  else rs = data.save()
+  if (session) rs = user.save({ session: session })
+  else rs = user.save()
   if (rs) rs.password = password
   return rs
 }

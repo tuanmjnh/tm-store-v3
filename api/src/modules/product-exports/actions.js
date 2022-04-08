@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   AProducts = require('../products/actions'),
   // crypto = require('../../utils/crypto'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger/index')
+  Logger = require('../../services/logger')
 
 module.exports.get = ({ conditions }) => {
   return MPExports.aggregate([
@@ -98,7 +98,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
       totalSave.quantities = totalSave.quantities + exportItems.quantity
       totalSave.prices = totalSave.prices + (exportItems.quantity * exportItems.price)
       //Set Logger
-      Logger.set({ request: request, collectionName: MProducts.collection.collectionName, CollectionID: e._id, method: 'update-export' })
+      Logger.set({ request: request, collectionName: MProducts.collection.collectionName, collectionID: e._id, method: 'update-export' })
     }
     // fix value Export total
     await MPExports.updateOne(
@@ -111,7 +111,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
       }, { session: session })
     rs.data = totalSave
     //Set Logger
-    Logger.set({ request: request, collectionName: MPExports.collection.collectionName, CollectionID: totalSave._id, method: 'insert' })
+    Logger.set({ request: request, collectionName: MPExports.collection.collectionName, collectionID: totalSave._id, method: 'insert' })
   })
   session.endSession()
   return rs

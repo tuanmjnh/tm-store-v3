@@ -1,16 +1,17 @@
 <template>
-  <q-scroll-area style="height:calc(100vh - 99px)">
+  <!-- <q-scroll-area style="height:calc(100vh - 99px)">
     <drawer-item :options="routes" />
-  </q-scroll-area>
+  </q-scroll-area> -->
+  <div></div>
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from "vue";
+import { defineComponent, defineAsyncComponent, computed } from "vue";
 import { useStore } from 'vuex'
 export default defineComponent({
   name: "Dashboard",
   components: {
-    drawerItem: defineAsyncComponent(() => import('layouts/components/drawer-item.vue'))
+    // drawerItem: defineAsyncComponent(() => import('src/layouts/components/content-routes.vue'))
   },
   setup () {
     const $store = useStore()

@@ -14,7 +14,6 @@ const express = require('express'),
   router = require('./router'),
   mongoose = require('./services/mongoose'),
   middleware = require('./services/middleware'),
-  // logger = require('./services/logger'),
   packageData = require('../package.json')
 
 // 

@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
 })
 
 // schema.post('save', () => console.log('Hello from pre save'))
-schema.post('updateOne', (doc) => console.log(doc))
+// schema.post('updateOne', (doc) => console.log(doc))
 // schema.post('find', () => console.log('Hello from pre find'))
 
 module.exports = mongoose.model('types', schema)

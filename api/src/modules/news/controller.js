@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
   ANews = require('./actions'),
   pagination = require('../../utils/pagination'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger/index')
+  Logger = require('../../services/logger')
 
 module.exports.name = MNews.collection.collectionName
 module.exports.get = async function (req, res, next) {
@@ -89,7 +89,7 @@ module.exports.post = async function (req, res, next) {
     const rs = await data.save()
     if (!rs) return res.status(500).send('invalid')
     //Set Logger
-    Logger.set({ request: req, collectionName: MNews.collection.collectionName, CollectionID: rs._id, method: 'insert' })
+    Logger.set({ request: req, collectionName: MNews.collection.collectionName, collectionID: rs._id, method: 'insert' })
     return res.status(201).json(rs)
   } catch (e) {
     console.log(e)
@@ -129,7 +129,7 @@ module.exports.put = async function (req, res, next) {
       })
     if (!rs) return res.status(500).send('invalid')
     //Set Logger
-    Logger.set({ request: req, collectionName: MNews.collection.collectionName, CollectionID: req.body._id, method: 'update' })
+    Logger.set({ request: req, collectionName: MNews.collection.collectionName, collectionID: req.body._id, method: 'update' })
     return res.status(202).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')
@@ -149,7 +149,7 @@ module.exports.patch = async function (req, res, next) {
           if (update) {
             rs.success.push(_id)
             //Set Logger
-            Logger.set({ request: req, collectionName: MNews.collection.collectionName, CollectionID: req.body._id, method: 'flag' })
+            Logger.set({ request: req, collectionName: MNews.collection.collectionName, collectionID: req.body._id, method: 'flag' })
           } else rs.error.push(_id)
         }
       } catch (e) { continue }
@@ -165,7 +165,7 @@ module.exports.delete = async function (req, res, next) {
     const rs = await MNews.deleteOne({ _id: req.params._id })
     if (!rs) return res.status(500).send('invalid')
     //Set Logger
-    Logger.set({ request: req, collectionName: MNews.collection.collectionName, CollectionID: req.params._id, method: 'delete' })
+    Logger.set({ request: req, collectionName: MNews.collection.collectionName, collectionID: req.params._id, method: 'delete' })
     return res.status(204).json(rs)
   } catch (e) {
     return res.status(500).send('invalid')

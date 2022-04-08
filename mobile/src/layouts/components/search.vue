@@ -1,5 +1,5 @@
 <template>
-  <q-btn flat round color="primary" icon="search" @click="isDialog=!isDialog" />
+  <q-btn flat round color="white" icon="search" @click="isDialog=!isDialog" />
 
   <!-- Dialog -->
   <q-dialog v-model="isDialog" :maximized="isMaximized">

@@ -59,7 +59,7 @@ module.exports.select = ({ conditions, fields }) => {
   }
 }
 
-module.exports.exist = (code) => {
+module.exports.exist = async (code) => {
   const exist = await MProducts.findOne({ code: code.toUpperCase() })
   if (exist) return true
   else return false

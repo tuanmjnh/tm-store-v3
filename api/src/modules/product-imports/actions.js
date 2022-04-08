@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   AProducts = require('../products/actions'),
   // crypto = require('../../utils/crypto'),
   Request = require('../../utils/Request'),
-  Logger = require('../../services/logger/index')
+  Logger = require('../../services/logger')
 
 module.exports.get = ({ conditions }) => {
   return MPImports.aggregate([
@@ -86,7 +86,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
         } else rs.success.push(e.code)
         e._id = productSave._id // productSave.success._id
         //Set Logger
-        Logger.set({ request: request, collectionName: AProducts.name, CollectionID: productSave._id, method: 'insert-import' })
+        Logger.set({ request: request, collectionName: AProducts.name, collectionID: productSave._id, method: 'insert-import' })
       } else {
         // Update price import and quantity
         await MProducts.updateOne(
@@ -96,7 +96,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
             $inc: { quantity: parseInt(e.quantity) }
           }, { session: session })
         //Set Logger
-        Logger.set({ request: request, collectionName: AProducts.name, CollectionID: e._id, method: 'update-import' })
+        Logger.set({ request: request, collectionName: AProducts.name, collectionID: e._id, method: 'update-import' })
       }
 
       // Import item
@@ -126,7 +126,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
       }, { session: session })
     rs.data = totalSave
     //Set Logger
-    Logger.set({ request: request, collectionName: MPImports.collection.collectionName, CollectionID: totalSave._id, method: 'insert' })
+    Logger.set({ request: request, collectionName: MPImports.collection.collectionName, collectionID: totalSave._id, method: 'insert' })
   })
   session.endSession()
   return rs
