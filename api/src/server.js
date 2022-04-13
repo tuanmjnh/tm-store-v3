@@ -99,13 +99,11 @@ app.use(`${process.env.BASE_URL}api`, router)
 
 // locals configs
 const AConfigs = require('./modules/configs/actions')
-app.locals.configs = {}
-AConfigs.get().then(x => {
-  x.forEach(e => {
-    app.locals.configs[e.key] = e.value
-  })
-})
-
+AConfigs.init(app)
+setTimeout(() => {
+  console.log(`Server configs:`)
+  console.log(app.locals.configs)
+}, 100)
 // listen
 app
   .listen(process.env.PORT) //, '192.168.1.10' // '127.0.0.1'

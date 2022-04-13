@@ -1,11 +1,11 @@
 <template>
   <q-card>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/orders/view'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.orders')}}</q-toolbar-title>
-      <q-btn icon="add" flat round dense color="blue" @click="$router.push('/orders/add')" />
+      <q-btn icon="add" flat round dense color="blue" @click="isDialogAdd=!isDialogAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
         <q-menu v-model="isFilter" class="q-pa-md" style="min-width:356px">
@@ -186,6 +186,10 @@
       <!-- </q-scroll-area> -->
     </q-card>
   </q-dialog>
+  <!-- Dialog Add -->
+  <q-dialog v-model="isDialogAdd" maximized>
+    <add-item />
+  </q-dialog>
   <!-- Dialog Actions -->
   <q-dialog v-model="isDialogTouchHold" position="bottom">
     <q-card class="full-width" style="border-radius:initial">
@@ -225,12 +229,14 @@ export default defineComponent({
     tmSwipeitem: defineAsyncComponent(() => import('components/tm-swipe-item')),
     viewDetails: defineAsyncComponent(() => import('components/view-details')),
     viewTotal: defineAsyncComponent(() => import('components/view-total')),
-    tmPrinter: defineAsyncComponent(() => import('components/tm-printer'))
+    tmPrinter: defineAsyncComponent(() => import('components/tm-printer')),
+    addItem: defineAsyncComponent(() => import('./add')),
   },
   setup () {
     const $store = useStore()
     const $q = useQuasar()
     const { t } = useI18n({ useScope: 'global' })
+    const isDialogAdd = ref(false)
     const isDialogDetails = ref(false)
     const isDialogTouchHold = ref(false)
     const refScrollTarget = ref(null)
@@ -283,7 +289,7 @@ export default defineComponent({
       })
     }
     return {
-      rows, selected, categories, pagination, isDialogDetails, isDialogTouchHold, refScrollTarget, isFilter,
+      rows, selected, categories, pagination, isDialogDetails, isDialogTouchHold, isDialogAdd, refScrollTarget, isFilter,
       onFetch, refPrinterDetails, refPrinterTotal, printer,
       onFilter: (val) => {
         pagination.value.filter = val

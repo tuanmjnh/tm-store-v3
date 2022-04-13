@@ -1,10 +1,10 @@
 <template>
-  <q-card>
+  <q-card flat>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/news/category/view'&&$route.path!=='/product/category/view'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <q-toolbar-title class="text-subtitle1">{{$t(`category.title${$store.getters.componentLoaded.meta.type}`)}}</q-toolbar-title>
+      <q-toolbar-title class="text-subtitle1">{{$t(`category.title${onGetType()}`)}}</q-toolbar-title>
       <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
@@ -24,7 +24,7 @@
     </q-toolbar>
     <q-separator />
     <q-card-section class="q-pt-sm q-pl-md p-pr-md">
-      <q-scroll-area style="height:calc(100vh - 99px)">
+      <q-scroll-area style="height:calc(100vh - 180px)">
         <q-tree :nodes="rows" v-model:selected="selected" v-model:ticked="ticked" v-model:expanded="expanded" node-key="_id"
                 tick-strategy="leaf" :filter="pagination.filter" :filter-method="onFilter">
           <template v-slot:default-header="prop">
@@ -74,6 +74,12 @@ export default defineComponent({
     const $store = useStore()
     const $q = useQuasar()
     const { t } = useI18n({ useScope: 'global' })
+    const onGetType = () => {
+      if ($route.name === 'category-product-view' || $route.name === 'category-news-view')
+        return $route.meta.type
+      else return $store.getters.componentLoaded.meta.type
+    }
+
     const isDialogAdd = ref(false)
     const isMaximized = ref(true)
     const isFilter = ref(false)
@@ -90,12 +96,12 @@ export default defineComponent({
       rowsPerPage: 10,
       rowsNumber: 1,
       // flag: 1,
-      type: $store.getters.componentLoaded.meta.type
+      type: onGetType()// $store.getters.componentLoaded.meta.type
     })
     const isRoutes = ref({
-      add: $router.hasRoute(`category-${$store.getters.componentLoaded.meta.type}-add`),
-      edit: $router.hasRoute(`category-${$store.getters.componentLoaded.meta.type}-edit`),
-      trash: $router.hasRoute(`category-${$store.getters.componentLoaded.meta.type}-trash`)
+      add: $router.hasRoute(`category-${onGetType()}-add`),
+      edit: $router.hasRoute(`category-${onGetType()}-edit`),
+      trash: $router.hasRoute(`category-${onGetType()}-trash`)
     })
     const rows = computed(() => $store.state.categories.items || [])
 
@@ -114,7 +120,7 @@ export default defineComponent({
     }
 
     return {
-      isDialogAdd, isMaximized, isFilter, rows, rootItems, selected, ticked, expanded, tooltipAction, pagination, isRoutes,
+      isDialogAdd, isMaximized, isFilter, rows, rootItems, selected, ticked, expanded, tooltipAction, pagination, isRoutes, onGetType,
       onFilter: (node, filter) => {
         const _filter = normalize(filter.toLowerCase())
         const title = normalize(node.title)
@@ -127,11 +133,11 @@ export default defineComponent({
         onFetch({ pagination: pagination.value })
       },
       onAdd: (val) => {
-        $store.dispatch('categories/set', { item: null, dependent: val ? val._id : null, type: $store.getters.componentLoaded.meta.type })
+        $store.dispatch('categories/set', { item: null, dependent: val ? val._id : null, type: onGetType() })
         isDialogAdd.value = true
       },
       onEdit: (val) => {
-        $store.dispatch('categories/set', { item: val, dependent: val.dependent, type: $store.getters.componentLoaded.meta.type })
+        $store.dispatch('categories/set', { item: val, dependent: val.dependent, type: onGetType() })
         isDialogAdd.value = true
       },
       onTrash: (val) => {

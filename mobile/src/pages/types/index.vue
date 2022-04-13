@@ -1,7 +1,7 @@
 <template>
   <q-card>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/manager/types/view'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.types')}} </q-toolbar-title>
@@ -46,7 +46,7 @@
         </q-menu>
       </q-btn>
     </q-toolbar>
-    <q-separator />
+    <!-- <q-separator /> -->
     <q-card-section class="q-pa-none">
       <q-scroll-area style="height:calc(100vh - 99px)">
         <!-- <q-list separator>

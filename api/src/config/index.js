@@ -11,7 +11,7 @@ if (process.env.NODE_ENV && process.env.NODE_ENV.toString().trim() === 'developm
   // dotenv.config({ path: '.env.development' })
   process.env.PORT = 8080
   process.env.BASE_URL = '/'
-  process.env.MONGODB = 'mongodb://localhost:27017/tm-store'
+  process.env.MONGODB = 'mongodb://localhost:27017/tm-store' //+ '?replicaSet=rs0'
   // secret variable
   process.env.SECRET = '03890a36-8888-45fe-8aa4-efb24469afb0'
   // package

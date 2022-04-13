@@ -109,11 +109,11 @@
             </div>
           </div>
         </q-tab-panel>
-        <q-tab-panel name="upload" id="tab-upload" class="q-pt-none q-pb-none">
-          <div class="row">
+        <q-tab-panel name="upload" id="tab-upload" class="q-pt-none q-pb-none" style="height:calc(100vh - 99px)">
+          <div class="row" style="height:45%">
             <div class="col-12 q-gutter-sm images">
               <tm-fileList ref="refTMFileListImages" v-model="data.images" v-model:view-type="viewTypeImage" :title="$t('global.avatar')"
-                           generate-image :multiple="true" :size="344" :lblConfirmTitle="$t('messageBox.warning')" minHeight="350px"
+                           :multiple="false" :size="290" :lblConfirmTitle="$t('messageBox.warning')" minHeight="280px"
                            :lblConfirmContent="$t('messageBox.delete')" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
                 <template v-slot:tool-bar>
                   <q-btn round dense flat icon="file_upload" color="primary" @click="onUpload('images')" />
@@ -132,10 +132,10 @@
             </div>
           </div>
           <q-separator class="q-mb-sm q-mt-sm" />
-          <div class="row">
+          <div class="row" style="height:45%">
             <div class="col-12 q-gutter-sm images">
               <tm-fileList ref="refTMFileListAttack" v-model="data.attach" v-model:view-type="viewTypeAttach" :title="$t('global.attach')"
-                           generate-image :multiple="true" :size="82" :lblConfirmTitle="$t('messageBox.warning')" minHeight="282px"
+                           :multiple="true" :size="82" :lblConfirmTitle="$t('messageBox.warning')" minHeight="282px"
                            :lblConfirmContent="$t('messageBox.delete')" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
                 <template v-slot:tool-bar>
                   <q-btn round dense flat icon="file_upload" color="primary" @click="onUpload('attack')" />
@@ -182,12 +182,12 @@
   <!-- Dialog FileManager -->
   <q-dialog v-model="isDialogFileManager" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <!---->
         <tm-fileManager lblAccept="" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                         :size="113" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :accept="accept"
-                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="multiple"
-                        :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
+                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="multiple" :mimeType="mimeType"
+                        :headers="[{name:'Upload-Path',value:'news'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
             <span class="text-subtitle1">{{$t('files.manager')}}</span>
@@ -199,11 +199,11 @@
   <!-- Dialog Upload -->
   <q-dialog v-model="isDialogUpload" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <tm-upload :multiple="multiple" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
-                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="113"
+                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="113" :mimeType="mimeType"
                    :accept="accept" :upload-url="$store.state.app.apiUpload" @on-finish="onUploaded"
-                   :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
+                   :headers="[{name:'Upload-Path',value:'news'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
             <span class="text-subtitle1">{{$t('files.upload')}}</span>
@@ -241,6 +241,7 @@ export default defineComponent({
     const selectedCategory = ref(null)
     const selectedCategories = ref([])
     const selectedFileList = ref(null)
+    const uploadUrl = ref(false)
     // TMFileList
     const viewTypeImage = ref('box')
     const viewTypeAttach = ref('list')
@@ -248,6 +249,7 @@ export default defineComponent({
     const refTMFileListAttack = ref(null)
     const multiple = ref(false)
     const accept = ref('*')
+    const mimeType = ref(null)
     const targetFilesList = ref('images')
     // TMUpload
     const isDialogUpload = ref(false)
@@ -259,8 +261,7 @@ export default defineComponent({
     }
     const onReset = () => {
       return new Promise((resolve, reject) => {
-        if ($store.state.news.item) data.value = { ...$store.state.news.item }
-        if ($store.state.news.item._id) { }
+        if ($store.state.news.item) data.value = JSON.parse(JSON.stringify($store.state.news.item))
         resolve()
       }).then(() => { if (form.value) form.value.resetValidation() })
     }
@@ -269,7 +270,7 @@ export default defineComponent({
 
     return {
       tabs, form, data, attrKeys, attrValues, categories, pins, selectedCategory, selectedCategories, selectedFileList, viewTypeImage,
-      viewTypeAttach, refTMFileListImages, refTMFileListAttack, isDialogUpload, isDialogFileManager, multiple, accept,
+      viewTypeAttach, refTMFileListImages, refTMFileListAttack, isDialogUpload, isDialogFileManager, multiple, accept, mimeType,
       onFilterAttrKey (val) {
         if (!val) return
         attrKeys.value = []
@@ -309,9 +310,11 @@ export default defineComponent({
       onFileManager (val) {
         if (val === 'images') {
           accept.value = '.jpg,.jpeg,.png,.gif,.jfif'
+          mimeType.value = 'image'
           multiple.value = false
         } else {
           accept.value = '*'
+          mimeType.value = null
           multiple.value = true
         }
         targetFilesList.value = val
@@ -321,15 +324,15 @@ export default defineComponent({
         isDialogUpload.value = false
         if (val)
           if (targetFilesList.value === 'images') {
-            data.value.images = val.url
+            data.value.images = uploadUrl.value ? val.url : val
           } else {
             if (data.value.attach) {
               val.forEach(e => {
-                if (data.value.attach.findIndex(x => x === e.url) < 0)
-                  data.value.attach.push(e.url)
+                if (data.value.attach.findIndex(x => x === (uploadUrl.value ? e.url : e)) < 0)
+                  data.value.attach.push(uploadUrl.value ? e.url : e)
               })
             } else {
-              data.value.attach = val.map(x => x.url)
+              data.value.attach = val.map(x => uploadUrl.value ? x.url : x)
             }
           }
       },
@@ -337,15 +340,15 @@ export default defineComponent({
         isDialogFileManager.value = false
         if (val)
           if (targetFilesList.value === 'images') {
-            data.value.images = val.url
+            data.value.images = uploadUrl.value ? val.url : val
           } else {
             if (data.value.attach) {
               val.forEach(e => {
-                if (data.value.attach.findIndex(x => x === e.url) < 0)
-                  data.value.attach.push(e.url)
+                if (data.value.attach.findIndex(x => x === (uploadUrl.value ? e.url : e)) < 0)
+                  data.value.attach.push(uploadUrl.value ? e.url : e)
               })
             } else {
-              data.value.attach = val.map(x => x.url)
+              data.value.attach = val.map(x => uploadUrl.value ? x.url : x)
             }
           }
       }

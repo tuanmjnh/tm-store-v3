@@ -10,7 +10,7 @@
         </div>
         <q-space />
         <div class="col">
-          <span class="text-h6">{{$t('global.search')}}</span>
+          <span class="text-subtitle1">{{$t('global.search')}}</span>
         </div>
       </q-card-section>
 

@@ -10,7 +10,7 @@
         </div>
         <q-space />
         <div class="col">
-          <span class="text-h6">{{$t('global.notification')}}</span>
+          <span class="text-subtitle1">{{$t('global.notification')}}</span>
         </div>
       </q-card-section>
 

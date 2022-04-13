@@ -26,6 +26,7 @@ export default {
     demo: 'Bản giới thiệu',
     template: 'Template',
     types: 'Kiểu dữ liệu',
+    configs: 'Cấu hình',
     orders: 'Đơn hàng',
     store: 'Kho hàng',
     warehouse: 'Kho hàng',
@@ -179,7 +180,7 @@ export default {
     dashboard: 'Dashboard',
     github: 'Github',
     logOut: 'Đăng xuất',
-    profile: 'Hồ sơ',
+    profile: 'Hồ sơ cá nhân',
     theme: 'Chủ đề',
     size: 'Kích thước chữ',
     switchLanguage: 'Thay đổi ngôn ngữ'

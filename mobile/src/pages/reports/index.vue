@@ -1,10 +1,10 @@
 <template>
   <q-card flat>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/warehouse/report'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
-      <q-toolbar-title>{{$t('report.title')}}</q-toolbar-title>
+      <q-toolbar-title class="text-subtitle1">{{$t('report.title')}}</q-toolbar-title>
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-menu v-model="isFilter">
           <q-list separator>

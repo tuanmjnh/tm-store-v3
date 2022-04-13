@@ -200,6 +200,8 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .tm-file-upload {
+  height: 100%;
+  overflow: hidden;
   .tm-file-upload__header {
     position: relative;
     .q-linear-progress {
@@ -207,6 +209,9 @@ export default defineComponent({
       bottom: 2px;
       left: -2px;
     }
+  }
+  .tm-file-upload__content {
+    height: 100%;
   }
   .tm-uploader {
     position: relative;

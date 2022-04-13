@@ -162,10 +162,11 @@
           </q-tree>
         </q-tab-panel>
         <q-tab-panel name="avatar" id="tab-avatar" style="height:calc(100vh - 99px)">
-          <tm-fileList ref="refTMFileList" v-model="data.avatar" v-model:view-type="viewType" :multiple="false" generate-image :size="352"
+          <tm-fileList ref="refTMFileList" v-model="data.avatar" v-model:view-type="viewType" :multiple="false" :size="353"
                        minHeight="360px" :isDelete="false" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                        :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
             <template v-slot:tool-bar>
+              <q-toolbar-title></q-toolbar-title>
               <q-btn round dense flat icon="file_upload" color="primary" @click="isDialogUpload=!isDialogUpload" />
               <q-btn round dense flat icon="cloud_circle" color="secondary" @click="isDialogFileManager=!isDialogFileManager" />
             </template>
@@ -177,12 +178,12 @@
   <!-- Dialog FileManager -->
   <q-dialog v-model="isDialogFileManager" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <!---->
         <tm-fileManager lblAccept="" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                         :size="113" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" accept=".jpg,.jpeg,.png,.gif,.jfif"
-                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="false"
-                        :headers="[{name:'Upload-Path',value:'users'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
+                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="false" mimeType="image"
+                        :headers="[{name:'Upload-Path',value:`users`},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
             <span class="text-subtitle1">{{$t('files.manager')}}</span>
@@ -194,11 +195,11 @@
   <!-- Dialog Upload -->
   <q-dialog v-model="isDialogUpload" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <tm-upload :multiple="false" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
-                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="340"
+                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="353" mimeType="image"
                    accept=".jpg,.jpeg,.png,.gif,.jfif" :upload-url="$store.state.app.apiUpload" @on-finish="onUploaded"
-                   :headers="[{name:'Upload-Path',value:`users/${data._id}`},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
+                   :headers="[{name:'Upload-Path',value:`users${data.username?'/'+data.username:''}`},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
             <span class="text-subtitle1">{{$t('files.upload')}}</span>
@@ -238,6 +239,7 @@ export default defineComponent({
     const selectedRegion = ref(regions.value[202])
     const gender = ref(genders.value[0])
     const group = ref(groups.value[0])
+    const uploadUrl = ref(false)
     // TMFileList
     const viewType = ref('box')
     const refTMFileList = ref(null)
@@ -299,11 +301,12 @@ export default defineComponent({
       },
       onUploaded (val) {
         isDialogUpload.value = false
-        if (val) data.value.avatar = val.url
+        if (val) data.value.avatar = uploadUrl.value ? val.url : val
       },
       onAccept (val) {
         isDialogFileManager.value = false
-        if (val) data.value.avatar = val.url
+        if (val) data.value.avatar = uploadUrl.value ? val.url : val
+        console.log(data.value.avatar)
       }
     }
   }

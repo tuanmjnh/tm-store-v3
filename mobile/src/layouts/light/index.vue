@@ -2,14 +2,15 @@
   <q-layout view="lHh Lpr lFf">
     <q-header>
       <q-toolbar>
-        <q-btn flat @click="leftDrawerOpen=!leftDrawerOpen" round dense icon="menu" />
+        <q-btn flat @click="leftDrawer=!leftDrawer" round dense icon="menu" />
         <!-- <img src="icons/favicon-16x16.png"> -->
         <!-- <span class="text-subtitle1">{{title}}</span> -->
         <!-- <drawer-search /> -->
         <q-space />
-        <drawer-search />
-        <notification />
-        <profile />
+        <header-qrcode />
+        <header-search />
+        <header-notification />
+        <!-- <profile /> -->
         <!-- <div>Quasar v{{ $q.version }}</div> -->
         <!-- <q-toolbar-title>TM Store</q-toolbar-title> -->
         <!-- <q-btn flat dense round icon="menu" aria-label="Menu" @click="rightDrawerOpen=!rightDrawerOpen" /> -->
@@ -17,9 +18,11 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="leftDrawer" show-if-above>
       <q-scroll-area class="fit">
-        <q-list class="rounded-borders">
+        <q-list>
+          <drawer-profile @on-show="leftDrawer=!leftDrawer" />
+          <q-separator spaced />
           <drawer-item v-for="(e,i) in $store.getters.routes" :key="i" :dense="$store.getters.dense.menu" :item="e" is-icon
                        :active="onActive(e.name)" />
         </q-list>
@@ -48,25 +51,29 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref } from "vue"
+import { defineComponent, defineAsyncComponent, computed } from "vue"
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: "MainLayout",
   components: {
-    menuBottom: defineAsyncComponent(() => import('../components/menu-bottom')),
-    drawerSearch: defineAsyncComponent(() => import('../components/search')),
-    notification: defineAsyncComponent(() => import('../components/notification')),
-    profile: defineAsyncComponent(() => import('../components/profile')),
+    headerQrcode: defineAsyncComponent(() => import('../components/header-qrcode')),
+    headerSearch: defineAsyncComponent(() => import('../components/header-search')),
+    headerNotification: defineAsyncComponent(() => import('../components/header-notification')),
+    drawerProfile: defineAsyncComponent(() => import('../components/drawer-profile')),
     drawerItem: defineAsyncComponent(() => import('../components/drawer-item')),
+    menuBottom: defineAsyncComponent(() => import('../components/menu-bottom'))
   },
   setup () {
     const $route = useRoute()
+    const $store = useStore()
     const title = process.env.APP_NAME
-    const leftDrawerOpen = ref(false)
-    // const leftDrawerOpen = ref(false)
-    // const rightDrawerOpen = ref(false)
+    const leftDrawer = computed({
+      get: () => $store.getters.leftDrawer,
+      set: val => $store.commit('app/LEFT_DRAWER', val)
+    })
     return {
-      title, leftDrawerOpen,//leftDrawerOpen, rightDrawerOpen,
+      title, leftDrawer,
       onActive: (name) => {
         const rs = $route.matched.map(x => x.name).indexOf(name) > -1 || false
         return rs

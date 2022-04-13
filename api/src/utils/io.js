@@ -46,11 +46,12 @@ module.exports.rename = async (oldPath, newPath) => {
 }
 
 module.exports.getExtention = function (path, dot = true) {
-  if (!path) return ''
+  if (!path) return null
   path = path.toLowerCase()
   const regx = /(?:\.([^.]+))?$/
   path = regx.exec(path)
-  return path ? (dot ? path[0] : path[1]) : ''
+  const rs = path ? (dot ? path[0] : path[1]) : null
+  return rs ? rs : null
 }
 
 function getFolder ({ dir, root, host }) {

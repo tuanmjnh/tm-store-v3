@@ -118,11 +118,12 @@
             </div>
           </div>
         </q-tab-panel>
-        <q-tab-panel name="images" id="tab-images" class="q-pt-none q-pb-none">
-          <tm-fileList ref="refTMFileList" v-model="data.images" v-model:selected="selectedFileList" v-model:view-type="viewType" generate-image
+        <q-tab-panel name="images" id="tab-images" class="q-pt-none q-pb-none" style="height:calc(100vh - 99px)">
+          <tm-fileList ref="refTMFileList" v-model="data.images" v-model:selected="selectedFileList" v-model:view-type="viewType"
                        :multiple="true" :size="113" minHeight="660px" :lblConfirmTitle="$t('messageBox.warning')"
                        :lblConfirmContent="$t('messageBox.delete')" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
             <template v-slot:tool-bar>
+              <q-toolbar-title></q-toolbar-title>
               <q-btn round dense flat icon="file_upload" color="primary" @click="isDialogUpload=!isDialogUpload" />
               <!-- <q-popup-proxy>
                     <tm-upload v-model="data.images" :upload-url="$store.state.app.apiUpload" :multiple="true" accept=".jpg,.jpeg,.png,.gif,.jfif"
@@ -187,11 +188,11 @@
   <!-- Dialog FileManager -->
   <q-dialog v-model="isDialogFileManager" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <!---->
         <tm-fileManager lblAccept="" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                         :size="113" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" accept=".jpg,.jpeg,.png,.gif,.jfif"
-                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="true"
+                        :url="$store.state.app.apiUpload" @onAccept="onAccept" :multiple="true" mimeType="image"
                         :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
@@ -204,9 +205,9 @@
   <!-- Dialog Upload -->
   <q-dialog v-model="isDialogUpload" maximized>
     <q-card>
-      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none">
+      <q-card-section class="q-pl-md q-pr-md q-pt-none q-pb-none" style="height:93%">
         <tm-upload :multiple="true" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
-                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="113"
+                   :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="113" mimeType="image"
                    accept=".jpg,.jpeg,.png,.gif,.jfif" :upload-url="$store.state.app.apiUpload" @on-finish="onUploaded"
                    :headers="[{name:'Upload-Path',value:'products'},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
@@ -258,6 +259,7 @@ export default defineComponent({
     const selectedCategories = ref([])
     const expanded = ref(null)
     const selectedFileList = ref(null)
+    const uploadUrl = ref(false)
     // TMFileList
     const viewType = ref('box')
     const refTMFileList = ref(null)
@@ -345,16 +347,28 @@ export default defineComponent({
       onSetRandomCode () {
         data.value.barcode = getRndInteger(1234567890123, 9999999999999).toString()
       },
+      // onUploaded (val) {
+      //   isDialogUpload.value = false
+      //   if (val)
+      //     if (data.value.images) {
+      //       val.forEach(e => {
+      //         if (data.value.images.findIndex(x => x === e.url) < 0)
+      //           data.value.images.push(e.url)
+      //       })
+      //     } else {
+      //       data.value.images = val.map(x => x.url)
+      //     }
+      // },
       onUploaded (val) {
         isDialogUpload.value = false
         if (val)
           if (data.value.images) {
             val.forEach(e => {
-              if (data.value.images.findIndex(x => x === e.url) < 0)
-                data.value.images.push(e.url)
+              if (data.value.images.findIndex(x => x === (uploadUrl.value ? e.url : e)) < 0)
+                data.value.images.push(uploadUrl.value ? e.url : e)
             })
           } else {
-            data.value.images = val.map(x => x.url)
+            data.value.images = val.map(x => uploadUrl.value ? x.url : x)
           }
       },
       onAccept (val) {
@@ -362,11 +376,11 @@ export default defineComponent({
         if (val)
           if (data.value.images) {
             val.forEach(e => {
-              if (data.value.images.findIndex(x => x === e.url) < 0)
-                data.value.images.push(e.url)
+              if (data.value.images.findIndex(x => x === (uploadUrl.value ? e.url : e)) < 0)
+                data.value.images.push(uploadUrl.value ? e.url : e)
             })
           } else {
-            data.value.images = val.map(x => x.url)
+            data.value.images = val.map(x => uploadUrl.value ? x.url : x)
           }
       }
     }

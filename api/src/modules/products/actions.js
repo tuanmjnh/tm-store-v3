@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
 module.exports.name = MProducts.collection.collectionName
 
 module.exports.get = ({ conditions }) => {
-  const rs = MProducts.aggregate([
+  return MProducts.aggregate([
     { $match: conditions },
     {
       $lookup: {
@@ -48,7 +48,6 @@ module.exports.get = ({ conditions }) => {
     // { $replaceRoot: { newRoot: { $mergeObjects: [{ '$units': 0 }, '$$ROOT'] } } },
     // { $project: { units: 0 } }
   ])
-  return rs
 }
 
 module.exports.select = ({ conditions, fields }) => {

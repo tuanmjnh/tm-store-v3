@@ -6,6 +6,7 @@ export default {
   // imageEmpty: state => state.app.imageEmpty,
   loading: state => state.app.loading,
   componentLoaded: state => state.app.componentLoaded,
+  leftDrawer: state => state.app.leftDrawer,
   routes: state => state.auth.routesConstant.concat(state.auth.routes),
   languages: state => state.app.languages,
   language: state => state.settings.language,

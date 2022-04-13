@@ -1,7 +1,7 @@
 <template>
-  <div class="tm-file-list">
+  <q-layout container class="tm-file-list">
     <q-toolbar v-if="isHeader">
-      <q-toolbar-title class="text-subtitle1">{{title}}</q-toolbar-title>
+      <q-toolbar-title v-if="title" class="text-subtitle1">{{title}}</q-toolbar-title>
       <slot v-if="slotToolBar" name="tool-bar"></slot>
       <q-btn v-if="!slotToolBar" round dense flat icon="view_module" :color="viewType!=='list'?'indigo':'blue-grey'"
              @click="onChangeView('box')">
@@ -13,18 +13,22 @@
       </q-btn>
     </q-toolbar>
     <div class="panel">
-      <slot v-if="slotPanelLeft" name="panel-left"></slot>
-      <div class="panel-right scroll" :style="{minHeight:minHeight,maxHeight:maxHeight}">
+      <div v-if="slotPanelLeft" class="panel-left">
+        <slot name="panel-left"></slot>
+      </div>
+      <div id="scroll-items" class="panel-right scroll">
         <div v-if="loading" class="fullscreen">
           <div class="absolute-full flex flex-center">
             <q-spinner color="primary" size="6em" :thickness="1" />
           </div>
         </div>
-        <div class="views view-box" v-if="viewType!=='list'">
+        <div :class="`views view-box ${multiple?'':'text-center'}`" v-if="viewType!=='list'">
           <div v-show="!loading" v-for="(e,i) in rows" :key="i" :style="`width:${size}px;height:${size}px`"
                :class="['item',selected&&selected.indexOf(e)>-1?'selected':'']">
             <div @click="onSelectItem(e)">
-              <q-img v-if="Extension.isImage(e.name)" :src="e.url" spinner-color="primary" :style="{height:`${size-4}px`}">
+              <i v-if="e.type==='folder'" class="material-icons absolute-full flex flex-center"
+                 :style="`font-size:${fontSize}px`">folder</i>
+              <q-img v-else-if="Extension.isImage(e.name)" :src="e.url" spinner-color="primary" :style="{height:`${size-4}px`}">
                 <template v-slot:error>
                   <i class="material-icons"
                      style="font-size:30px;color:#a5a5a5;position:absolute;top:0;right:0;bottom:0;left:0;align-items:center;justify-content:center;display:flex;flex-wrap:wrap;">photo_size_select_actual</i>
@@ -90,7 +94,6 @@
                 <i v-if="isDelete" class="material-icons file-delete" @click="onDelete(i)">clear</i>
               </q-item-section>
             </q-item>
-
           </q-list>
           <!-- <q-table flat dense :rows="rows" :columns="columns" :visible-columns="visibleColumns" row-key="name" selection="multiple"
                    :no-data-label="$t('table.noData')" :rows-per-page-label="$t('table.rowPerPage')"
@@ -158,9 +161,15 @@
             </template>
           </q-table> -->
         </div>
+        <!-- <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll> -->
       </div>
     </div>
-  </div>
+  </q-layout>
 </template>
 
 <script>
@@ -245,8 +254,11 @@ export default defineComponent({
       } else return null
     }
     const rows = computed(() => {
-      if (props.generateImage) return onGenerateImages(props.modelValue)
-      else return props.modelValue || []
+      if (props.generateImage) {
+        return onGenerateImages(props.modelValue)
+      } else {
+        return props.modelValue ? Array.isArray(props.modelValue) ? props.modelValue : [props.modelValue] : []
+      }
     })
     return {
       Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns,
@@ -339,6 +351,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .tm-file-list {
+  // height: calc(100vh - 99px);
   .q-toolbar {
     min-height: initial;
     padding: 5px 0;
@@ -375,5 +388,13 @@ export default defineComponent({
     background-color: #c55959;
     color: #fff;
   }
+  // .panel {
+  //   .panel-left {
+  //     position: absolute;
+  //     width: 100%;
+  //     height: 100%;
+  //     z-index: 3000;
+  //   }
+  // }
 }
 </style>

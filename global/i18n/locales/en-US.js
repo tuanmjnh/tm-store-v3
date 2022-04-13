@@ -25,6 +25,7 @@ export default {
     news: 'News',
     template: 'Template',
     types: 'Type data',
+    configs: 'Config',
     orders: 'Orders',
     store: 'Store',
     warehouse: 'Warehouse',

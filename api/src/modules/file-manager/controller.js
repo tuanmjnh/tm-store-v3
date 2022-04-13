@@ -1,45 +1,117 @@
-const io = require('../../utils/io')
-const multer = require('multer')
-
-const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const create_dir = await io.createDir({ dir: req.headers.path })
-    cb(null, create_dir.path)
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-module.exports.storage = storage
-
-const upload = multer({ storage: storage }).array('file-upload')
-module.exports.upload = upload
+const GDrive = require('../../services/googleapis/drive'),
+  processFile = require('./process-file'),
+  // { Readable } = require('stream'),
+  fs = require('fs'),
+  name = 'file-manager'
+module.exports.name = name
 
 module.exports.get = async function (req, res, next) {
   try {
-    const result = 'File manager'
-    if (result) res.status(201).json(result).end()
-    else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+    // const files = await GDrive.getFiles()
+    // console.log(files)
+    const folderPath = req.headers['upload-path'] ? req.headers['upload-path'] : null
+    const mimeType = req.headers['mime-type'] && req.headers['mime-type'] !== 'null' ? req.headers['mime-type'] : null
+    const folderId = req.headers['folder-id'] ? req.headers['folder-id'] : null
+    // console.log(folderId)
+    const rs = await GDrive.getAll({ folder: folderPath, mimeType: mimeType, folderId: folderId })
+    // console.log(rs)
+    if (rs) return res.status(200).json(rs)
+    else return res.status(200).json([])
   } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.getFolders = async function (req, res, next) {
+  try {
+    // const files = await GDrive.getFiles()
+    // console.log(files)
+    const folderPath = req.headers['upload-path'] ? req.headers['upload-path'] : null
+    const mimeType = req.headers['mime-type'] && req.headers['mime-type'] !== 'null' ? req.headers['mime-type'] : null
+    const rs = await GDrive.getAll({ folder: folderPath, mimeType: mimeType })
+    if (rs) return res.status(200).json(rs)
+    else {
+      // GDrive.createFolder({ name: folderPath })
+      return res.status(200).json([])
+    }
+  } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.getFiles = async function (req, res, next) {
+  try {
+    // const files = await GDrive.getFiles()
+    // console.log(files)
+    const folderPath = req.headers['upload-path'] ? req.headers['upload-path'] : null
+    const mimeType = req.headers['mime-type'] && req.headers['mime-type'] !== 'null' ? req.headers['mime-type'] : null
+    const rs = await GDrive.getAll({ folder: folderPath, mimeType: mimeType })
+    if (rs) return res.status(200).json(rs)
+    else {
+      // GDrive.createFolder({ name: folderPath })
+      return res.status(200).json([])
+    }
+  } catch (e) {
+    // console.log(e)
     return res.status(500).send('invalid')
   }
 }
 
 module.exports.post = async function (req, res, next) {
   try {
-    const result = []// await dbapi.create(body)
-    for (const e of req.files) {
-      result.push({
-        path: req.headers.path,
-        size: e.size,
-        originalname: e.filename,
-        filename: `${req.headers.path}/${e.filename}`,
-        extension: io.getExtention(e.filename),
-        mimetype: e.mimetype
-      })
+    const uploadPath = req.headers['upload-path'] ? req.headers['upload-path'].split('/') : null
+    const folders = []
+    if (uploadPath && uploadPath.length) {
+      for await (const e of uploadPath) {
+        const folder = await GDrive.createFolder({ name: e, rootFolderID: folders.length ? folders[folders.length - 1] : null, exist: true })
+        if (folder) folders.push(folder)
+      }
     }
-    if (result) res.status(201).json(result).end()
-    else res.status(404).json({ msg: 'exist', params: 'data' }).end()
+    // console.log(folders)
+    await processFile.diskStorage(req, res)
+    GDrive.createFile({
+      name: req.file.filename,
+      mimeType: req.file.mimetype,
+      stream: fs.createReadStream(req.file.path),
+      rootFolderID: folders[folders.length - 1].id
+    }).then(x => {
+      fs.unlinkSync(req.file.path)
+      if (x) return res.status(201).json(x)
+      else return res.status(201).send(null)
+    })
+  } catch (e) {
+    // console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.put = async function (req, res, next) {
+  try {
+    const rs = []
+    if (rs) return res.status(202).json(rs)
+    else return res.status(500).send('invalid')
+  } catch (e) {
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.patch = async function (req, res, next) {
+  try {
+    const rs = []
+    if (rs) return res.status(203).json(rs)
+    else return res.status(500).send('invalid')
+  } catch (e) {
+    return res.status(500).send('invalid')
+  }
+}
+
+module.exports.delete = async function (req, res, next) {
+  try {
+    const rs = []
+    if (rs) return res.status(204).json(rs)
+    else return res.status(500).send('invalid')
   } catch (e) {
     return res.status(500).send('invalid')
   }

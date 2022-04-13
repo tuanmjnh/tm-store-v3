@@ -5,7 +5,7 @@ const constant = {
   value: ''
 }
 const state = {
-  items: null,
+  items: [],
   item: { ...constant }
 }
 const mutations = {
@@ -17,15 +17,9 @@ const mutations = {
     else state.item = { ...constant }
   },
   ADD_ITEMS (state, value) {
-    if (Array.isArray(value)) {
-      value.forEach(e => {
-        state.items.push(e)
-        state.keys.pushIfNotExist(e.key)
-      })
-    } else {
-      state.items.push(value)
-      state.keys.pushIfNotExist(value.key)
-    }
+    console.log(state.items)
+    if (Array.isArray(value)) value.forEach(e => { state.items.push(e) })
+    else state.items.push(value)
   },
   UPDATE_ITEMS (state, value) {
     if (Array.isArray(value)) {
@@ -45,21 +39,19 @@ const mutations = {
       }
     }
   }
-  //   value.forEach(e => {
-  //     const i = state.items.find(x => x._id === e)
-  //     i.flag = i.flag === 1 ? 0 : 1
-  //   })
-  // }
-  // SET_ROWS_NUMBER (state, value) {
-  //   state.rowsNumber = value ? value : 0
-  // }
 }
 const actions = {
   get ({ commit }, params) {
     return api.get(collection, { params }).then((res) => {
-      if (res) commit('SET_ITEMS', res)
+      if (res) commit('SET_ITEMS', res.data)
       return res
     })
+  },
+  set ({ commit }, params) {
+    commit('SET_ITEM', params)
+  },
+  exist ({ commit }, params) {
+    return api.debonce({ method: 'get', params: params, url: `${collection}/exist` })
   },
   post ({ commit }, params) {
     return api.post(collection, params).then((res) => {

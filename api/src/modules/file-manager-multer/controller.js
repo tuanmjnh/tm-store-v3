@@ -1,6 +1,9 @@
 const io = require('../utils/io')
 const multer = require('multer')
 
+const name = 'file-manager'
+module.exports.name = name
+
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const create_dir = await io.createDir({ dir: req.headers.path })

@@ -123,11 +123,10 @@ module.exports.find = async function (req, res, next) {
 
 module.exports.exist = async function (req, res, next) {
   try {
-    if (req.query.code) {
-      const rs = await AProducts.exist(req.query.code)
-      if (rs) return res.status(200).json(true)
-      else return res.status(200).json(false)
-    }
+    if (!req.query.code) return res.status(404).send('exist')
+    const rs = await AProducts.exist(req.query.code)
+    if (rs) return res.status(200).json(true)
+    else return res.status(200).json(false)
   } catch (e) {
     return res.status(200).json('invalid')
   }

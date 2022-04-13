@@ -1,7 +1,7 @@
 <template>
   <q-card>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/product/list/view'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.product')}}</q-toolbar-title>
@@ -81,7 +81,7 @@
             <q-item>
               <q-item-section avatar>
                 <q-avatar rounded size="42px">
-                  <q-img v-if="e.images&&e.images.length" :src="e.images[0]">
+                  <q-img v-if="e.images&&e.images.length&&e.images[0].length" :src="e.images[0]">
                     <template v-slot:error>
                       <div class="image-error absolute-full flex flex-center">
                         <q-icon name="insert_photo" />

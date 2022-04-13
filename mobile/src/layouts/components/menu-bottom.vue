@@ -7,19 +7,16 @@
     </template>
   </q-tabs>
   <!-- QR Code Scanner dialog -->
-  <q-dialog v-model="isDialogQRCode" :maximized="true">
+  <!-- <q-dialog v-model="isDialogQRCode" :maximized="true">
     <tm-html5qrcode :title="$t('qrCode.qrCodeScanner')" :cancelLabel="$t('global.cancel')" @onDecode="onDecodeQR" @onError="onErrorQR" />
-  </q-dialog>
+  </q-dialog> -->
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed } from "vue"
 import { useRoute, useRouter } from 'vue-router'
 export default defineComponent({
   name: "MenuBottom",
-  components: {
-    tmHtml5qrcode: defineAsyncComponent(() => import('components/tm-html5qrcode')),
-  },
   setup () {
     const $route = useRoute()
     const $router = useRouter()
@@ -34,24 +31,24 @@ export default defineComponent({
         meta: { title: 'dashboard', icon: 'dashboard' }
       },
       {
+        path: '/orders',
+        name: 'orders-view',
+        meta: { title: 'orders', icon: 'class' },
+      },
+      {
         path: '/warehouse',
-        name: 'warehouse',
+        name: 'warehouse-data',
         meta: { title: 'warehouse', icon: 'store' }
       },
-      {
-        path: '/qrcode',
-        name: 'qrcode',
-        meta: { title: 'qrCodeScanner', icon: 'qr_code_scanner' }
-      },
+      // {
+      //   path: '/qrcode',
+      //   name: 'qrcode',
+      //   meta: { title: 'qrCodeScanner', icon: 'qr_code_scanner' }
+      // },
       {
         path: '/warehouse/report',
-        name: 'store-report',
+        name: 'warehouse-report',
         meta: { title: 'report', icon: 'pie_chart' },
-      },
-      {
-        path: '/orders',
-        name: 'orders',
-        meta: { title: 'orders', icon: 'class' },
       }
       // {
       //   path: '/notification',

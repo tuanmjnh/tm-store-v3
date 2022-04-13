@@ -46,7 +46,7 @@
             <q-item clickable v-ripple>
               <q-item-section avatar>
                 <q-avatar rounded size="42px">
-                  <q-img v-if="e.images&&e.images.length" :src="e.images[0]">
+                  <q-img v-if="e.images&&e.images.length&&e.images[0].length" :src="e.images[0]">
                     <template v-slot:error>
                       <div class="image-error absolute-full flex flex-center">
                         <q-icon name="insert_photo" />
@@ -93,7 +93,8 @@
                       </q-item>
                     </q-list>
                   </q-card-section>
-                  <q-card-section>
+                  <q-separator />
+                  <q-card-section class="q-pt-none q-pb-none">
                     <q-input v-model.number="e.price" type="number" :label="$t('product.priceSale')">
                       <template v-slot:append>
                         <q-icon name="attach_money" />

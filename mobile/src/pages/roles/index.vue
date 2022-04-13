@@ -1,7 +1,7 @@
 <template>
   <q-card>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/manager/roles/view'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.roles')}}</q-toolbar-title>
@@ -33,8 +33,8 @@
 
     <!-- <q-separator /> -->
     <q-card-section class="q-pa-none">
-      <q-list separator ref="refListTarget" id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
-        <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250" :scroll-target="refListTarget">
+      <q-list separator id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
+        <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250">
           <q-item clickable v-ripple v-for="e in rows" :key="e._id" v-touch-swipe.mouse.left="()=>{onTrash(e)}"
                   v-touch-swipe.mouse.right="()=>{onEdit(e)}" v-touch-hold.mouse="()=>{onTouchHold(e)}">
             <q-item-section>
@@ -107,7 +107,6 @@ export default defineComponent({
     const isMaximized = ref(true)
     const isDialogTouchHold = ref(false)
     const refScrollTarget = ref(null)
-    const refListTarget = ref(null)
     const isFilter = ref(false)
     const selected = ref([])
     const isRoutes = ref({

@@ -40,21 +40,19 @@ export default defineComponent({
     const isDialog = ref(false)
     const isMaximized = ref(true)
     const firstItem = ref(props.options[0])
-    const routePath = ref(null)
     const component = ref(null)
     watch(() => isDialog.value, (state, prevState) => {
       if (!state) $store.dispatch('app/setComponentLoaded')
       // console.log($store.getters.componentLoaded)
     }, { deep: true })
     return {
-      isDialog, isMaximized, firstItem, routePath, component, RandomColor,
+      isDialog, isMaximized, firstItem, component, RandomColor,
       onItemClick (val) {
         // val.component()
         // const a = () => import(val.component)
         // const a = defineAsyncComponent(() => val.meta.component)
         component.value = val.meta.component
         $store.dispatch('app/setComponentLoaded', val)
-        // routePath.value = val.redirect
         isDialog.value = !isDialog.value
       }
     }

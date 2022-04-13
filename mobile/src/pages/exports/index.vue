@@ -1,7 +1,7 @@
 <template>
   <q-card>
     <q-toolbar>
-      <div class="col-auto">
+      <div v-if="$route.path!=='/warehouse/export/list'" class="col-auto">
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.export')}}</q-toolbar-title>

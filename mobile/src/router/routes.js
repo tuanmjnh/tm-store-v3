@@ -148,22 +148,22 @@ export const dynamic = [
       {
         path: 'data',
         name: 'warehouse-data',
-        meta: { title: 'data', icon: 'home_work', parent: 'warehouse', component: 'pages/warehouse/index' },
+        meta: { title: 'data', icon: 'home_work', hidden: true, parent: 'warehouse', component: 'pages/warehouse/index' },
         component: () => import('pages/warehouse/index')
       },
       {
         path: 'report',
         name: 'warehouse-report',
-        meta: { title: 'report', icon: 'pie_chart', parent: 'warehouse', component: 'pages/reports/index' },
+        meta: { title: 'report', icon: 'pie_chart', hidden: true, parent: 'warehouse', component: 'pages/reports/index' },
         component: () => import('pages/reports/index')
       },
       {
-        path: '/import',
+        path: 'import',
         name: 'import',
-        meta: { title: 'import', icon: 'playlist_add_check', parent: 'warehouse', component: 'pages/imports/index' },
+        meta: { title: 'import', icon: 'playlist_add_check', dialog: true, parent: 'warehouse', component: 'pages/imports/index' },
         // component: () => import('pages/import/index'),
         component: fakeLayout,
-        redirect: '/import/list',
+        redirect: '/warehouse/import/list',
         children: [
           {
             path: 'list',
@@ -180,12 +180,12 @@ export const dynamic = [
         ]
       },
       {
-        path: '/export',
+        path: 'export',
         name: 'export',
-        meta: { title: 'export', icon: 'playlist_play', parent: 'warehouse', component: 'pages/exports/index' },
+        meta: { title: 'export', icon: 'playlist_play', dialog: true, parent: 'warehouse', component: 'pages/exports/index' },
         // component: () => import('pages/store/export-list')
         component: fakeLayout,
-        redirect: '/export/list',
+        redirect: '/warehouse/export/list',
         children: [
           {
             path: 'list',
@@ -213,7 +213,7 @@ export const dynamic = [
       {
         path: 'list',
         name: 'product-list',
-        meta: { title: 'list', icon: 'collections', color: "", parent: 'product', component: 'pages/products/index' },
+        meta: { title: 'list', icon: 'collections', color: "", dialog: true, parent: 'product', component: 'pages/products/index' },
         component: fakeLayout,
         redirect: '/product/list/view',
         // component: () => import('pages/products/index'),
@@ -273,7 +273,7 @@ export const dynamic = [
       {
         path: 'category',
         name: 'category-product',
-        meta: { title: 'category', icon: 'category', type: 'product', parent: 'product', component: 'pages/category/index' },
+        meta: { title: 'category', icon: 'category', type: 'product', dialog: true, parent: 'product', component: 'pages/category/index' },
         component: fakeLayout,
         redirect: '/product/category/view',
         children: [
@@ -407,7 +407,7 @@ export const dynamic = [
       {
         path: 'list',
         name: 'news-list',
-        meta: { title: 'list', icon: 'collections_bookmark', parent: 'news', component: 'pages/news/index' },
+        meta: { title: 'list', icon: 'collections_bookmark', dialog: true, parent: 'news', component: 'pages/news/index' },
         component: fakeLayout,
         redirect: '/news/list/view',
         children: [
@@ -466,7 +466,7 @@ export const dynamic = [
       {
         path: 'category',
         name: 'category-news',
-        meta: { title: 'category', icon: 'category', type: 'news', parent: 'news', component: 'pages/category/index' },
+        meta: { title: 'category', icon: 'category', type: 'news', dialog: true, parent: 'news', component: 'pages/category/index' },
         component: fakeLayout,
         redirect: '/news/category/view',
         children: [
@@ -538,7 +538,7 @@ export const dynamic = [
       {
         path: 'users',
         name: 'manager-users',
-        meta: { title: 'users', icon: 'account_box', parent: 'manager', component: 'pages/users/index' },
+        meta: { title: 'users', icon: 'account_box', dialog: true, parent: 'manager', component: 'pages/users/index' },
         component: fakeLayout,
         redirect: '/manager/users/view',
         children: [
@@ -610,7 +610,7 @@ export const dynamic = [
       {
         path: 'roles',
         name: 'manager-roles',
-        meta: { title: 'roles', icon: 'verified_user', parent: 'manager', component: 'pages/roles/index' },
+        meta: { title: 'roles', icon: 'verified_user', dialog: true, parent: 'manager', component: 'pages/roles/index' },
         component: fakeLayout,
         redirect: '/manager/roles/view',
         children: [
@@ -669,7 +669,7 @@ export const dynamic = [
       {
         path: 'types',
         name: 'manager-types',
-        meta: { title: 'types', icon: 'scatter_plot', parent: 'manager', component: 'pages/types/index' },
+        meta: { title: 'types', icon: 'scatter_plot', dialog: true, parent: 'manager', component: 'pages/types/index' },
         component: fakeLayout,
         redirect: '/manager/types/view',
         children: [
@@ -733,13 +733,75 @@ export const dynamic = [
             component: () => import('pages/types/index')
           }
         ]
+      },
+      {
+        path: 'configs',
+        name: 'manager-configs',
+        meta: { title: 'configs', icon: 'settings', dialog: true, parent: 'manager', component: 'pages/configs/index' },
+        component: fakeLayout,
+        redirect: '/manager/configs/view',
+        children: [
+          {
+            path: 'view',
+            name: 'manager-configs-view',
+            meta: {
+              title: 'view',
+              icon: 'list',
+              hidden: true,
+              noCache: true,
+              flag: 1,
+              parent: 'manager-configs'
+            },
+            component: () => import('pages/configs/index')
+          },
+          {
+            path: 'add',
+            name: 'manager-configs-add',
+            meta: {
+              title: 'add',
+              icon: 'add',
+              hidden: true,
+              parent: 'manager-configs'
+            },
+            component: () => import('pages/configs/add')
+          },
+          {
+            path: 'edit/:id?',
+            name: 'manager-configs-edit',
+            props: true,
+            meta: {
+              title: 'edit',
+              icon: 'edit',
+              hidden: true,
+              noCache: true,
+              activeMenu: '/configs/view',
+              parent: 'manager-configs'
+            },
+            component: () => import('pages/configs/add')
+            // beforeEnter: (to, from, next) => {
+            //   if (to.redirectedFrom) {
+            //     to.query = to.redirectedFrom.query
+            //     to.href = to.redirectedFrom.href
+            //     to.fullPath = to.redirectedFrom.fullPath
+            //   }
+            //   next()
+            // }
+          },
+          {
+            path: 'trash',
+            name: 'manager-configs-trash',
+            meta: {
+              title: 'trash',
+              icon: 'delete',
+              hidden: true,
+              noCache: true,
+              flag: 0,
+              parent: 'manager-configs'
+            },
+            component: () => import('pages/configs/index')
+          }
+        ]
       }
-      // {
-      //   path: 'table',
-      //   name: 'manager-table',
-      //   meta: { title: 'table', icon: 'scatter_plot' },
-      //   component: () => import('pages/types/table')
-      // }
     ]
   }
 ]
