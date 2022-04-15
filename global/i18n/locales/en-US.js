@@ -438,7 +438,8 @@ export default {
     url: 'Url file',
     inputUrl: 'Input url',
     googleSheet: 'Google sheet',
-    manager: 'File manager'
+    manager: 'File manager',
+    captures: 'Take captures'
   },
   gender: {
     male: 'Male',

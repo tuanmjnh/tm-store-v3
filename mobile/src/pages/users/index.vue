@@ -92,7 +92,7 @@
             <q-item>
               <q-item-section avatar>
                 <q-avatar rounded size="42px">
-                  <q-img v-if="e.avatar&&e.avatar.length" :src="e.avatar">
+                  <q-img v-if="e.avatar&&e.avatar.length" :src="e.avatar[0].url">
                     <template v-slot:error>
                       <div class="image-error absolute-full flex flex-center">
                         <q-icon name="insert_photo" />

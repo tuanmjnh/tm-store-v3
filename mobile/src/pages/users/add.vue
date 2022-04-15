@@ -162,7 +162,7 @@
           </q-tree>
         </q-tab-panel>
         <q-tab-panel name="avatar" id="tab-avatar" style="height:calc(100vh - 99px)">
-          <tm-fileList ref="refTMFileList" v-model="data.avatar" v-model:view-type="viewType" :multiple="false" :size="353"
+          <tm-fileList ref="refTMFileList" v-model="data.avatar" v-model:view-type="viewType" :multiple="false" :size="353" center
                        minHeight="360px" :isDelete="false" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                        :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
             <template v-slot:tool-bar>
@@ -199,7 +199,7 @@
         <tm-upload :multiple="false" :lblConfirmTitle="$t('messageBox.warning')" :lblConfirmContent="$t('messageBox.delete')"
                    :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')" :size="353" mimeType="image"
                    accept=".jpg,.jpeg,.png,.gif,.jfif" :upload-url="$store.state.app.apiUpload" @on-finish="onUploaded"
-                   :headers="[{name:'Upload-Path',value:`users${data.username?'/'+data.username:''}`},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
+                   :headers="[{name:'Upload-Path',value:`users${data._id?'/'+data._id:''}`},{ name:'Upload-Rename',value:true},{name:'x-access-token',value:`Bearer ${$store.state.auth.token}`}]">
           <template v-slot:headerLeft>
             <q-btn flat dense icon="arrow_back" v-close-popup />
             <span class="text-subtitle1">{{$t('files.upload')}}</span>
@@ -301,12 +301,11 @@ export default defineComponent({
       },
       onUploaded (val) {
         isDialogUpload.value = false
-        if (val) data.value.avatar = uploadUrl.value ? val.url : val
+        if (val) data.value.avatar = uploadUrl.value ? [val.url] : [val]
       },
       onAccept (val) {
         isDialogFileManager.value = false
-        if (val) data.value.avatar = uploadUrl.value ? val.url : val
-        console.log(data.value.avatar)
+        if (val) data.value.avatar = uploadUrl.value ? [val.url] : [val]
       }
     }
   }

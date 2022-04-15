@@ -44,16 +44,16 @@ const auth = new google.auth.GoogleAuth({
 const getPath = (filePath) => {
   return path.join(__dirname, filePath)
 }
-const createFolder = async ({ name, rootFolderID, exist }) => {
+const createFolder = async ({ name, rootFolderId, exist }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
     if (exist) {
-      const _exist = await getFolder({ name: name, rootFolderID: rootFolderID || FOLDER_ROOT })
+      const _exist = await getFolder({ name: name, rootFolderId: rootFolderId || FOLDER_ROOT })
       if (_exist) return _exist
     }
     const fileMetadata = {
       'name': name,
-      'parents': rootFolderID || FOLDER_ROOT,
+      'parents': [rootFolderId] || FOLDER_ROOT,
       'mimeType': MIME_TYPE.folder
     }
     const response = await driveService.files.create({
@@ -73,7 +73,7 @@ const createFile = async ({ name, rootFolderID, mimeType, stream }) => {
     const driveService = google.drive({ version: 'v3', auth })
     const fileMetadata = {
       'name': name, //'icon.png',
-      'parents': rootFolderID || FOLDER_ROOT
+      'parents': [rootFolderID] || FOLDER_ROOT
     }
     const media = {
       mimeType: mimeType, //'image/jpeg',
@@ -99,50 +99,96 @@ const createFile = async ({ name, rootFolderID, mimeType, stream }) => {
   }
 }
 
-const getFolder = async ({ name, rootFolderID }) => {
+const getFolder = async ({ name, rootFolderId, pageSize }) => {
+  try {
+    // console.log(rootFolderId)
+    const driveService = google.drive({ version: 'v3', auth })
+    const opts = {
+      pageSize: pageSize || 50,
+      fields: 'files(id,name)',
+      q: `'${rootFolderId || FOLDER_ROOT}' in parents and name='${name}' and mimeType='${MIME_TYPE.folder}'`,
+      spaces: 'drive'
+    }
+    // console.log(opts)
+    const response = await driveService.files.list(opts)
+    if (response.data.files && response.data.files.length) return response.data.files[0]
+    else return null
+  } catch (e) {
+    // console.log(e)
+    return null
+  }
+}
+const getFolderById = async ({ rootFolderId, pageSize }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
     const opts = {
-      pageSize: 10,
+      pageSize: pageSize || 50,
       fields: 'files(id,name)',
-      q: `'${rootFolderID || FOLDER_ROOT}' in parents and name='${name}' and mimeType='${MIME_TYPE.folder}'`,
+      q: `'${rootFolderId || FOLDER_ROOT}' in parents and mimeType='${MIME_TYPE.folder}'`,
       spaces: 'drive'
     }
     const response = await driveService.files.list(opts)
+    // console.log(rootFolderId)
     if (response.data.files && response.data.files.length) return response.data.files[0]
-    else {
-      // const folder = await createFolder({ name: name })
-      // if (folder) return folder
-      return null
-    }
+    else return null
   } catch (e) {
     // console.log(e)
     return null
   }
 }
 
-
-const getFolders = async ({ name, rootFolderID }) => {
+const getFolders = async ({ rootFolder, rootFolderId, folderId, pageSize }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
-    const names = name.split('/')
-    const rs = [{ id: rootFolderID || FOLDER_ROOT, name: 'root' }]
-    // for await (const e of names) {
-    //   const opts = {
-    //     pageSize: 10,
-    //     fields: 'files(id,name,mimeType)',
-    //     q: `'${rs[rs.length - 1].id}' in parents and name='${e}' and mimeType='${MIME_TYPE.folder}'`,
-    //     spaces: 'drive'
-    //   }
-    //   const response = await driveService.files.list(opts)
-    //   if (response.data.files && response.data.files.length) rs.push(response.data.files[0])
-    //   else {
-    //     const folder = await createFolder({ name: e, rootFolderID: rs[rs.length - 1].id })
-    //     if (folder) rs.push(folder)
-    //   }
-    // }
-    const a = await createFolder({ name: '5eccbc9e9071001d87fd4df1', rootFolderID: '1gRKS1SbOEBHvga7CcThAm5EcGKCPedTI' })
-    console.log(a)
+    const rs = []
+    const opts = {
+      pageSize: pageSize || 50,
+      fields: 'files(id,name)',
+      q: `mimeType='${MIME_TYPE.folder}'`,
+      spaces: 'drive'
+    }
+    if (folderId) opts.q = `${opts.q} and '${folderId}' in parents`
+    else {
+      if (rootFolderId) {
+        opts.q = `${opts.q} and '${rootFolderId}' in parents`
+        rs.push({
+          id: rootFolderId,
+          name: 'Root',
+          children: []
+        })
+      } else {
+        const folderID = await getFolder({ name: rootFolder, pageSize: pageSize })
+        if (folderID) {
+          opts.q = `${opts.q} and '${folderID.id}' in parents`
+          rs.push({
+            id: folderID.id,
+            name: 'Root',
+            children: []
+          })
+        } else {
+          opts.q = `${opts.q} and '${FOLDER_ROOT[0]}' in parents`
+          rs.push({
+            id: FOLDER_ROOT[0],
+            name: 'Root',
+            children: []
+          })
+        }
+      }
+    }
+    // console.log(opts)
+    const response = await driveService.files.list(opts)
+    if (response.data.files && response.data.files.length) {
+      for await (const e of response.data.files) {
+        if (rs.length && rs[0].children) rs[0].children.push({
+          id: e.id,
+          name: e.name
+        })
+        else rs.push({
+          id: e.id,
+          name: e.name
+        })
+      }
+    }
     return rs
   } catch (e) {
     // console.log(e)
@@ -150,27 +196,28 @@ const getFolders = async ({ name, rootFolderID }) => {
   }
 }
 
-const getFiles = async ({ folder, mimeType }) => {
+const getFiles = async ({ rootFolder, folderId, mimeType, pageSize, nextPageToken }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
     const opts = {
-      pageSize: 10,
+      pageSize: pageSize || 10,
       fields: 'nextPageToken, files(id,name,mimeType,size,thumbnailLink)',
       q: `'${FOLDER_ROOT}' in parents`,
-      pageToken: pageToken,
+      pageToken: nextPageToken,
       spaces: 'drive'
     }
-    const rs = []
-    if (folder) {
-      const folderID = await getFolder({ name: folder })
+    const rs = { files: [], nextPageToken: null }
+    if (folderId) opts.q = `'${folderId}' in parents`
+    else if (rootFolder) {
+      const folderID = await getFolder({ name: rootFolder })
       if (folderID) opts.q = `'${folderID.id}' in parents`
     }
     if (mimeType) opts.q = `${opts.q} and mimeType contains '${mimeType}'`
-    // console.log(opts.q)
     const response = await driveService.files.list(opts)
     if (response.data.files && response.data.files.length) {
+      rs.nextPageToken = response.data.nextPageToken
       for await (const e of response.data.files) {
-        rs.push({
+        rs.files.push({
           id: e.id,
           name: e.name,
           url: getViewUrl(e.id),
@@ -180,19 +227,18 @@ const getFiles = async ({ folder, mimeType }) => {
       }
     }
     // console.log(rs)
-    if (rs.length) return rs
-    else return null
+    return rs
   } catch (e) {
-    // console.log(e)
+    console.log(e)
     return null
   }
 }
 
-const getAll = async ({ folder, mimeType, folderId }) => {
+const getAll = async ({ folder, mimeType, folderId, pageSize }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
     const opts = {
-      pageSize: 10,
+      pageSize: pageSize || 10,
       fields: 'nextPageToken, files(id,name,mimeType,size,thumbnailLink)',
       q: `'${FOLDER_ROOT}' in parents`,
       pageToken: pageToken,
@@ -227,40 +273,43 @@ const getAll = async ({ folder, mimeType, folderId }) => {
     }
     // if (mimeType) opts.q = `${opts.q} and mimeType contains '${mimeType}'`
     // console.log(opts.q)
-    const response = await driveService.files.list(opts)
-    if (response.data.files && response.data.files.length) {
-      for await (const e of response.data.files) {
-        if (e.mimeType === MIME_TYPE.folder) {
-          if (rs.folders.length && rs.folders[0].children) rs.folders[0].children.push({
-            id: e.id,
-            name: e.name
-          })
-          else rs.folders.push({
-            id: e.id,
-            name: e.name
-          })
-        } else {
-          if (mimeType) {
-            const reg = new RegExp(mimeType)
-            if (reg.test(e.mimeType)) rs.files.push({
-              id: e.id,
-              name: e.name,
-              url: getViewUrl(e.id),
-              type: e.mimeType,
-              size: e.size,
-            })
-          } else {
-            rs.files.push({
-              id: e.id,
-              name: e.name,
-              url: getViewUrl(e.id),
-              type: e.mimeType,
-              size: e.size,
-            })
-          }
-        }
-      }
-    }
+    const resFolders = await getFolders({ rootFolderID: folderId })
+    console.log(resFolders)
+    // const response = await driveService.files.list(opts)
+    // if (response.data.files && response.data.files.length) {
+    //   for await (const e of response.data.files) {
+    //     console.log(e.name)
+    //     if (e.mimeType === MIME_TYPE.folder) {
+    //       if (rs.folders.length && rs.folders[0].children) rs.folders[0].children.push({
+    //         id: e.id,
+    //         name: e.name
+    //       })
+    //       else rs.folders.push({
+    //         id: e.id,
+    //         name: e.name
+    //       })
+    //     } else {
+    //       if (mimeType) {
+    //         const reg = new RegExp(mimeType)
+    //         if (reg.test(e.mimeType)) rs.files.push({
+    //           id: e.id,
+    //           name: e.name,
+    //           url: getViewUrl(e.id),
+    //           type: e.mimeType,
+    //           size: e.size,
+    //         })
+    //       } else {
+    //         rs.files.push({
+    //           id: e.id,
+    //           name: e.name,
+    //           url: getViewUrl(e.id),
+    //           type: e.mimeType,
+    //           size: e.size,
+    //         })
+    //       }
+    //     }
+    //   }
+    // }
     // console.log(rs)
     return rs
   } catch (e) {
@@ -269,5 +318,5 @@ const getAll = async ({ folder, mimeType, folderId }) => {
   }
 }
 
-module.exports = { createFolder, getFolder, getFolders, createFile, getFiles, getAll, MIME_TYPE }
+module.exports = { createFolder, getFolder, getFolderById, getFolders, createFile, getFiles, getAll, MIME_TYPE }
 // getFiles()

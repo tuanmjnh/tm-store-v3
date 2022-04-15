@@ -113,7 +113,7 @@
           <div class="row" style="height:45%">
             <div class="col-12 q-gutter-sm images">
               <tm-fileList ref="refTMFileListImages" v-model="data.images" v-model:view-type="viewTypeImage" :title="$t('global.avatar')"
-                           :multiple="false" :size="290" :lblConfirmTitle="$t('messageBox.warning')" minHeight="280px"
+                           :multiple="false" :size="290" :lblConfirmTitle="$t('messageBox.warning')" minHeight="280px" center
                            :lblConfirmContent="$t('messageBox.delete')" :lblOk="$t('global.accept')" :lblCancel="$t('global.cancel')">
                 <template v-slot:tool-bar>
                   <q-btn round dense flat icon="file_upload" color="primary" @click="onUpload('images')" />
@@ -324,7 +324,7 @@ export default defineComponent({
         isDialogUpload.value = false
         if (val)
           if (targetFilesList.value === 'images') {
-            data.value.images = uploadUrl.value ? val.url : val
+            data.value.images = uploadUrl.value ? [val.url] : [val]
           } else {
             if (data.value.attach) {
               val.forEach(e => {
@@ -340,7 +340,7 @@ export default defineComponent({
         isDialogFileManager.value = false
         if (val)
           if (targetFilesList.value === 'images') {
-            data.value.images = uploadUrl.value ? val.url : val
+            data.value.images = uploadUrl.value ? [val.url] : [val]
           } else {
             if (data.value.attach) {
               val.forEach(e => {

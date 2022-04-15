@@ -87,13 +87,6 @@ app.use(middleware.verify)
 /**
  * Primary app routes.
  */
-/* GET home page. */
-app.get(process.env.BASE_URL, function (req, res, next) {
-  // res.render('index', { title: 'Express' })
-  // var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
-  // res.end('TM-Store Express Server api', { title: 'Express' })
-  res.end(`TM-Store Express Server api. version: ${packageData.version}`) // process.env.npm_package_version
-})
 // Mount the router at /api so all its routes start with /api
 app.use(`${process.env.BASE_URL}api`, router)
 
@@ -103,7 +96,18 @@ AConfigs.init(app)
 setTimeout(() => {
   console.log(`Server configs:`)
   console.log(app.locals.configs)
-}, 100)
+}, 300)
+/* GET home page. */
+app.get(process.env.BASE_URL, function (req, res, next) {
+  let rs = `TM-Store Express Server api\r\n`
+  rs = `${rs}version: ${packageData.version}\r\n`
+  rs = `${rs}\r\nServer configs:`
+  Object.keys(app.locals.configs).forEach(e => {
+    rs = `${rs}\r\n* ${e}: ${app.locals.configs[e]}`
+  })
+  // res.end(`TM-Store Express Server api. version: ${packageData.version} \r\n ${app.locals.configs}`) // process.env.npm_package_version
+  res.end(rs)
+})
 // listen
 app
   .listen(process.env.PORT) //, '192.168.1.10' // '127.0.0.1'

@@ -439,7 +439,9 @@ export default {
     url: 'Địa chỉ tệp',
     inputUrl: 'Nhập đường dẫn',
     googleSheet: 'Google sheet',
-    manager: 'Quản lý tệp'
+    manager: 'Quản lý tệp',
+    captures: 'Chụp ảnh',
+    reCaptures: 'Chụp lại'
   },
   gender: {
     male: 'Nam',

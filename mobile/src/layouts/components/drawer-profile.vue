@@ -3,7 +3,7 @@
     <q-item-section avatar class="q-mr-sm">
       <q-avatar size="100px">
         <!-- <img :src="$store.state.auth.user.avatar"> -->
-        <q-img v-if="$store.state.auth.user.avatar&&$store.state.auth.user.avatar.length" :src="$store.state.auth.user.avatar">
+        <q-img v-if="$store.state.auth.user.avatar&&$store.state.auth.user.avatar.length" :src="$store.state.auth.user.avatar[0].url">
           <template v-slot:error>
             <div class="image-error absolute-full flex flex-center">
               <q-icon name="insert_photo" />
@@ -30,10 +30,13 @@
           <q-btn flat dense icon="arrow_back" v-close-popup></q-btn>
         </div>
         <q-space />
-        <span class="text-subtitle2 q-pt-md">{{$store.state.auth.user.fullName}}</span>
-        <avatar />
+        <!-- <span class="text-subtitle2 q-pt-md">{{$store.state.auth.user.fullName}}</span> -->
+        <!-- <avatar /> -->
       </q-card-section>
 
+      <q-card-section class="q-pt-none text-center">
+        <avatar />
+      </q-card-section>
       <q-card-section class="q-pt-none">
         <profile />
       </q-card-section>

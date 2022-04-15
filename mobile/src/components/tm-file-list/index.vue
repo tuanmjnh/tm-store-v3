@@ -16,14 +16,111 @@
       <div v-if="slotPanelLeft" class="panel-left">
         <slot name="panel-left"></slot>
       </div>
-      <div id="scroll-items" class="panel-right scroll">
+      <div v-if="scrollLoad" id="panel-right-scroll" class="panel-right">
         <div v-if="loading" class="fullscreen">
           <div class="absolute-full flex flex-center">
             <q-spinner color="primary" size="6em" :thickness="1" />
           </div>
         </div>
-        <div :class="`views view-box ${multiple?'':'text-center'}`" v-if="viewType!=='list'">
-          <div v-show="!loading" v-for="(e,i) in rows" :key="i" :style="`width:${size}px;height:${size}px`"
+        <div v-if="viewType!=='list'" :class="`views view-box ${center?'text-center':''}`" class="scroll"
+             :style="contentHeight?`height:${contentHeight}px`:''">
+          <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="1">
+            <div v-for="(e,i) in rows" :key="i" :style="`width:${size}px;height:${size}px`"
+                 :class="['item',selected&&selected.indexOf(e)>-1?'selected':'']">
+              <div @click="onSelectItem(e)">
+                <i v-if="e.type==='folder'" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">folder</i>
+                <q-img v-else-if="Extension.isImage(e.name)" :src="e.url" spinner-color="primary" :style="{height:`${size-4}px`}">
+                  <template v-slot:error>
+                    <i class="material-icons"
+                       style="font-size:30px;color:#a5a5a5;position:absolute;top:0;right:0;bottom:0;left:0;align-items:center;justify-content:center;display:flex;flex-wrap:wrap;">photo_size_select_actual</i>
+                  </template>
+                </q-img>
+                <i v-else-if="Extension.isAudio(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">audiotrack</i>
+                <i v-else-if="Extension.isVideo(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">video_library</i>
+                <i v-else-if="Extension.isPdf(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">picture_as_pdf</i>
+                <i v-else-if="Extension.isFlash(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">burst_mode</i>
+                <i v-else-if="Extension.isCode(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">code</i>
+                <i v-else-if="Extension.isDoc(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">description</i>
+                <i v-else-if="Extension.isSheet(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">list_alt</i>
+                <i v-else-if="Extension.isText(e.name)" class="material-icons absolute-full flex flex-center"
+                   :style="`font-size:${fontSize}px`">assignment</i>
+                <i v-else class="material-icons absolute-full flex flex-center" :key="i" :style="`font-size:${fontSize}px`">file_copy</i>
+              </div>
+              <i v-if="isDelete" class="material-icons file-delete" @click="onDelete(i)">clear</i>
+              <q-tooltip>{{Extension.getNameFilePath(e.name)}}</q-tooltip>
+            </div>
+            <template v-if="!scrollEnd" v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+          </q-infinite-scroll>
+        </div>
+        <div v-else class="views view-list">
+          <q-list separator class="scroll" :style="contentHeight?`height:${contentHeight}px`:''">
+            <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="50">
+              <q-item v-for="(e,i) in rows" :key="i">
+                <q-item-section avatar>
+                  <q-img :src="e.url" spinner-color="primary" fit="cover" v-if="Extension.isImage(e.name)">
+                    <template v-slot:error>
+                      <i class="content material-icons"
+                         style="font-size:23px;position:absolute;top:0;left:0;color:#908f8f">photo_size_select_actual</i>
+                    </template>
+                  </q-img>
+                  <i v-else-if="Extension.isAudio(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">audiotrack</i>
+                  <i v-else-if="Extension.isVideo(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">video_library</i>
+                  <i v-else-if="Extension.isPdf(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">picture_as_pdf</i>
+                  <i v-else-if="Extension.isFlash(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">burst_mode</i>
+                  <i v-else-if="Extension.isCode(e.name)" class="content material-icons" :style="`font-size:${fontSize}px`">code</i>
+                  <i v-else-if="Extension.isDoc(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">description</i>
+                  <i v-else-if="Extension.isSheet(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">list_alt</i>
+                  <i v-else-if="Extension.isText(e.name)" class="content material-icons"
+                     :style="`font-size:${fontSize}px`">assignment</i>
+                  <i v-else class="content material-icons" :key="i" :style="`font-size:${fontSize}px`">file_copy</i>
+                  <!-- <q-icon color="primary" name="e.icon" /> -->
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="ellipsis">{{e.name}}</q-item-label>
+                  <q-item-label caption lines="1">{{e.type}}</q-item-label>
+                  <q-item-label caption lines="1">{{parseInt(e.size).formatFileSize()}}</q-item-label>
+                </q-item-section>
+
+                <q-item-section side>
+                  <i v-if="isDelete" class="material-icons file-delete" @click="onDelete(i)">clear</i>
+                </q-item-section>
+              </q-item>
+              <template v-if="!scrollEnd" v-slot:loading>
+                <div class="row justify-center q-my-md">
+                  <q-spinner-dots color="primary" size="40px" />
+                </div>
+              </template>
+            </q-infinite-scroll>
+          </q-list>
+        </div>
+      </div>
+      <div v-else id="panel-right-scroll" class="panel-right">
+        <div v-if="loading" class="fullscreen">
+          <div class="absolute-full flex flex-center">
+            <q-spinner color="primary" size="6em" :thickness="1" />
+          </div>
+        </div>
+        <div v-if="viewType!=='list'" :class="`views view-box ${center?'text-center':''}`" class="scroll"
+             :style="contentHeight?`height:${contentHeight}px`:''">
+          <div v-for="(e,i) in rows" :key="i" :style="`width:${size}px;height:${size}px`"
                :class="['item',selected&&selected.indexOf(e)>-1?'selected':'']">
             <div @click="onSelectItem(e)">
               <i v-if="e.type==='folder'" class="material-icons absolute-full flex flex-center"
@@ -57,7 +154,7 @@
           </div>
         </div>
         <div v-else class="views view-list">
-          <q-list separator>
+          <q-list separator class="scroll" :style="contentHeight?`height:${contentHeight}px`:''">
             <q-item v-for="(e,i) in rows" :key="i">
               <q-item-section avatar>
                 <q-img :src="e.url" spinner-color="primary" fit="cover" v-if="Extension.isImage(e.name)">
@@ -95,78 +192,7 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <!-- <q-table flat dense :rows="rows" :columns="columns" :visible-columns="visibleColumns" row-key="name" selection="multiple"
-                   :no-data-label="$t('table.noData')" :rows-per-page-label="$t('table.rowPerPage')"
-                   :selected-rows-label="()=>`${selected.length} ${$t('table.rowSelected')}`" :rows-per-page-options="rowsPerPageOptions">
-            <template v-slot:header="props">
-              <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  <span v-if="$q.dark.isActive" class="text-bold">{{col.label}}</span>
-                  <span v-else class="text-bold text-blue-grey-10">{{col.label}}</span>
-                </q-th>
-                <q-th auto-width>
-                  <q-btn flat round dense :color="$q.dark.isActive?'':'grey-7'" icon="menu_open">
-                    <q-tooltip v-if="!$q.platform.is.mobile">{{$t('table.displayColumns')}}</q-tooltip>
-                    <q-menu fit>
-                      <q-list dense style="min-width:100px">
-                        <template v-for="(item,index) in columns">
-                          <q-item v-if="!item.required" clickable :key="index" :active="visibleColumns.indexOf(item.name)>-1||false"
-                                  @click="onColumns(item.name)">
-                            <q-item-section>{{item.label}}</q-item-section>
-                          </q-item>
-                        </template>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </q-th>
-              </q-tr>
-            </template>
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td auto-width key="index" :props="props">{{props.row.index+1}}</q-td>
-                <q-td auto-width key="icon" :props="props">
-                  <q-img :src="props.row.name" spinner-color="primary" style="height:23px;max-width:25px" fit="cover"
-                         v-if="Extension.isImage(props.row.name)">
-                    <template v-slot:error>
-                      <i class="content material-icons"
-                         style="font-size:23px;position:absolute;top:0;left:0;color:#908f8f">photo_size_select_actual</i>
-                    </template>
-                  </q-img>
-                  <i v-else-if="Extension.isAudio(props.row.name)" class="content material-icons"
-                     style="font-size:20px">audiotrack</i>
-                  <i v-else-if="Extension.isVideo(props.row.name)" class="content material-icons"
-                     style="font-size:20px">video_library</i>
-                  <i v-else-if="Extension.isPdf(props.row.name)" class="content material-icons"
-                     style="font-size:20px">picture_as_pdf</i>
-                  <i v-else-if="Extension.isFlash(props.row.name)" class="content material-icons"
-                     style="font-size:20px">burst_mode</i>
-                  <i v-else-if="Extension.isCode(props.row.name)" class="content material-icons"
-                     style="font-size:20px">code</i>
-                  <i v-else-if="Extension.isDoc(props.row.name)" class="content material-icons"
-                     style="font-size:20px">description</i>
-                  <i v-else-if="Extension.isSheet(props.row.name)" class="content material-icons"
-                     style="font-size:20px">list_alt</i>
-                  <i v-else-if="Extension.isText(props.row.name)" class="content material-icons"
-                     style="font-size:20px">assignment</i>
-                  <i v-else class="content material-icons" style="font-size:20px">file_copy</i>
-                </q-td>
-                <q-td key="name" :props="props">{{Extension.getNameFilePath(props.row.name)}}</q-td>
-                <q-td auto-width key="type" :props="props">{{props.row.type}}</q-td>
-                <td auto-width>
-                  <q-btn flat round dense color="negative" icon="clear" size="sm" @click="onDelete(props.row.index)">
-                    <q-tooltip v-if="!$q.platform.is.mobile">{{labelDeleteFile}}</q-tooltip>
-                  </q-btn>
-                </td>
-              </q-tr>
-            </template>
-          </q-table> -->
         </div>
-        <!-- <template v-slot:loading>
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
-            </div>
-          </template>
-        </q-infinite-scroll> -->
       </div>
     </div>
   </q-layout>
@@ -176,6 +202,7 @@
 import { defineComponent, ref, computed, onMounted } from 'vue';
 import * as extension from '../../../../global/utils/extension'
 import { useQuasar } from 'quasar'
+import { number } from '@intlify/core-base';
 
 export default defineComponent({
   name: 'TMFileList',
@@ -196,6 +223,7 @@ export default defineComponent({
     viewType: { type: String, default: 'box' },
     minHeight: { type: String, default: '200px' },
     maxHeight: { type: String, default: '200px' },
+    contentHeight: { type: Number, default: 500 },
     labelViewList: { type: String, default: 'View list' },
     labelViewBox: { type: String, default: 'View box' },
     labelIndex: { type: String, default: 'Index' },
@@ -207,7 +235,10 @@ export default defineComponent({
     lblOk: { type: String, default: 'Ok' },
     lblCancel: { type: String, default: 'Cancel' },
     lblConfirmTitle: { type: String, default: 'Confirm' },
-    lblConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' }
+    lblConfirmContent: { type: String, default: 'Are you sure you want to delete this record?' },
+    center: { type: Boolean, default: false },
+    scrollLoad: { type: Boolean, default: false },
+    scrollEnd: { type: Boolean, default: true }
   },
   setup (props, { emit, slots }) {
     const $q = useQuasar()
@@ -223,6 +254,9 @@ export default defineComponent({
       { name: 'type', field: 'type', label: props.labelType, align: 'left', sortable: true }
       // { name: 'size', field: 'size', label: 'Size', align: 'left', sortable: true }
     ])
+    //
+    const refViewBox = ref(null)
+    const refViewList = ref(null)
     const onGenerateImages = (images) => {
       if (images && images.length) {
         const _images = JSON.parse(JSON.stringify(images))
@@ -261,7 +295,7 @@ export default defineComponent({
       }
     })
     return {
-      Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns,
+      Extension, slotToolBar, slotPanelLeft, rows, visibleColumns, columns, refViewBox, refViewList,
       onGetStyleImage: (url) => {
         return `background-size:cover;background-position:50% 50%;background-image:url("${url}");`
       },
@@ -343,6 +377,9 @@ export default defineComponent({
         var i = visibleColumns.value.indexOf(val)
         if (i < 0) visibleColumns.value.push(val)
         else visibleColumns.value.splice(i, 1)
+      },
+      onScrollLoad (index, done) {
+        emit('onScrollLoad', { index, done })
       }
     }
   }

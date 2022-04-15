@@ -8,7 +8,7 @@ const schema = new mongoose.Schema({
   desc: { type: String, default: null },
   content: { type: String, default: null },
   url: { type: String, default: null },
-  images: { type: String, default: null },
+  images: { type: Array, default: null },
   quantity: { type: Number, default: null },
   position: { type: Array, default: [1] },
   tags: { type: Array, default: null },

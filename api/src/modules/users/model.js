@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
   phone: { type: String, default: null },
   personNumber: { type: String, default: null },
   region: { type: String, default: 'vi-vn' },
-  avatar: { type: String, default: null },
+  avatar: { type: Array, default: null },
   note: { type: String, default: null },
   dateBirth: { type: Date, default: null },
   gender: { type: String, default: null },
