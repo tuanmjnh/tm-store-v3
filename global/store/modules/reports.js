@@ -42,8 +42,11 @@ const mutations = {
   },
 }
 const actions = {
+  getTotalOrders ({ commit }, params) {
+    return api.get(`${collection}/total-orders`, { params })
+  },
   getDate ({ commit }, params) {
-    return api.get(collection, { params })
+    return api.get(`${collection}/date`, { params })
   },
   getWeekly ({ commit }, params) {
     return api.get(`${collection}/weekly`, { params })

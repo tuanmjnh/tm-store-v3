@@ -5,9 +5,56 @@ const mongoose = require('mongoose'),
   MImportItems = require('../product-imports/model-items'),
   MProducts = require('../products/model'),
   MCategories = require('../categories/model'),
+  AReport = require('./actions'),
   moment = require('moment')
 
 module.exports.name = 'product-reports'
+module.exports.totalOrders = async function (req, res, next) {
+  try {
+    const dataType = AReport.getType({ type: req.query.type || 'day', match: { flag: 2 } })
+    const data = await MPExports.aggregate(dataType.conditions)
+    // console.log(data)
+    const rs = { total: { orders: 0, prices: 0, products: 0, quantities: 0 }, data: [] }
+    if (data && data.length) {
+      data.forEach(e => {
+        rs.total.orders = rs.total.orders + e.orders
+        rs.total.prices = rs.total.prices + e.prices
+        rs.total.products = rs.total.products + e.products
+        rs.total.quantities = rs.total.orders + e.quantities
+      })
+      for (let i = 1; i < dataType.labels; i++) {
+        const item = data.find((x) => x._id.labels === i)
+        if (item) {
+          rs.data.push({
+            curent: item._id.curent,
+            labels: item._id.labels,
+            data: {
+              orders: item.orders,
+              products: item.products,
+              prices: item.prices,
+              quantities: item.quantities
+            }
+          })
+        } else {
+          rs.data.push({
+            curent: dataType.curent,
+            labels: i,
+            data: {
+              orders: 0,
+              products: 0,
+              prices: 0,
+              quantities: 0
+            }
+          })
+        }
+      }
+    }
+    return res.status(200).json(rs)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).send('invalid')
+  }
+}
 module.exports.date = async function (req, res, next) {
   try {
     const result = {
@@ -74,6 +121,7 @@ module.exports.date = async function (req, res, next) {
     }
     // exports
     const exports = await MPExports.aggregate(conditions)
+    // console.log(exports)
     if (exports) {
       for (let i = 1; i < labelsLength; i++) {
         const item = exports.find((x) => x._id.labels === i)

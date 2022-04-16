@@ -78,7 +78,7 @@ module.exports.insert = async ({ request, item, createdBy }) => {
     for await (const e of item) {
       // Export item
       const exportItems = new MPExportItems({
-        key: _id,//totalSave._id,
+        key: totalSave._id,
         product: e._id,
         price: parseInt(e.priceExport),
         quantity: parseInt(e.quantity),

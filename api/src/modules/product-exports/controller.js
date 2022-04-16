@@ -142,9 +142,9 @@ module.exports.post = async function (req, res, next) {
     if (!req.body.length) return res.status(202).json([])
     const rs = await APExports.insert({ request: req, item: req.body })
     if (rs.error && rs.error.length) return res.status(500).send(rs.error)
-    else return res.status(201).send(rs)
+    else return res.status(200).send(rs)
   } catch (e) {
-    // console.log(e)
+    console.log(e)
     return res.status(500).send('invalid')
   }
 }
