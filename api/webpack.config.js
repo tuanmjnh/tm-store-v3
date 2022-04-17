@@ -71,9 +71,9 @@ module.exports = {
 
     new CopyPlugin({
       patterns: [
-        { from: './src/public/', to: './public/' },
+        { from: './src/public', to: './', noErrorOnMissing: true },
         { from: '.env', to: './' },
-        { from: './statics/', to: './' }
+        { from: './statics', to: './', noErrorOnMissing: true }
       ]
     })
     // new webpack.DefinePlugin({

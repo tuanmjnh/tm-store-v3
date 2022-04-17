@@ -96,7 +96,7 @@ AConfigs.init(app)
 setTimeout(() => {
   console.log(`Server configs:`)
   console.log(app.locals.configs)
-}, 300)
+}, 500)
 /* GET home page. */
 app.get(process.env.BASE_URL, function (req, res, next) {
   let rs = `TM-Store Express Server api\r\n`
@@ -110,7 +110,7 @@ app.get(process.env.BASE_URL, function (req, res, next) {
 })
 // listen
 app
-  .listen(process.env.PORT) //, '192.168.1.10' // '127.0.0.1'
+  .listen(process.env.PORT || 8080) //, '192.168.1.10' // '127.0.0.1'
   .on('listening', () => {
     // process.env.HOST = `http://${server.address().address}:${port}`
     console.log(`Web server listening on: http://127.0.0.1:${process.env.PORT}`)

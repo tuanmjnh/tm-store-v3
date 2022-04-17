@@ -101,7 +101,7 @@ module.exports.post = async function (req, res, next) {
       stream: fs.createReadStream(req.file.path),
       rootFolderID: folders[folders.length - 1].id//folders.map(x => x.id) //folders[folders.length - 1].id
     }).then(x => {
-      // fs.unlinkSync(req.file.path)
+      fs.unlinkSync(req.file.path)
       if (x) return res.status(201).json(x)
       else return res.status(201).send(null)
     })

@@ -1,14 +1,13 @@
 {
   "name": "tm-store-quasar",
-  "version": "0.0.1",
-  "description": "TM Store Quasar Framework app",
-  "productName": "TM Store",
+  "version": "1.0.0",
+  "description": "TM Store Mobile",
+  "productName": "TM Store Mobile",
   "cordovaId": "tm.store.quasar",
   "capacitorId": "",
   "author": "tuanmjnh <minhtuan200990@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "node build/dev-server.js",
     "start": "node server.js",
     "heroku-postbuild": "npm run prod"
   },

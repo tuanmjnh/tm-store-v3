@@ -2,11 +2,18 @@
   "name": "tm-store-mobile",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
+  "productName": "TM Store",
+  "cordovaId": "tm.store.quasar",
+  "capacitorId": "",
   "author": "tuanmjnh",
   "private": true,
+  "scripts": {
+    "dev": "node build/dev-server.js",
+    "start": "node server.js",
+    "heroku-postbuild": "npm run prod"
+  },
   "dependencies": {
-    "@capacitor/android": "^2.5.0",
-    "@capacitor/cli": "^2.0.0",
-    "@capacitor/core": "^2.0.0"
+    "connect-history-api-fallback": "^1.6.0",
+    "express": "^4.17.1"
   }
 }

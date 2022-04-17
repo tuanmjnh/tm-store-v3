@@ -101,18 +101,25 @@ module.exports = configure(function (ctx) {
       // environment
       env: ctx.dev
         ? { // so on dev we'll have
-          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: '/api',//'http://localhost:8080/api',//'/api', // JSON.stringify('http://localhost:8001/api'),
-          API_UPLOAD: 'http://localhost:8080/uploads', // JSON.stringify('http://localhost:8001/uploads'),
-          API_PUBLIC: 'http://localhost:8080/public', // JSON.stringify('http://localhost:8001/public'),
-          API_FILE_UPLOAD: 'http://localhost:8080/api/file-manager' // JSON.stringify('http://localhost:8001/api/file-manager')
+          APP_NAME: 'TM-Store',
+          API: '/api',//'http://localhost:8080/api',//'/api',
+          API_UPLOAD: 'http://localhost:8080/uploads',
+          API_PUBLIC: 'http://localhost:8080/public',
+          API_FILE_UPLOAD: 'http://localhost:8080/api/file-manager'
         }
-        : { // and on build (production):
-          APP_NAME: 'TM-Store', // JSON.stringify('TM-Store'),
-          API: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api', // JSON.stringify('https://tm-store-express.herokuapp.com/api'),
-          API_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/uploads', // JSON.stringify('https://tm-store-express.herokuapp.com/uploads'),
-          API_PUBLIC: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/public', // JSON.stringify('https://tm-store-express.herokuapp.com/public'),
-          API_FILE_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api/file-manager' // JSON.stringify('https://tm-store-express.herokuapp.com/api/file-manager')
+        // : { // and on build (production): google cloud
+        //   APP_NAME: 'TM-Store',
+        //   API: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api',
+        //   API_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/uploads',
+        //   API_PUBLIC: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/public',
+        //   API_FILE_UPLOAD: 'https://tm-store-api-opkgzsyymq-uc.a.run.app/api/file-manager'
+        // }
+        : { // and on build (production): herokuapp
+          APP_NAME: 'TM-Store',
+          API: 'https://tm-store-api.herokuapp.com/api',
+          API_UPLOAD: 'https://tm-store-api.herokuapp.com/uploads',
+          API_PUBLIC: 'https://tm-store-api.herokuapp.com/public',
+          API_FILE_UPLOAD: 'https://tm-store-api.herokuapp.com/api/file-manager'
         }
     },
 
@@ -123,15 +130,15 @@ module.exports = configure(function (ctx) {
       },
       port: 8100,
       open: false, // opens browser window automatically
-      proxy: {
-        '/api': {
-          // target: 'https://tm-store-api-opkgzsyymq-uc.a.run.app',
-          target: 'http://localhost:8080',
-          // pathRewrite: { '^/api': '' },
-          changeOrigin: true,
-          secure: true
-        }
-      }
+      // proxy: {
+      //   '/api': {
+      //     // target: 'https://tm-store-api-opkgzsyymq-uc.a.run.app',
+      //     target: 'http://localhost:8080',
+      //     // pathRewrite: { '^/api': '' },
+      //     changeOrigin: true,
+      //     secure: true
+      //   }
+      // }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
