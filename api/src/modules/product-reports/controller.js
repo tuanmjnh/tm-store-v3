@@ -20,7 +20,7 @@ module.exports.totalOrders = async function (req, res, next) {
         rs.total.orders = rs.total.orders + e.orders
         rs.total.prices = rs.total.prices + e.prices
         rs.total.products = rs.total.products + e.products
-        rs.total.quantities = rs.total.orders + e.quantities
+        rs.total.quantities = rs.total.quantities + e.quantities
       })
       for (let i = 1; i < dataType.labels; i++) {
         const item = data.find((x) => x._id.labels === i)

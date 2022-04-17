@@ -5,7 +5,7 @@
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t(`category.title${onGetType()}`)}}</q-toolbar-title>
-      <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
+      <q-btn v-if="isRoutes.add" icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
         <q-menu v-model="isFilter" class="q-pa-md">

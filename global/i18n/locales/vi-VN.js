@@ -392,7 +392,7 @@ export default {
     year: 'Báo cáo năm',
     fiveYear: 'Báo cáo 5 năm',
     bills: 'Tổng đơn',
-    products: 'Tổng sản phẩm',
+    products: 'Tổng mặt hàng',
     prices: 'Tổng tiền',
     revenue: 'Doanh thu',
     quantities: 'Tổng số lượng',

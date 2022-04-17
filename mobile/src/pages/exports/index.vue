@@ -5,7 +5,7 @@
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.export')}}</q-toolbar-title>
-      <q-btn icon="add" flat round dense color="blue" @click="isDialogAdd=!isDialogAdd" />
+      <q-btn v-if="isRoutes.add" icon="add" flat round dense color="blue" @click="isDialogAdd=!isDialogAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
         <q-menu v-model="isFilter" class="q-pa-md">
@@ -170,7 +170,8 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref, computed } from "vue"
+import { defineComponent, defineAsyncComponent, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 export default defineComponent({
   name: "ImportIndex",
@@ -182,6 +183,7 @@ export default defineComponent({
     tmPrinter: defineAsyncComponent(() => import('components/tm-printer'))
   },
   setup () {
+    const $router = useRouter()
     const $store = useStore()
     const isDialogAdd = ref(false)
     const isDialogDetails = ref(false)
@@ -194,6 +196,11 @@ export default defineComponent({
     const refPrinterTotal = ref(null)
     const detailsPrint = ref([])
     const totalPrint = ref([])
+    const isRoutes = ref({
+      add: $router.hasRoute('import-add'),
+      edit: $router.hasRoute('import-edit'),
+      trash: $router.hasRoute('import-trash')
+    })
     const pagination = ref({
       filter: '',
       sortBy: 'createdAt',
@@ -237,7 +244,7 @@ export default defineComponent({
     }
     return {
       rows, selected, categories, pagination, isDialogAdd, isDialogDetails, isDialogTouchHold, refScrollTarget, isFilter,
-      onFetch, refPrinterDetails, refPrinterTotal, detailsPrint, totalPrint,
+      onFetch, refPrinterDetails, refPrinterTotal, detailsPrint, totalPrint, isRoutes,
       onFilter: (val) => {
         pagination.value.filter = val
         onFetch({ pagination: pagination.value }).then(x => { data.value = x })

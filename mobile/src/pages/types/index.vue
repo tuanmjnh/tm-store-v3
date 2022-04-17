@@ -5,7 +5,7 @@
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.types')}} </q-toolbar-title>
-      <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
+      <q-btn v-if="isRoutes.add" icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
         <q-menu v-model="isFilter" class="q-pa-md">
@@ -197,11 +197,13 @@ export default defineComponent({
         isDialogAdd.value = true
       },
       onEdit: (val) => {
+        if (!isRoutes.value.edit) return
         if (val) selected.value = [val]
         $store.dispatch('types/set', selected.value[0]).then(x => selected.value = [])
         isDialogAdd.value = true
       },
       onTrash: (val) => {
+        if (!isRoutes.value.trash) return
         $q.dialog({
           title: t('messageBox.warning'),
           message: pagination.value.flag ? t('messageBox.trash') : t('messageBox.recover'),

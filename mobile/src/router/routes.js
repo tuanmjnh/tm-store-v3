@@ -176,6 +176,12 @@ export const dynamic = [
             name: 'import-add',
             meta: { title: 'add', icon: 'addchart', hidden: true, parent: 'import' },
             component: () => import('pages/imports/add')
+          },
+          {
+            path: 'edit',
+            name: 'import-edit',
+            meta: { title: 'edit', icon: 'edit', hidden: true, parent: 'import' },
+            component: () => import('pages/imports/add')
           }
         ]
       },
@@ -197,6 +203,12 @@ export const dynamic = [
             path: 'add',
             name: 'export-add',
             meta: { title: 'add', icon: 'double_arrow', hidden: true, parent: 'export' },
+            component: () => import('pages/exports/add')
+          },
+          {
+            path: 'edit',
+            name: 'export-edit',
+            meta: { title: 'edit', icon: 'edit', hidden: true, parent: 'import' },
             component: () => import('pages/exports/add')
           }
         ]

@@ -12,7 +12,7 @@
         </q-list>
       </q-btn-dropdown>
     </div>
-    <div class="row q-col-gutter-md">
+    <div class="row q-col-gutter-md q-mb-md">
       <div class="col-6">
         <div class="list-content">
           <div>{{$t('report.orders')}}</div>
@@ -26,25 +26,33 @@
         </div>
       </div>
     </div>
+    <div class="row q-col-gutter-md">
+      <div class="col-6"><span>{{$t('report.products')}}:</span> <span
+              class="text-indigo">{{parseInt(results.total.products).NumberFormat($store.getters.language)}}</span></div>
+      <div class="col-6"><span>{{$t('report.quantities')}}:</span> <span
+              class="text-teal">{{parseInt(results.total.quantities).NumberFormat($store.getters.language)}}</span></div>
+    </div>
   </div>
   <div class="q-pa-md">
     <div class="row q-mb-md">
       <div>{{$t('report.reportOrders')}}</div>
     </div>
     <div class="row scroll full-width q-pb-md">
-      <line-chart v-if="chartData" :chartData="chartData" />
+      <!-- <line-chart v-if="chartData" :chartData="chartData" class="line-chart full-width" /> -->
+      <bar-chart v-if="chartData" :chartData="chartData" class="line-chart full-width" />
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, computed, ref, onMounted } from "vue";
+import { defineComponent, defineAsyncComponent, ref, onMounted } from "vue";
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 export default defineComponent({
   name: "Dashboard",
   components: {
-    lineChart: defineAsyncComponent(() => import('components/chartjs/lineChart.vue')),
+    // lineChart: defineAsyncComponent(() => import('components/chartjs/lineChart.vue')),
+    barChart: defineAsyncComponent(() => import('components/chartjs/barChart.vue')),
   },
   setup () {
     const $store = useStore()
@@ -55,12 +63,25 @@ export default defineComponent({
     const group = ref('orders')
     const results = ref({ total: { orders: 0, prices: 0, products: 0, quantities: 0 }, data: [] })
     const chartData = ref(null)
+    const onGetLabels = (data) => {
+      if (typeTotal.value === 'week') {
+        return data.map(x => t(`dayWeek.${x.labels}`))
+      } else if (typeTotal.value === 'month') {
+        return data.map(x => `${t('global.day')} ${x.labels}`)
+      } else if (typeTotal.value === 'quarter') {
+        return data.map(x => t(`quarter.${x.labels}`))
+      } else if (typeTotal.value === 'year') {
+        return data.map(x => `${t('global.month')} ${x.labels}`)
+      } else {
+        return data.map(x => `${x.labels}:00`)
+      }
+    }
     const getTotalOrders = (params) => {
       isLoading.value = true
       $store.dispatch('reports/getTotalOrders', params).then(x => {
         results.value = x
         chartData.value = {
-          labels: results.value.data.map(x => `${x.labels}:00`),
+          labels: onGetLabels(results.value.data),//results.value.data.map(x => `${x.labels}:00`),
           datasets: [
             {
               label: t('report.orders'),
@@ -71,6 +92,16 @@ export default defineComponent({
               label: t('report.prices'),
               backgroundColor: '#f87979',
               data: results.value.data.map(x => x.data['prices'])
+            },
+            {
+              label: t('report.products'),
+              backgroundColor: '#3f51b5',
+              data: results.value.data.map(x => x.data['products'])
+            },
+            {
+              label: t('report.quantities'),
+              backgroundColor: '#009688',
+              data: results.value.data.map(x => x.data['quantities'])
             }
           ]
         }

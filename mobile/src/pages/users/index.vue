@@ -5,7 +5,7 @@
         <q-btn flat dense icon="arrow_back" v-close-popup />
       </div>
       <q-toolbar-title class="text-subtitle1">{{$t('route.users')}}</q-toolbar-title>
-      <q-btn icon="add" flat round dense color="blue" @click="onAdd" />
+      <q-btn v-if="isRoutes.add" icon="add" flat round dense color="blue" @click="onAdd" />
       <q-btn icon="filter_list" flat round dense color="teal">
         <q-tooltip v-if="!$q.platform.is.mobile">{{$t('global.filter')}}</q-tooltip>
         <q-menu v-model="isFilter" class="q-pa-md">
@@ -42,11 +42,11 @@
       <q-list separator ref="refListTarget" id="scroll-items" class="scroll" style="height:calc(100vh - 99px)">
         <q-infinite-scroll ref="refScrollTarget" @load="onScrollLoad" :offset="250" :scroll-target="refListTarget">
           <tm-swipeitem v-for="(e,i) in rows" :key="i" leftValue="max" rightValue="111" v-touch-hold.mouse="()=>{onTouchHold(e)}">
-            <template v-slot:right>
-              <q-btn no-caps class="q-btn--square" @click="onEdit(e)">
+            <template v-if="isRoutes.edit||isRoutes.trash" v-slot:right>
+              <q-btn v-if="isRoutes.edit" no-caps class="q-btn--square" @click="onEdit(e)">
                 <q-icon name="edit" color="blue" size="18px" />
               </q-btn>
-              <q-btn no-caps class="q-btn--square" @click="onTrash(e)">
+              <q-btn v-if="isRoutes.trash" no-caps class="q-btn--square" @click="onTrash(e)">
                 <q-icon name="clear" color="negative" size="18px" />
               </q-btn>
             </template>
@@ -279,15 +279,18 @@ export default defineComponent({
         else return region
       },
       onAdd: () => {
+        if (!isRoutes.value.add) return
         $store.dispatch('users/set')
         isDialogAdd.value = true
       },
       onEdit: (val) => {
+        if (!isRoutes.value.edit) return
         if (val) selected.value = [val]
         $store.dispatch('users/set', selected.value[0]).then(x => selected.value = [])
         isDialogAdd.value = true
       },
       onTrash (val) {
+        if (!isRoutes.value.trash) return
         $q.dialog({
           title: t('messageBox.warning'),
           message: pagination.value.enable ? t('messageBox.lock') : t('messageBox.unlock'),
