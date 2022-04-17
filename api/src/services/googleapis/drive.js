@@ -1,8 +1,8 @@
-const path = require('path')
+// const path = require('path')
 // const io = require('../../utils/io')
 const { google } = require('googleapis')
 
-const KEY_FILE_PATH = path.join(__dirname, './key.json')
+const KEY_FILE_PATH = `${process.env.ROOT_PATH}/credentials/google-service-account.json`//path.join(__dirname, './key.json')
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/drive']//['https://www.googleapis.com/auth/drive.metadata.readonly']
 // The file token.json stores the user's access and refresh tokens, and is
@@ -41,9 +41,9 @@ const auth = new google.auth.GoogleAuth({
   keyFile: KEY_FILE_PATH,
   scopes: SCOPES
 })
-const getPath = (filePath) => {
-  return path.join(__dirname, filePath)
-}
+// const getPath = (filePath) => {
+//   return path.join(__dirname, filePath)
+// }
 const createFolder = async ({ name, rootFolderId, exist }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
@@ -118,6 +118,7 @@ const getFolder = async ({ name, rootFolderId, pageSize }) => {
     return null
   }
 }
+
 const getFolderById = async ({ rootFolderId, pageSize }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })
@@ -137,6 +138,9 @@ const getFolderById = async ({ rootFolderId, pageSize }) => {
   }
 }
 
+// getFolderById({ rootFolderId: null }).then(x => {
+//   console.log(x)
+// })
 const getFolders = async ({ rootFolder, rootFolderId, folderId, pageSize }) => {
   try {
     const driveService = google.drive({ version: 'v3', auth })

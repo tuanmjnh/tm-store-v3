@@ -38,4 +38,4 @@ Thumbs.db
 # Ignore built ts files
 /dist
 
-/src/services/googleapis/key.json
+/src/credentials

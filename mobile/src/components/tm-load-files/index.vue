@@ -73,7 +73,7 @@
 <script>
 import { defineComponent, ref, watch } from 'vue'
 import { read, utils } from "xlsx"
-import { getSheets, getSheetValues } from "../../../../global/utils/gapi"
+import { getSheets, getSheetValues, getIdFromUrl } from "../../../../global/utils/gapi"
 import { validURL } from "../../../../global/utils/validate"
 export default defineComponent({
   name: 'tm-load-files',
@@ -221,7 +221,9 @@ export default defineComponent({
             isLoading.value = true
             emit('onStart', val)
             // emit('update:model-value', val)
-            spreadsheetId.value = validURL(val) ? val.split('/')[5] : (val.split('/')[0] || val)
+            spreadsheetId.value = validURL(val) ? getIdFromUrl(val) : (val.split('/')[0] || val)
+            //https://docs.google.com/spreadsheets/d/1gj0J7IZEM1ZJzl_l6AgIluZPpVW8fdBWthNsXBZRZfE/edit#gid=0
+            //https://docs.google.com/spreadsheets/u/0/d/1gj0J7IZEM1ZJzl_l6AgIluZPpVW8fdBWthNsXBZRZfE/htmlview?lsrp=1#gid=0
             getSheets(spreadsheetId.value).then((x) => {
               if (x) sheets.value = x
               else sheets.value = 'error'

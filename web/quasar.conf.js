@@ -6,7 +6,7 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli/quasar-conf-js
 const path = require('path')
-const CopyPlugin = require('copy-webpack-plugin')
+// const CopyPlugin = require('copy-webpack-plugin')
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin')
 const { configure } = require('quasar/wrappers');
@@ -79,7 +79,7 @@ module.exports = configure(function (ctx) {
         }
 
         // cfg.plugins.push(new CopyPlugin([{ from: './statics/', to: '../' }]))
-        cfg.plugins.push(new CopyPlugin({ patterns: [{ from: './statics/', to: '../' }] }))
+        // cfg.plugins.push(new CopyPlugin({ patterns: [{ from: './statics/', to: '../' }] }))
 
         // for i18n resources (json/json5/yaml)
         cfg.module.rules.push({

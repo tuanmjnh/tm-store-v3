@@ -71,8 +71,9 @@ module.exports = {
 
     new CopyPlugin({
       patterns: [
-        { from: './src/public', to: './', noErrorOnMissing: true },
         { from: '.env', to: './' },
+        { from: './src/credentials', to: './credentials' },
+        { from: './src/public', to: './', noErrorOnMissing: true },
         { from: './statics', to: './', noErrorOnMissing: true }
       ]
     })

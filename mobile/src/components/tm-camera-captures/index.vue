@@ -162,8 +162,8 @@ export default defineComponent({
         const width = cameraInstance.value.videoEl.offsetWidth
         const height = cameraInstance.value.videoEl.offsetHeight
         _canvas.width = width
-        _canvas.height = width
-        context.drawImage(cameraInstance.value.videoEl, 0, 0, width, width)
+        _canvas.height = height
+        context.drawImage(cameraInstance.value.videoEl, 0, 0, width, height)
         beforeResetCamera()
         canvas.value = _canvas
         tmCameraCaptures.value.appendChild(_canvas)

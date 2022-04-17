@@ -6,7 +6,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 const path = require('path')
-const CopyPlugin = require('copy-webpack-plugin')
+// const CopyPlugin = require('copy-webpack-plugin')
 /* eslint-env node */
 const ESLintPlugin = require("eslint-webpack-plugin");
 const { configure } = require("quasar/wrappers");
@@ -80,7 +80,7 @@ module.exports = configure(function (ctx) {
         }
 
         // cfg.plugins.push(new CopyPlugin([{ from: './statics/', to: '../' }]))
-        cfg.plugins.push(new CopyPlugin({ patterns: [{ from: './statics/', to: '../' }] }))
+        // cfg.plugins.push(new CopyPlugin({ patterns: [{ from: './statics/', to: '../' }] }))
 
         // for i18n resources (json/json5/yaml)
         cfg.module.rules.push({
@@ -105,7 +105,7 @@ module.exports = configure(function (ctx) {
           API: '/api',//'http://localhost:8080/api',//'/api',
           API_UPLOAD: 'http://localhost:8080/uploads',
           API_PUBLIC: 'http://localhost:8080/public',
-          API_FILE_UPLOAD: 'http://localhost:8080/api/file-manager'
+          API_FILE_UPLOAD: '/api/file-manager'
         }
         // : { // and on build (production): google cloud
         //   APP_NAME: 'TM-Store',
@@ -130,15 +130,15 @@ module.exports = configure(function (ctx) {
       },
       port: 8100,
       open: false, // opens browser window automatically
-      // proxy: {
-      //   '/api': {
-      //     // target: 'https://tm-store-api-opkgzsyymq-uc.a.run.app',
-      //     target: 'http://localhost:8080',
-      //     // pathRewrite: { '^/api': '' },
-      //     changeOrigin: true,
-      //     secure: true
-      //   }
-      // }
+      proxy: {
+        '/api': {
+          // target: 'https://tm-store-api-opkgzsyymq-uc.a.run.app',
+          target: 'http://localhost:8080',
+          // pathRewrite: { '^/api': '' },
+          changeOrigin: true,
+          secure: true
+        }
+      }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework

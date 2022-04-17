@@ -57,16 +57,16 @@ function initClient () {
  *  Called when the signed in status changes, to update the UI
  *  appropriately. After a sign-in, the API is called.
  */
-function updateSigninStatus (isSignedIn) {
-  if (isSignedIn) {
-    signinButton.style.display = 'none'
-    signoutButton.style.display = 'block'
-    listMajors()
-  } else {
-    signinButton.style.display = 'block'
-    signoutButton.style.display = 'none'
-  }
-}
+// function updateSigninStatus (isSignedIn) {
+//   if (isSignedIn) {
+//     signinButton.style.display = 'none'
+//     signoutButton.style.display = 'block'
+//     listMajors()
+//   } else {
+//     signinButton.style.display = 'block'
+//     signoutButton.style.display = 'none'
+//   }
+// }
 
 /**
  *  Sign in the user upon button click.
@@ -119,27 +119,32 @@ document.body.appendChild(gapiScript)
  * Print the names and majors of students in a sample spreadsheet:
  * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
  */
-function listMajors () {
-  gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Class Data!A2:E'
-  }).then((res) => {
-    console.log(res)
-    var range = res.result
-    if (range.values.length > 0) {
-      // appendPre('Name, Major:')
-      for (i = 0; i < range.values.length; i++) {
-        var row = range.values[i]
-        // Print columns A and E, which correspond to indices 0 and 4.
-        // appendPre(row[0] + ', ' + row[4])
-      }
-    } else {
-      // appendPre('No data found.')
-    }
-  }, (res) => {
-    console.log('Error: ' + res.result.error.message)
-    // appendPre('Error: ' + response.result.error.message)
-  })
+// function listMajors () {
+//   gapi.client.sheets.spreadsheets.values.get({
+//     spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+//     range: 'Class Data!A2:E'
+//   }).then((res) => {
+//     console.log(res)
+//     var range = res.result
+//     if (range.values.length > 0) {
+//       // appendPre('Name, Major:')
+//       for (i = 0; i < range.values.length; i++) {
+//         var row = range.values[i]
+//         // Print columns A and E, which correspond to indices 0 and 4.
+//         // appendPre(row[0] + ', ' + row[4])
+//       }
+//     } else {
+//       // appendPre('No data found.')
+//     }
+//   }, (res) => {
+//     console.log('Error: ' + res.result.error.message)
+//     // appendPre('Error: ' + response.result.error.message)
+//   })
+// }
+
+export const getIdFromUrl = (url) => {
+  const rs = url.match(/[-\w]{25,}(?!.*[-\w]{25,})/) /* /[-\w]{25,}/ */
+  return rs ? rs[0] : null
 }
 
 export const getSheets = (spreadsheetId) => {
