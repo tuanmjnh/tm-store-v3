@@ -27,7 +27,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "icongenie": "icongenie g -i logo/logo.png",
     "keytool": "keytool -genkey -v -keystore my-release-key.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 20000",
-    "jarsigner": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore dist/capacitor/android/apk/release/app-release-unsigned.apk alias_name",
+    "jarsigner": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore keys/tm-store-release-key.keystore dist/capacitor/android/apk/release/app-release-unsigned.apk alias_name",
     "update": "npm update",
     "upgrade": "npm upgrade",
     "upgrade-quasar": "quasar upgrade",
